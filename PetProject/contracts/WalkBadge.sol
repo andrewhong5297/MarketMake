@@ -68,11 +68,19 @@ contract WalkBadge is ReentrancyGuard {
         uint256 _level =
             calculateLevel(_distanceWalked, _timeWalked, _dogsWalked);
 
-        if (AddresstoBadge[_walker].level != 0) {
-            AddresstoBadge[_walker].level == _level;
-            AddresstoBadge[_walker].timeWalked == _timeWalked;
-            AddresstoBadge[_walker].distanceWalked == _distanceWalked;
+        console.log("current level: ", AddresstoBadge[_walker].level);
+        console.log("calculated level: ", _level);
+
+        if (AddresstoBadge[_walker].level > 0) {
+            AddresstoBadge[_walker].level = _level;
+            AddresstoBadge[_walker].timeWalked = _timeWalked;
+            AddresstoBadge[_walker].distanceWalked = _distanceWalked;
             AddresstoBadge[_walker].dogsWalked = _dogsWalked;
+            console.log(
+                "updated",
+                _distanceWalked,
+                AddresstoBadge[_walker].distanceWalked
+            );
 
             emit updatedBadge(
                 AddresstoBadge[_walker].walker,
@@ -110,12 +118,21 @@ contract WalkBadge is ReentrancyGuard {
         uint256 _timeWalked,
         uint256 _dogsWalked
     ) internal returns (uint256 _level) {
-        // uint256 sum =
-        //     0.5 * _distanceWalked + 2 * _timeWalked + 1.5 * _dogsWalked; //use safemath here please
+        uint256 sum =
+            _distanceWalked.mul(2).add(_timeWalked.div(2)).add(
+                _dogsWalked.mul(10)
+            );
+        console.log("sum", sum);
 
+        uint256 threshold = 80;
         //if statements of if sum is greater than 100, level 1, if greater than 200, level 2....
-        uint256 level = 1;
-        return level;
+        if (sum > 80) {
+            return 2;
+        } else if (sum > 30 && sum < 80) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     function getWalkerStats(address _oracle, uint256 jobID)

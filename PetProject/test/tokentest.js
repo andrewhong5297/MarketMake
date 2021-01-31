@@ -33,8 +33,11 @@ describe("Token Test", function () {
     })
 
     it("pay walker for walking mochi for 300 minutes", async () => {
-        const walkedAmount=30; //this could be an API call to Wag's app holding data on walks
-        const distanceTraveled=1; //miles
+        
+        //this data should be from API, where all new walks in the last week are paid out every Monday. 
+        const walkedAmount=30; 
+        const distanceTraveled=1; 
+
         const totalPayout = walkedAmount*distanceTraveled;
 
         await walkToken.connect(shelter).transfer(walker.getAddress(), ethers.BigNumber.from(totalPayout));
@@ -48,12 +51,12 @@ describe("Token Test", function () {
         console.log("total supply of WalkToken: ", totalSupply.toString());
     })
 
-    //Andrew to write deploy exchange. NFT2 implementation on exchange. 
+    //Andrew to write exchange contract
     xit("deploy Exchange contract", async () => {
         //...
     });
 
-    //walkBadge should be non-transferrable. Make a modifier or override. 
+    //walkBadge should be non-transferrable?
     it("walker use walktokens redeem an NFT Achievement Badge", async () => {
         //deploy WalkBadge contract
         const WalkBadge = await ethers.getContractFactory(
@@ -62,24 +65,51 @@ describe("Token Test", function () {
 
         walkBadge = await WalkBadge.connect(shelter).deploy()
             
-        //request to mint one Badge, need to rename this function to checkLevel or something like that
-        await walkBadge.connect(shelter).requestBadge(walker.getAddress(),ethers.BigNumber.from("12"),ethers.BigNumber.from("32"),ethers.BigNumber.from(1)); //this should eventually be an API call
+        //every Monday, request to create or update Badge for each walker who did at least one new walk in the last week.
+        await walkBadge.connect(shelter).requestBadge(walker.getAddress(),ethers.BigNumber.from("4"),ethers.BigNumber.from("32"),ethers.BigNumber.from(1)); //this should eventually be an API call
 
-        const badgeData = await walkBadge.connect(shelter).getBadge(walker.getAddress())
-        
-        //print struct data
+        //print badge data
+        let badgeData = await walkBadge.connect(shelter).getBadge(walker.getAddress())
         console.log(`${badgeData[0]} has a badge with:
                         Level of ${badgeData[1]}
                         Total time walked of ${badgeData[2]}
                         Total distance walked of ${badgeData[3]}
                         Total dogs walked of ${badgeData[4]}`)
 
-        ////ERC721 version. Should it be a token? What would be the benefits of being a token? Token is only useful if going from object to owner. This object is technically not unique, so maybe should be ERC1155
+        //test again to see if update works correctly
+        await walkBadge.connect(shelter).requestBadge(walker.getAddress(),ethers.BigNumber.from("10"),ethers.BigNumber.from("97"),ethers.BigNumber.from(4)); 
+
+        //print updated badge data
+        badgeData = await walkBadge.connect(shelter).getBadge(walker.getAddress())
+        console.log(`${badgeData[0]} has a badge with:
+                        Level of ${badgeData[1]}
+                        Total time walked of ${badgeData[2]}
+                        Total distance walked of ${badgeData[3]}
+                        Total dogs walked of ${badgeData[4]}`)
+
+        ethers.filter = {
+            address: walkBadge.address,
+            topics: [
+                id("UpdateBadge(address,uint256,uint256,uint256,uint256,uint256)"),
+                hexZeroPad(myAddress, 32)
+            ]
+        }
+
+        console.log(filter)
+    });
+
+    //Joe to recreate using WalkBadge as template
+    xit("walker using walktokens to redeem NFTs that represent real world goods", async () => {
+        //deploy WalkCoupon contract, redeem for shirts, services, etc. 
+
+        ////ERC721 version of walkBadge for reference, decided not to go with NFT for the badge since it wouldn't be traded. Though ERC1155 might be better for this one. 
+        // const WalkBadge = await ethers.getContractFactory(
+        //     "WalkBadge"
+        //   );
         //   walkBadge = await WalkBadge.connect(shelter).deploy("WalkBadge","WB")
             
         // // request to mint one Badge, need to rename this function to checkLevel or something like that
         // await walkBadge.connect(shelter).requestBadge(walker.getAddress(),ethers.BigNumber.from("12"),ethers.BigNumber.from("32"),ethers.BigNumber.from(1)); //this should eventually be an API call
-
 
         // //get the supposed owner of token 0
         // const ownerAddress = await walkBadge.connect(shelter).ownerOf(ethers.BigNumber.from(0))
@@ -95,11 +125,6 @@ describe("Token Test", function () {
         
         // //check addresses match
         // expect(ownerAddress).to.equal(badgeData[0]);
-    });
-
-    //Joe to recreate using WalkBadge as template
-    xit("walker using walktokens to redeem NFTs that represent real world goods", async () => {
-        //deploy WalkCoupon contract, redeem for shirts, services, etc. 
     });
 
     //Andrew will do
