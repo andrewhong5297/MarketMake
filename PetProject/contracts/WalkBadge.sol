@@ -44,14 +44,6 @@ contract WalkBadge is ReentrancyGuard {
         shelter = msg.sender;
     }
 
-    function getBadge(address _walker)
-        external
-        view
-        returns (WalkerLevel memory _badge)
-    {
-        return AddresstoBadge[_walker];
-    }
-
     function requestBadge(
         address _walker,
         uint256 _distanceWalked,
@@ -76,11 +68,6 @@ contract WalkBadge is ReentrancyGuard {
             AddresstoBadge[_walker].timeWalked = _timeWalked;
             AddresstoBadge[_walker].distanceWalked = _distanceWalked;
             AddresstoBadge[_walker].dogsWalked = _dogsWalked;
-            console.log(
-                "updated",
-                _distanceWalked,
-                AddresstoBadge[_walker].distanceWalked
-            );
 
             emit updatedBadge(
                 AddresstoBadge[_walker].walker,
@@ -124,8 +111,6 @@ contract WalkBadge is ReentrancyGuard {
             );
         console.log("sum", sum);
 
-        uint256 threshold = 80;
-        //if statements of if sum is greater than 100, level 1, if greater than 200, level 2....
         if (sum > 80) {
             return 2;
         } else if (sum > 30 && sum < 80) {
@@ -145,6 +130,14 @@ contract WalkBadge is ReentrancyGuard {
     {
         require(msg.sender == shelter, "only shelter can input data");
         //oracle call
-        return (1, 2, 3);
+        return (3, 97, 3);
+    }
+
+    function getBadge(address _walker)
+        external
+        view
+        returns (WalkerLevel memory _badge)
+    {
+        return AddresstoBadge[_walker];
     }
 }
