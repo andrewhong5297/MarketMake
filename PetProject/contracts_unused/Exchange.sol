@@ -2,3 +2,4 @@
 //walkToken can also be used to buy or redeem NFTs
 //pragma  ^0.7.0;
 
+

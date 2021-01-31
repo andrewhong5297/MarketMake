@@ -3,96 +3,106 @@ pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
 import "hardhat/console.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract WalkBadge is ERC721, ReentrancyGuard {
-    using Counters for Counters.Counter;
+contract WalkBadge is ReentrancyGuard {
     using SafeMath for uint256;
 
     address public shelter; //default is 0x0
-    Counters.Counter public nonce;
 
     struct WalkerLevel {
         address walker;
         uint256 level;
-        uint256 time;
-        uint256 distance;
-        uint256 dogs;
+        uint256 timeWalked;
+        uint256 distanceWalked;
+        uint256 dogsWalked;
         //possibly other variables?
     }
 
-    mapping(uint256 => WalkerLevel) public IDtoBadge;
-    mapping(address => uint256[]) public AddresstoIDS;
-    WalkerLevel[] public Badges;
+    mapping(address => WalkerLevel) public AddresstoBadge;
 
     event newBadge(
-        uint256 tokenId,
         address walker,
         uint256 level,
-        uint256 time,
-        uint256 distance,
-        uint256 dogs
+        uint256 timeWalked,
+        uint256 distanceWalked,
+        uint256 dogsWalked,
+        uint256 dateCreated
     );
 
-    constructor(string memory _name, string memory _symbol)
-        public
-        ERC721(_name, _symbol)
-    {
+    event updatedBadge(
+        address walker,
+        uint256 level,
+        uint256 timeWalked,
+        uint256 distanceWalked,
+        uint256 dogsWalked,
+        uint256 dateUpdated
+    );
+
+    constructor() public {
         shelter = msg.sender;
     }
 
-    function createBadge(
-        address _walker,
-        uint256 _level, //do we want to represent with level? what would walkers want to earn?
-        uint256 _time,
-        uint256 _distance,
-        uint256 _dogs
-    ) internal {
-        Badges.push(WalkerLevel(_walker, _level, _time, _distance, _dogs));
-    }
-
-    function getBadge(uint256 id)
+    function getBadge(address _walker)
         external
         view
         returns (WalkerLevel memory _badge)
     {
-        return Badges[id];
+        return AddresstoBadge[_walker];
     }
 
-    function mint(
+    function requestBadge(
         address _walker,
-        uint256 _distanceWalked, //remove later
-        uint256 _timeWalked, //remove later
-        uint256 _dogsWalked //remove later
+        uint256 _distanceWalked,
+        uint256 _timeWalked,
+        uint256 _dogsWalked
     ) external nonReentrant {
         require(msg.sender == shelter, "only shelter can mint new badges");
 
-        uint256 tokenId = nonce.current();
-        nonce.increment(); //Note that ID starts at 0.
-
-        //(uint256 _distanceWalked, uint256 _timeWalked, uint256 _dogsWalked) = getWalkerStats(_walker);
+        //undecided on if we make a sql query and insert it into the function, or if there should be an oracle connection.
+        //Insert in function means shelter has to call this, oracle means walker can call this.
+        //If shelter needs to call then this should be called every time a walk is finished.
+        //Otherwise oracle request: (uint256 _distanceWalked, uint256 _timeWalked, uint256 _dogsWalked) = getWalkerStats(_walker);
 
         uint256 _level =
             calculateLevel(_distanceWalked, _timeWalked, _dogsWalked);
 
-        //insert if statement checking if this level badge has already been redeemed. ERC1155 might actually be better here.
-        createBadge(_walker, _level, _timeWalked, _distanceWalked, _dogsWalked);
-        _safeMint(_walker, tokenId);
+        if (AddresstoBadge[_walker].level != 0) {
+            AddresstoBadge[_walker].level == _level;
+            AddresstoBadge[_walker].timeWalked == _timeWalked;
+            AddresstoBadge[_walker].distanceWalked == _distanceWalked;
+            AddresstoBadge[_walker].dogsWalked = _dogsWalked;
 
-        IDtoBadge[tokenId] = Badges[tokenId];
-        AddresstoIDS[_walker].push(tokenId); //not sure how else to search for tokens held by Address
+            emit updatedBadge(
+                AddresstoBadge[_walker].walker,
+                AddresstoBadge[_walker].level,
+                AddresstoBadge[_walker].timeWalked,
+                AddresstoBadge[_walker].distanceWalked,
+                AddresstoBadge[_walker].dogsWalked,
+                block.timestamp
+            );
+        } else {
+            WalkerLevel memory createdBadge =
+                WalkerLevel(
+                    _walker,
+                    _level,
+                    _timeWalked,
+                    _distanceWalked,
+                    _dogsWalked
+                );
 
-        emit newBadge(
-            tokenId,
-            Badges[tokenId].walker,
-            Badges[tokenId].level,
-            Badges[tokenId].time,
-            Badges[tokenId].distance,
-            Badges[tokenId].dogs
-        );
+            AddresstoBadge[_walker] = createdBadge; //not sure how else to search for tokens held by Address
+
+            emit newBadge(
+                AddresstoBadge[_walker].walker,
+                AddresstoBadge[_walker].level,
+                AddresstoBadge[_walker].timeWalked,
+                AddresstoBadge[_walker].distanceWalked,
+                AddresstoBadge[_walker].dogsWalked,
+                block.timestamp
+            );
+        }
     }
 
     function calculateLevel(
@@ -111,13 +121,13 @@ contract WalkBadge is ERC721, ReentrancyGuard {
     function getWalkerStats(address _oracle, uint256 jobID)
         external
         returns (
-            uint256 time,
-            uint256 distance,
-            uint256 dogs
+            uint256 timeWalked,
+            uint256 distanceWalked,
+            uint256 dogsWalked
         )
     {
         require(msg.sender == shelter, "only shelter can input data");
-        //oracle call or just use postgres API insertion from shelter address
+        //oracle call
         return (1, 2, 3);
     }
 }

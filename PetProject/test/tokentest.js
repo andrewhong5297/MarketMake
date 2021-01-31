@@ -53,31 +53,48 @@ describe("Token Test", function () {
         //...
     });
 
-    //already done
+    //walkBadge should be non-transferrable. Make a modifier or override. 
     it("walker use walktokens redeem an NFT Achievement Badge", async () => {
         //deploy WalkBadge contract
         const WalkBadge = await ethers.getContractFactory(
             "WalkBadge"
           );
-          walkBadge = await WalkBadge.connect(shelter).deploy("WalkBadge","WB")
-            
-        //mint one Badge, need to rename this function to checkLevel or something like that
-        await walkBadge.connect(shelter).mint(walker.getAddress(),ethers.BigNumber.from("12"),ethers.BigNumber.from("32"),ethers.BigNumber.from(1)); //this should eventually be an API call
 
-        //get the supposed owner of token 0
-        const ownerAddress = await walkBadge.connect(shelter).ownerOf(ethers.BigNumber.from(0))
-        //get the struct at position 0, which should represent token 0
-        const badgeData = await walkBadge.connect(shelter).getBadge(ethers.BigNumber.from(0))
+        walkBadge = await WalkBadge.connect(shelter).deploy()
+            
+        //request to mint one Badge, need to rename this function to checkLevel or something like that
+        await walkBadge.connect(shelter).requestBadge(walker.getAddress(),ethers.BigNumber.from("12"),ethers.BigNumber.from("32"),ethers.BigNumber.from(1)); //this should eventually be an API call
+
+        const badgeData = await walkBadge.connect(shelter).getBadge(walker.getAddress())
         
         //print struct data
-        console.log(`Owner of token 0 is ${badgeData[0]} with:
+        console.log(`${badgeData[0]} has a badge with:
                         Level of ${badgeData[1]}
                         Total time walked of ${badgeData[2]}
                         Total distance walked of ${badgeData[3]}
                         Total dogs walked of ${badgeData[4]}`)
+
+        ////ERC721 version. Should it be a token? What would be the benefits of being a token? Token is only useful if going from object to owner. This object is technically not unique, so maybe should be ERC1155
+        //   walkBadge = await WalkBadge.connect(shelter).deploy("WalkBadge","WB")
+            
+        // // request to mint one Badge, need to rename this function to checkLevel or something like that
+        // await walkBadge.connect(shelter).requestBadge(walker.getAddress(),ethers.BigNumber.from("12"),ethers.BigNumber.from("32"),ethers.BigNumber.from(1)); //this should eventually be an API call
+
+
+        // //get the supposed owner of token 0
+        // const ownerAddress = await walkBadge.connect(shelter).ownerOf(ethers.BigNumber.from(0))
+        // //get the struct at position 0, which should represent token 0
+        // const badgeData = await walkBadge.connect(shelter).getBadge(ethers.BigNumber.from(0),ethers.BigNumber.from(1),walker.getAddress())
         
-        //check addresses match
-        expect(ownerAddress == badgeData[0], "owner addresses don't match");
+        // //print struct data
+        // console.log(`Owner of token 0 is ${badgeData[0]} with:
+        //                 Level of ${badgeData[1]}
+        //                 Total time walked of ${badgeData[2]}
+        //                 Total distance walked of ${badgeData[3]}
+        //                 Total dogs walked of ${badgeData[4]}`)
+        
+        // //check addresses match
+        // expect(ownerAddress).to.equal(badgeData[0]);
     });
 
     //Joe to recreate using WalkBadge as template
