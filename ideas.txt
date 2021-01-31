@@ -1,0 +1,7 @@
+1) wag walker walks a shelter dog for 30 minutes. so wag has a data api, which tracks how much distance/time was walked based on GPS location. This data could be sent to the shelter to then mint respective quantities of token to the walker's wallet
+2) shelter would be the owner/deployer of ERC20 contract, so they are the only ones who can mint tokens. ERC20 token mints 30 tokens to the walker based on data from Wag.
+3) The walker has 100 tokens they can send 100 tokens (ERC20.transfer(cup_seller, 100))  to the cup seller who will now see 100 tokens in their metamask wallet. walker could redeem 100 tokens for an NFT representing some physical item or service. Like a digital coupon. which would change a variable on the NFT from redeemed=false to redeemed=true
+
+Webpage UI: 
+Can be ranking of top walkers. 
+Rest is integrated into Wag! as an NYC ACC account

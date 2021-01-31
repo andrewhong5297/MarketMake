@@ -13,7 +13,7 @@ contract WalkToken is ERC20 {
     }
 
     function mint(uint256 _newSupply) external {
-        require(msg.sender == shelter, "only shelter can mint, not dogs :(");
+        require(msg.sender == shelter, "only shelter can mint, not dogs");
         _mint(msg.sender, _newSupply);
     }
 }
