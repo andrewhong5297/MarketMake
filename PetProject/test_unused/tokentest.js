@@ -1,20 +1,17 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { abi: abiDai } = require("../artifacts/contracts/Dai.sol/Dai.json");
+const fs = require("fs"); 
 
+function mnemonic() {
+  return fs.readFileSync("./test/mnemonic.txt").toString().trim();
+}
+
+//make sure you have defaultnetwork on localhost, a hardhat node running
 describe("Pet Project Full Test v1 Local", function () {
     let walkToken, walkBadge, walkExchange;
     let dai, aDai, AAVE; 
     let shelter, mochi, walker, walker_two;
-
-    xit("deploy/setup Kovan contracts", async () => {
-        //mnemonic
-
-        Dai = new ethers.Contract(
-            "0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD",
-            abiDai,
-            owner)     
-    });
 
     it("deploy local testing contracts", async () => {
         [shelter, mochi, walker, walker_two] = await ethers.getSigners(); //jsonrpc signers from default 20 accounts with 10000 ETH each
@@ -80,7 +77,7 @@ describe("Pet Project Full Test v1 Local", function () {
         const balance = await walkToken.connect(shelter).balanceOf(walkExchange.address)        
         expect(balance.toString()).to.equal("60")
         
-        //test Dai deposit then into AAVE
+        //AAVE deposit test in kovantest script, not here. 
     });
 
     //walkBadge should be non-transferrable, so not a token. 

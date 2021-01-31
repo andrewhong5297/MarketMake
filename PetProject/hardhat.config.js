@@ -18,14 +18,13 @@ task("accounts", "Prints the list of accounts", async () => {
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
-const defaultNetwork = "localhost"; //use kovan later for AAVE integration
+const defaultNetwork = "kovan"; //use kovan later for AAVE integration
 
 function mnemonic() {
   try {
     return fs.readFileSync("./mnemonic.txt").toString().trim();
   } catch (e) {
     if (defaultNetwork !== "localhost") {
-      console.log("☢️ WARNING: No mnemonic file created for a deploy account. Try `yarn run generate` and then `yarn run account`.")
     }
   }
   return "";
@@ -57,7 +56,7 @@ module.exports = {
       },
     },
     kovan: {
-      url: "https://ropsten.infura.io/v3/d635ea6eddda4720824cc8b24380e4a9",
+      url: "https://kovan.infura.io/v3/d635ea6eddda4720824cc8b24380e4a9",
       accounts: {
         mnemonic: mnemonic(),
       },
