@@ -15,8 +15,6 @@ contract WalkTokenExchange is ReentrancyGuard {
     using SafeMath for uint256;
 
     address shelter;
-    address dai;
-    address WT;
     IERC20 private IERC20Dai;
     IERC20 private IERC20WT;
     ILendingPool private ILP;
@@ -27,8 +25,6 @@ contract WalkTokenExchange is ReentrancyGuard {
         address _ILP
     ) public {
         shelter = msg.sender;
-        dai = _Dai;
-        WT = _WT;
         IERC20Dai = IERC20(_Dai);
         IERC20WT = IERC20(_WT);
         ILP = ILendingPool(_ILP);
@@ -37,20 +33,21 @@ contract WalkTokenExchange is ReentrancyGuard {
     function recieveWT(uint256 _value) public {
         //must have approval first from owner address to this contract address
         IERC20WT.transferFrom(msg.sender, address(this), _value);
-    }
-
-    function burnWT(uint256 _value) external {
-        //? burn function in WT callable only by this contract?
+        //should we burn here? IERC20WT.burn(_value)?
     }
 
     function recieveDai(uint256 _value) external {
+        require(msg.sender == shelter, "only shelter can deposit Dai");
         //must have approval first from owner address to this contract address
         IERC20Dai.transferFrom(msg.sender, address(this), _value);
     }
 
-    function sendDai(uint256 _value) internal {
+    function withdrawDai(uint256 _value) external {
+        require(msg.sender == shelter, "only shelter can withdraw Dai");
         IERC20Dai.approve(msg.sender, _value);
         IERC20Dai.transferFrom(address(this), msg.sender, _value);
+
+        //eventually need a function in here that calls for withdrawAAVE too
     }
 
     // Function to receive Ether. msg.data must be empty
@@ -60,7 +57,7 @@ contract WalkTokenExchange is ReentrancyGuard {
     fallback() external payable {}
 
     // If at some point shelter sends too much ETH to the contract.
-    function sendETH(address payable _to) public payable {
+    function withdrawETH(address payable _to) public payable {
         require(msg.sender == shelter, "only shelter can withdraw ETH");
         // Send returns a boolean value indicating success or failure.
         // This function is not recommended for sending Ether.
@@ -74,35 +71,35 @@ contract WalkTokenExchange is ReentrancyGuard {
             msg.sender == shelter,
             "only shelter can adjust AAVE functions"
         );
-        ILP.deposit(address(IERC20Dai), _value, address(this), 0);
+        IERC20Dai.approve(address(ILP), _value);
+        ILP.deposit(address(IERC20Dai), _value, address(this), 0); //asset, amount, receiver of aDai, referral code
     }
 
-    function withdrawAAVE(uint256 _value) internal {
+    function withdrawAAVE(uint256 _value, address _redeeemer) internal {
         require(
             msg.sender == shelter,
             "only shelter can adjust AAVE functions"
         );
-        ILP.withdraw(address(IERC20Dai), _value, address(this));
+        ILP.withdraw(address(IERC20Dai), _value, _redeeemer);
+    }
+
+    function redeemWTforDai(uint256 _DaitoRedeem) external {
+        uint256 balanceWT = IERC20WT.balanceOf(msg.sender);
+        uint256 WTneeded = _DaitoRedeem.mul(100); //100 WT are worth 1 Dai 200*100 = 20000
+
+        require(
+            balanceWT >= WTneeded,
+            "Insufficient walkTokens to redeem with. 100 WT are worth 1 Dai"
+        );
+        recieveWT(WTneeded);
+
+        uint256 contractBalanceDai = IERC20Dai.balanceOf(address(this));
+        if (contractBalanceDai < _DaitoRedeem) {
+            withdrawAAVE(_DaitoRedeem, msg.sender); //withdraw only required amount. later this should be always like 30% of dai is redeemable, or some fraction of all walktokens not owned by shelter.
+        }
     }
 
     //Joe to write this function
     //function buyNFT()
     //
-
-    function redeemWTforDai(uint256 _WTtoRedeem) external {
-        uint256 balanceWT = IERC20WT.balanceOf(msg.sender);
-        require(
-            _WTtoRedeem >= balanceWT,
-            "Insufficient walkTokens to redeem with"
-        );
-
-        uint256 redeemableDai = balanceWT.div(100); //100 WT are worth 1 Dai
-
-        uint256 contractBalanceDai = IERC20WT.balanceOf(address(this));
-        if (contractBalanceDai < redeemableDai) {
-            withdrawAAVE(redeemableDai.sub(contractBalanceDai)); //withdraw only required amount
-        }
-        recieveWT(_WTtoRedeem);
-        sendDai(redeemableDai);
-    }
 }
