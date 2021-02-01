@@ -70,16 +70,6 @@ describe("Pet Project Full Test v1 Local", function () {
         console.log("total supply of WalkToken: ", totalSupply.toString());
     })
 
-    it("test 60 walkTokens or Dai transfer to exchange", async () => {
-        await walkToken.connect(walker).approve(walkExchange.address, ethers.BigNumber.from("60"))
-        await walkExchange.connect(walker).recieveERC20(ethers.BigNumber.from("60"))
-
-        const balance = await walkToken.connect(shelter).balanceOf(walkExchange.address)        
-        expect(balance.toString()).to.equal("60")
-        
-        //AAVE deposit test in kovantest script, not here. 
-    });
-
     //walkBadge should be non-transferrable, so not a token. 
     it("walker use walktokens redeem an NFT Achievement Badge", async () => {            
         //every Monday, request to create or update Badge for each walker who did at least one new walk in the last week.
@@ -141,9 +131,7 @@ describe("Pet Project Full Test v1 Local", function () {
         // expect(ownerAddress).to.equal(badgeData[0]);
     });
 
-    //Andrew will do
+    //already done in Kovan testnet
     xit("walker use walktokens to redeem real money (USDT)", async () => {
-        //so maybe 100 walkTokens is $1
-        //we need to integrate AAVE, to use their deposit and withdrawal system.
     });
 })

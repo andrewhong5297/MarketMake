@@ -5,3 +5,5 @@
 Webpage UI: 
 Can be ranking of top walkers. 
 Rest is integrated into Wag! as an NYC ACC account
+
+uses chainlink and AAVE
