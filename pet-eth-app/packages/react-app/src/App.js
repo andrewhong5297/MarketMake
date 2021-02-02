@@ -3,15 +3,23 @@ import { Contract } from "@ethersproject/contracts";
 import { getDefaultProvider } from "@ethersproject/providers";
 import { useQuery } from "@apollo/react-hooks";
 
-import { Body, Button, Header, Image, Link } from "./components";
+import { Table, Button, Container, Row, Col, Card, Dropdown, Alert } from "react-bootstrap"
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+import { Body, Header, Image, Link } from "./components";
 import logo from "./ethereumLogo.png";
 import useWeb3Modal from "./hooks/useWeb3Modal";
 
+import { ethers } from "ethers";
+import { useForm } from "react-hook-form";
 import { addresses, abis } from "@project/contracts";
 import GET_TRANSFERS from "./graphql/subgraph";
 import * as Realm from "realm-web";
-const fetch = require("node-fetch");
+import { RedeemButton } from "./components/RedeemButton";
 
+const fetch = require("node-fetch");
+const { abi: abiWTE } = require("./abis/WalkTokenExchange.json");
+const { abi: abiWT } = require("./abis/WalkToken.json");
 
 async function getWalkerData(token) {
   const url = "https://realm.mongodb.com/api/client/v2.0/app/petproject-sfwui/graphql"
@@ -71,17 +79,6 @@ const loginAndFetchWalks = async () => {
   await getWalkerData(app.currentUser.accessToken);
 };
 
-async function readOnChainData() {
-  // Should replace with the end-user wallet, e.g. Metamask
-  const defaultProvider = getDefaultProvider();
-  // Create an instance of an ethers.js Contract
-  // Read more about ethers.js on https://docs.ethers.io/v5/api/contract/contract/
-  const ceaErc20 = new Contract(addresses.ceaErc20, abis.erc20, defaultProvider);
-  // A pre-defined address that owns some CEAERC20 tokens
-  const tokenBalance = await ceaErc20.balanceOf("0x3f8CB69d9c0ED01923F11c829BaE4D9a4CB6c82C");
-  console.log({ tokenBalance: tokenBalance.toString() });
-}
-
 function WalletButton({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
   return (
     <Button
@@ -115,6 +112,19 @@ function App() {
     }
   }, [loading, error, data]);
 
+  //contracts
+  let walkExchange = new ethers.Contract(
+    "0x226AD4B41EC8cfe8157d095DCd382614bFBE2037",
+    abiWTE,
+    provider
+  );
+
+  let walkToken = new ethers.Contract(
+    "0x13e5Cc4beAF377BcC4318A6AB3698CE846f4FA85",
+    abiWT,
+    provider
+  );
+
   return (
     <div> 
         <Header>
@@ -125,10 +135,10 @@ function App() {
             <p>
               Edit <code>packages/react-app/src/App.js</code> and save to reload.
             </p>
-            {/* Remove the "hidden" prop and open the JavaScript console in the browser to see what this function does */}
-            <Button hidden onClick={() => readOnChainData()}>
-              Read On-Chain Balance
-            </Button>
+            <RedeemButton 
+              provider={provider}
+              walkExchange={walkExchange}
+              walkToken={walkToken} />
             <Link href="https://ethereum.org/developers/#getting-started" style={{ marginTop: "8px" }}>
               Learn Ethereum
             </Link>

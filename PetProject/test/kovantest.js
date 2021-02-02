@@ -84,7 +84,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         exchangeAddress=walkExchange.address
     })
 
-    it("send ETH for GSN and approve Dai for redeemability", async () => {
+    it("send ETH for GSN and shelter deposit Dai for redeemability", async () => {
         walkExchange = new ethers.Contract(
             exchangeAddress, 
             abiWTE,
