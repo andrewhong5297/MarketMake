@@ -7,3 +7,20 @@ Can be ranking of top walkers.
 Rest is integrated into Wag! as an NYC ACC account
 
 uses chainlink and AAVE
+
+http.post({
+  "url": "https://realm.mongodb.com/api/client/v2.0/app/petproject-sfwui/graphql",
+  "headers": {
+    "email": "andrewhong5297@gmail.com",
+    "password": "andrewhong5297",
+  },
+  "body": '{"query":"query walk {\n Distance_Walked\n Dog_Name\n Time_Walked\n UNIX_Timestamp\n Walker_Address\n Walker_Name _id\n }"}'
+})
+
+curl --location --request POST 'https://realm.mongodb.com/api/client/v2.0/app/petproject-sfwui/graphql' \
+   --header 'email: andrewhong5297@gmail.com' \
+   --header 'password: andrewhong5297' \
+   --header 'Content-Type: application/json' \
+   --data-raw '{"query":"query walk {\n Distance_Walked\n Dog_Name\n Time_Walked\n UNIX_Timestamp\n Walker_Address\n Walker_Name _id\n }"}'
+
+reduce 
