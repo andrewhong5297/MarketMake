@@ -27,5 +27,8 @@
     "packages": [
       "packages/*"
     ]
+  },
+  "dependencies": {
+    "realm-web": "^1.2.0"
   }
 }

@@ -1,5 +1,7 @@
 # MarketMake
 
-cd PetProject
+cd pet-eth-app
 
-npm install 
+npm install
+
+yarn react-app:start

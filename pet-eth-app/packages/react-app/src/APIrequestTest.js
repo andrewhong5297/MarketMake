@@ -25,7 +25,7 @@ const otherParam={
     method: "POST"
 }
 
-async function getWalkerData() {
+export async function getWalkerData() {
     const pet_response = await fetch(url, otherParam).then(data=>{return data.json()})//.then(res=>console.log(res));
     console.log(pet_response.data.walks)
 
