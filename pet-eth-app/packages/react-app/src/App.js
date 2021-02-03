@@ -3,7 +3,7 @@ import { Contract } from "@ethersproject/contracts";
 import { getDefaultProvider } from "@ethersproject/providers";
 import { useQuery } from "@apollo/react-hooks";
 
-import { Table, Button, Container, Row, Col, Card, Dropdown, Alert } from "react-bootstrap"
+import { Navbar, Table, Button, Container, Row, Col, Card, Dropdown, Alert } from "react-bootstrap"
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { Body, Header, Image, Link } from "./components";
@@ -127,9 +127,9 @@ function App() {
 
   return (
     <div> 
-        <Header>
+        <Navbar>
           <WalletButton provider={provider} loadWeb3Modal={loadWeb3Modal} logoutOfWeb3Modal={logoutOfWeb3Modal} />
-        </Header>
+        </Navbar>
           <Body>
             <Image src={logo} alt="react-logo" />
             <p>
