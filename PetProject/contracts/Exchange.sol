@@ -76,10 +76,6 @@ contract WalkTokenExchange is ReentrancyGuard {
     }
 
     function withdrawAAVE(uint256 _value, address _redeeemer) internal {
-        require(
-            msg.sender == shelter,
-            "only shelter can adjust AAVE functions"
-        );
         ILP.withdraw(address(IERC20Dai), _value, _redeeemer);
     }
 

@@ -1,7 +1,6 @@
 pragma solidity >=0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "hardhat/console.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
@@ -75,9 +74,6 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
 
         uint256 _level = calculateLevel(_walker);
 
-        console.log("current level: ", AddresstoBadge[_walker].level);
-        console.log("calculated level: ", _level);
-
         AddresstoBadge[_walker].level = _level;
 
         emit updatedBadge(
@@ -100,7 +96,6 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
             _distanceWalked.mul(2).add(_timeWalked.div(2)).add(
                 _dogsWalked.mul(10)
             );
-        console.log("sum", sum);
 
         if (sum > 80) {
             return 2;
@@ -129,7 +124,7 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
                 address(this),
                 this.fulfillStats.selector
             );
-        req.add("address", toString(_walker));
+        req.add("address", addressToString(_walker)); //this is fine, it just needs to have '0x' + BigInt(ethAddressAsInt).toString(16).padStart(40, '0') in the adapter.
         // req.add("unix", 0); //this should be block.timestamp for payments later. Or maybe we can just take the difference between this new pay value and old pay value?
         bytes32 reqId = sendChainlinkRequestTo(oracle, req, fee);
         reqId_Address[reqId] = _walker;
@@ -152,9 +147,28 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         AddresstoBadge[_walker].totalPaid = results[3];
     }
 
-    //need to get this working
-    function toString(address account) public pure returns (string memory) {
-        return toString(abi.encodePacked(account));
+    function addressToString(address _pool)
+        public
+        pure
+        returns (string memory _uintAsString)
+    {
+        uint256 _i = uint256(_pool);
+        if (_i == 0) {
+            return "0";
+        }
+        uint256 j = _i;
+        uint256 len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint256 k = len - 1;
+        while (_i != 0) {
+            bstr[k--] = bytes1(uint8(48 + (_i % 10)));
+            _i /= 10;
+        }
+        return string(bstr);
     }
 
     ////view functions

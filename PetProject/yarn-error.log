@@ -1,0 +1,53 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add -W bn.js
+
+PATH: 
+  C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\libnvvp;C:\Program Files (x86)\Razer Chroma SDK\bin;C:\Program Files\Razer Chroma SDK\bin;C:\ProgramData\Oracle\Java\javapath;C:\Program Files (x86)\Intel\iCLS Client\;C:\Program Files\Intel\iCLS Client\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\IPT;C:\Program Files\Intel\Intel(R) Management Engine Components\IPT;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\system32\config\systemprofile\AppData\Local\Microsoft\WindowsApps;C:\Program Files\MATLAB\R2018b\bin;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Microsoft VS Code\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\Git\cmd;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\dotnet\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\Yarn\bin\;C:\Users\Andrew\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Users\Andrew\AppData\Local\Programs\Python\Python37-32\Scripts\;C:\Users\Andrew\AppData\Local\Programs\Python\Python37-32\;C:\Users\Andrew\AppData\Local\Microsoft\WindowsApps;C:\Users\Andrew\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Python 3.7;C:\Users\Andrew\AppData\NVIDIA GPU Computing Toolkit\CUDA\v9.0\bin;C:\Users\Andrew\AppData\NVIDIA GPU Computing Toolkit\CUDA\v9.0\libnvvp;C:\Users\Andrew\AppData\NVIDIA GPU Computing Toolkit\CUDA\v9.0\extras\CUPTI\libx64;C:\Users\Andrew\AppData\NVIDIA GPU Computing Toolkit\CUDA\v9.0\cuda\bin;C:\Users\Andrew\AppData\Local\GitHubDesktop\bin;C:\Anaconda3;C:\Anaconda3\Scripts;C:\Program Files\heroku\bin;C:\Users\Andrew\.dotnet\tools;C:\Users\Andrew\AppData\Roaming\npm;C:\Program Files\MongoDB\Server\4.2\bin;C:\Users\Andrew\node_modules\surge;C:\Users\Andrew\AppData\Local\Android\Sdk\platform-tools;C:\FFmpeg\bin;C:\Users\Andrew\.mujoco\mjpro150\bin;C:\Users\Andrew\swigwin-3.0.12;C:\Program Files\PostgreSQL\13\lib;C:\Program Files\PostgreSQL\13\bin;C:\Users\And;C:\Users\Andrew\AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin;C:\Program Files\nodejs;
+
+Yarn version: 
+  1.22.5
+
+Node version: 
+  12.16.1
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: EPERM: operation not permitted, unlink 'C:\Users\Andrew\Documents\Blockchain\MarketMake\PetProject\node_modules\bufferutil\prebuilds\win32-x64\node.napi.node'
+
+npm manifest: 
+  {
+    "name": "petproject",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "chain": "npx hardhat node",
+      "test": "npx hardhat test"
+    },
+    "author": "Pet Project Team! :)",
+    "license": "ISC",
+    "dependencies": {
+      "@chainlink/contracts": "^0.1.6",
+      "@nomiclabs/hardhat-ethers": "^2.0.1",
+      "@nomiclabs/hardhat-etherscan": "^2.1.0",
+      "@nomiclabs/hardhat-waffle": "^2.0.1",
+      "@openzeppelin/contracts": "^3.3.0",
+      "@openzeppelin/contracts-ethereum-package": "^3.0.0",
+      "@truffle/contract": "^4.3.1",
+      "chai": "^4.2.0",
+      "ethereum-waffle": "^3.2.1",
+      "ethers": "^5.0.23",
+      "hardhat": "^2.0.4",
+      "mocha": "^8.2.1",
+      "node-fetch": "^2.6.1",
+      "web3": "^1.3.0"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
