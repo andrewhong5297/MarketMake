@@ -32,6 +32,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
     
         shelter = ethers.Wallet.fromMnemonic(mnemonic()); //(Step 1) connect your mnemonic
         shelter = await shelter.connect(provider);
+        walker = shelter; //need second mnemonic() 
         
         dai = new ethers.Contract(
             "0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD",
@@ -100,21 +101,24 @@ describe("Pet Project Full Test v1 Kovan", function () {
             "WalkBadgeOracle"
           );
 
-        walkBadge = await WalkBadge.connect(shelter).deploy(walkToken.address);
+        walkBadge = await WalkBadge.connect(shelter).deploy(walkToken.address, link.address);
         await walkBadge.deployed()
         console.log("Badge Address: ", walkBadge.address)
         walkBadgeAddress=walkBadge.address
-        
+
         //set badge contract to be able to payTo
         const setting = await walkToken.connect(shelter).changeBadge(walkBadge.address)
-        await setting.wait(3)
+        await setting.wait(1)
 
-        //send badge contract 1 link token
-        const approve = await link.connect(shelter).approve(walkBadge.address, ethers.BigNumber.from((10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
-        await approve.wait(3)
+        // //send badge contract 1 link token
+        // const approve = await link.connect(shelter).approve(walkBadge.address, ethers.BigNumber.from((10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
+        // await approve.wait(1)
         
-        const recieve = await walkBadge.connect(shelter).recieveLink(ethers.BigNumber.from((10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
-        await recieve.wait(3)
+        // const recieve = await walkBadge.connect(shelter).recieveLink(ethers.BigNumber.from((10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
+        // await recieve.wait(1)
+
+        // const oraclej = await walkBadge.connect(shelter).setOracleAddress("") //1 link
+        // await oraclej.wait(3)
        
     })
 
@@ -126,10 +130,10 @@ describe("Pet Project Full Test v1 Kovan", function () {
         
         //deposit Dai into contract
         const approve = await dai.connect(shelter).approve(walkExchange.address, ethers.BigNumber.from((10**20).toLocaleString('fullwide', {useGrouping:false})), overrides); //100 dai
-        await approve.wait(3)
+        await approve.wait(1)
         
         const recieve = await walkExchange.connect(shelter).recieveDai(ethers.BigNumber.from((10**20).toLocaleString('fullwide', {useGrouping:false})), overrides); //100 dai
-        await recieve.wait(3)
+        await recieve.wait(1)
         
         // //transfer ETH to the contract for gas fees (Implement GSN later)
         // const tx = await shelter.sendTransaction({
@@ -147,7 +151,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
 
         //deposit 100 dai into AAVE from exchange contract
         const attemptDeposit = await walkExchange.connect(shelter).depositAAVE(ethers.BigNumber.from((10**20).toLocaleString('fullwide', {useGrouping:false})), overrides); //100 dai
-        await attemptDeposit.wait(3)
+        await attemptDeposit.wait(1)
     })
 
     it("test walker redeem WT for Dai at 1/100 ratio, with withdrawal call from AAVE if balance not enough", async () => {
@@ -167,10 +171,10 @@ describe("Pet Project Full Test v1 Kovan", function () {
         
         //redeem 2000 walktokens for 20 dai. This should technically be done by walker but we're working with one mnemonic so...
         const approve = await walkToken.connect(shelter).approve(walkExchange.address,ethers.BigNumber.from((2*10**21).toLocaleString('fullwide', {useGrouping:false})),overrides);
-        await approve.wait(3)
+        await approve.wait(1)
         
         const redeemed = await walkExchange.connect(shelter).redeemWTforDai(ethers.BigNumber.from((2*10**19).toLocaleString('fullwide', {useGrouping:false})), overrides); //redeem 20 bucks
-        await redeemed.wait(3)
+        await redeemed.wait(1)
         balance = await dai.connect(shelter).balanceOf(shelter.getAddress());
         console.log("Balance of Shelter Dai after redeem: ", balance.toString());
     })
@@ -186,16 +190,22 @@ describe("Pet Project Full Test v1 Kovan", function () {
             shelter)  
 
         //create badge
-        const createB = await walkBadge.connect(shelter).createBadge(shelter.getAddress());
-        await createB.wait(3)
+        const createB = await walkBadge.connect(shelter).createBadge(walker.getAddress());
+        await createB.wait(1)
         
-        //call oracle (check if payTo mint of tokens worked)
-        const updateStats = await walkBadge.connect(shelter).updateWalkerStats('jobid bytes',shelter.getAddress());
-        await updateStats.wait(3)
+        // //call oracle (check if payTo mint of tokens worked)
+        // const balance = await walkToken.connect(shelter).balanceOf(walker.getAddress())
+        // console.log("balance of WT before payment ", balance);
+        
+        // const updateStats = await walkBadge.connect(shelter).updateWalkerStats('jobid bytes',shelter.getAddress());
+        // await updateStats.wait(3)
 
-        //update badge
-        const updateBadge = await walkBadge.connect(shelter).updateBadge(shelter.getAddress());
-        await updateBadge.wait(3)
+        // const balance2 = await walkToken.connect(shelter).balanceOf(walker.getAddress())
+        // console.log("balance of WT after payment ", balance2);
+
+        // //update badge
+        // const updateBadge = await walkBadge.connect(shelter).updateBadge(shelter.getAddress());
+        // await updateBadge.wait(3)
 
         //get badge data
         const badgeData = await walkBadge.connect(shelter).getBadge(walker.getAddress())

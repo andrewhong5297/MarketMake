@@ -15,7 +15,7 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
     WalkToken private IERC20WT;
     IERC20 private IERC20Link;
     address private oracle;
-    uint256 private fee = 100000000000000000; //currently 10**17
+    uint256 private fee = 100000000000000000; //currently 10**17 or 0.1 link
 
     struct WalkerLevel {
         address walker;
@@ -125,13 +125,12 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
                 this.fulfillStats.selector
             );
         req.add("address", addressToString(_walker)); //this is fine, it just needs to have '0x' + BigInt(ethAddressAsInt).toString(16).padStart(40, '0') in the adapter.
-        // req.add("unix", 0); //this should be block.timestamp for payments later. Or maybe we can just take the difference between this new pay value and old pay value?
         bytes32 reqId = sendChainlinkRequestTo(oracle, req, fee);
         reqId_Address[reqId] = _walker;
     }
 
     function fulfillStats(bytes32 _requestId, uint256[] memory results) public {
-        //how do we even put _walker in here? also note these are all returning mul 100.
+        //note these are all returning mul 100.
         address _walker = reqId_Address[_requestId];
         /*
         results[0]=timesum
@@ -140,7 +139,7 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         results[3]=totalpayments 
         */
         uint256 oldPay = AddresstoBadge[_walker].totalPaid;
-        IERC20WT.payTo(results[3].sub(oldPay), _walker);
+        IERC20WT.payTo(results[3].sub(oldPay).mul(10**16), _walker); //pay is reported in two decimals, so 10**16 instead of 10**18
         AddresstoBadge[_walker].timeWalked = results[0];
         AddresstoBadge[_walker].distanceWalked = results[1];
         AddresstoBadge[_walker].dogsWalked = results[2];
