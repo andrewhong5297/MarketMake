@@ -2,6 +2,6 @@
 
 cd pet-eth-app
 
-npm install
+yarn install
 
 yarn react-app:start
