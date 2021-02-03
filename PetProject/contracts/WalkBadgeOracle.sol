@@ -1,18 +1,21 @@
 //earnable NFTs with levels
-pragma solidity ^0.7.0;
+pragma solidity >=0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "https://github.com/smartcontractkit/chainlink/evm-contracts/src/v0.6/ChainlinkClient.sol";
+import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
+import "./WalkToken.sol";
+import "@openzeppelin/contracts/token/IERC20/IERC20.sol";
 
-contract WalkBadgeOracle is ReentrancyGuard {
+contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
     using SafeMath for uint256;
 
     address public shelter; //default is 0x0
     address[] public assignedAddresses;
-
+    WalkToken private IERC20WT;
+    IERC20 private IERC20Link;
     address private oracle;
     uint256 private fee = 1000000000000000000;
 
@@ -22,10 +25,12 @@ contract WalkBadgeOracle is ReentrancyGuard {
         uint256 timeWalked;
         uint256 distanceWalked;
         uint256 dogsWalked;
+        uint256 totalPaid;
         //possibly other variables?
     }
 
     mapping(address => WalkerLevel) public AddresstoBadge;
+    mapping(bytes32 => address) public reqId_Address;
 
     event updatedBadge(
         address walker,
@@ -33,11 +38,20 @@ contract WalkBadgeOracle is ReentrancyGuard {
         uint256 timeWalked,
         uint256 distanceWalked,
         uint256 dogsWalked,
-        uint256 dateUpdated
+        uint256 dateUpdated,
+        uint256 payUpdated
     );
 
-    constructor() public {
+    constructor(address _WT, address _link) public {
         shelter = msg.sender;
+        IERC20WT = WalkToken(_WT);
+        IERC20Link = IERC20(_link);
+    }
+
+    function recieveLink(uint256 _value) external {
+        // require(msg.sender == shelter, "only shelter can deposit Link");
+        //must have approval first from owner address to this contract address
+        IERC20Link.transferFrom(msg.sender, address(this), _value);
     }
 
     /*for create and update. Flow must be createBadge first, then call updateWalkerStats. 
@@ -48,7 +62,7 @@ contract WalkBadgeOracle is ReentrancyGuard {
             AddresstoBadge[_walker].level == 0,
             "badget has already been created"
         );
-        WalkerLevel memory createdBadge = WalkerLevel(_walker, 1, 0, 0, 0);
+        WalkerLevel memory createdBadge = WalkerLevel(_walker, 1, 0, 0, 0, 0);
 
         AddresstoBadge[_walker] = createdBadge; //not sure how else to search for tokens held by Address
         assignedAddresses.push(_walker);
@@ -61,8 +75,7 @@ contract WalkBadgeOracle is ReentrancyGuard {
         );
         require(msg.sender == shelter, "only shelter can mint new badges");
 
-        uint256 _level =
-            calculateLevel(_distanceWalked, _timeWalked, _dogsWalked);
+        uint256 _level = calculateLevel(_walker);
 
         console.log("current level: ", AddresstoBadge[_walker].level);
         console.log("calculated level: ", _level);
@@ -75,15 +88,16 @@ contract WalkBadgeOracle is ReentrancyGuard {
             AddresstoBadge[_walker].timeWalked,
             AddresstoBadge[_walker].distanceWalked,
             AddresstoBadge[_walker].dogsWalked,
+            AddresstoBadge[_walker].totalPaid,
             block.timestamp
         );
     }
 
-    function calculateLevel(
-        uint256 _distanceWalked,
-        uint256 _timeWalked,
-        uint256 _dogsWalked
-    ) internal returns (uint256 _level) {
+    function calculateLevel(address _walker) internal returns (uint256 _level) {
+        uint256 _distanceWalked = AddresstoBadge[_walker].distanceWalked;
+        uint256 _timeWalked = AddresstoBadge[_walker].timeWalked;
+        uint256 _dogsWalked = AddresstoBadge[_walker].dogsWalked;
+
         uint256 sum =
             _distanceWalked.mul(2).add(_timeWalked.div(2)).add(
                 _dogsWalked.mul(10)
@@ -105,7 +119,7 @@ contract WalkBadgeOracle is ReentrancyGuard {
         oracle = _oracle;
     }
 
-    function updateWalkerStats(uint256 jobID, address _walker) public {
+    function updateWalkerStats(bytes32 jobID, address _walker) public {
         // require(msg.sender == shelter, "only shelter can input data");
         require(
             AddresstoBadge[_walker].level >= 1,
@@ -113,29 +127,35 @@ contract WalkBadgeOracle is ReentrancyGuard {
         );
         Chainlink.Request memory req =
             buildChainlinkRequest(
-                jobId,
+                jobID,
                 address(this),
                 this.fulfillStats.selector
             );
-        req.add("address", _walker);
-        req.add("unix", 0); //this should be block.timestamp for payments later. Or maybe we can just take the difference between this new pay value and old pay value?
-        sendChainlinkRequestTo(oracle, req, fee);
+        req.add("address", toString(_walker));
+        // req.add("unix", 0); //this should be block.timestamp for payments later. Or maybe we can just take the difference between this new pay value and old pay value?
+        bytes32 reqId = sendChainlinkRequestTo(oracle, req, fee);
+        reqId_Address[reqId] = _walker;
     }
 
-    function fulfillStats(
-        bytes32 _requestId,
-        uint256[] memory results,
-        address _walker
-    ) public {
-        //how do we even put _walker in here?
-        //results[0]=walksum
-        //results[1]=distancesum
-        //results[2]=dogcount
-        //results[3]=totalpayments //IERC20WT.payTo(_walker,_totalpaymentsdifference)
-        //should use totalpayments to calculate a difference, which is how much should be paid to the walker.
-        // AddresstoBadge[_walker].timeWalked = _timeWalked;
-        // AddresstoBadge[_walker].distanceWalked = _distanceWalked;
-        // AddresstoBadge[_walker].dogsWalked = _dogsWalked;
+    function fulfillStats(bytes32 _requestId, uint256[] memory results) public {
+        //how do we even put _walker in here? also note these are all returning mul 100.
+        address _walker = reqId_Address[_requestId];
+        /*
+        results[0]=walksum
+        results[1]=distancesum
+        results[2]=dogcount
+        results[3]=totalpayments 
+        */
+        uint256 oldPay = AddresstoBadge[_walker].totalPaid;
+        IERC20WT.payTo(results[3].sub(oldPay), _walker);
+        AddresstoBadge[_walker].timeWalked = results[0];
+        AddresstoBadge[_walker].distanceWalked = results[1];
+        AddresstoBadge[_walker].dogsWalked = results[2];
+        AddresstoBadge[_walker].totalPaid = results[3];
+    }
+
+    function toString(address account) public pure returns (string memory) {
+        return toString(abi.encodePacked(account));
     }
 
     ////view functions
