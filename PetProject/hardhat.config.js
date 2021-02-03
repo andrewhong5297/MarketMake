@@ -18,7 +18,7 @@ task("accounts", "Prints the list of accounts", async () => {
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
-const defaultNetwork = "localhost"; //use kovan later for AAVE integration
+const defaultNetwork = "kovan"; //use kovan later for AAVE integration
 
 function mnemonic() {
   try {

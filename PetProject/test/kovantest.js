@@ -75,7 +75,6 @@ describe("Pet Project Full Test v1 Kovan", function () {
     });
 
     it("deploy walkExchange", async () => {
-        const LPaddress = await LPAP.connect(shelter).getLendingPool();
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,
@@ -92,7 +91,6 @@ describe("Pet Project Full Test v1 Kovan", function () {
     })
 
     it("deploy walkBadge", async () => {
-        const LPaddress = await LPAP.connect(shelter).getLendingPool();
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,
@@ -110,9 +108,17 @@ describe("Pet Project Full Test v1 Kovan", function () {
         //set badge contract to be able to payTo
         const setting = await walkToken.connect(shelter).changeBadge(walkBadge.address)
         await setting.wait(3)
+
+        //send badge contract 1 link token
+        const approve = await link.connect(shelter).approve(walkBadge.address, ethers.BigNumber.from((10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
+        await approve.wait(3)
+        
+        const recieve = await walkBadge.connect(shelter).recieveLink(ethers.BigNumber.from((10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
+        await recieve.wait(3)
+       
     })
 
-    it("shelter deposit Dai for redeemability", async () => {
+    it("shelter deposit Dai into exchange for walkers' redeemability", async () => {
         walkExchange = new ethers.Contract(
             exchangeAddress, 
             abiWTE,
@@ -133,7 +139,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         // console.log(tx)
     });
 
-    it("exchange deposit into AAVE", async () => {
+    it("exchange deposits Dai into AAVE", async () => {
         walkExchange = new ethers.Contract(
             exchangeAddress, 
             abiWTE,
@@ -144,7 +150,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         await attemptDeposit.wait(3)
     })
 
-    it("test walker redeem WT for Dai at 1/100 ratio", async () => {
+    it("test walker redeem WT for Dai at 1/100 ratio, with withdrawal call from AAVE if balance not enough", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,
@@ -169,18 +175,15 @@ describe("Pet Project Full Test v1 Kovan", function () {
         console.log("Balance of Shelter Dai after redeem: ", balance.toString());
     })
 
-    it("create badge, call oracle, and update badge. should see a payment too", async () => {
+    xit("test walker buying an NFT from exchange contract", async () => {
+        //still have to write this contract
+    })
+
+    it("walker create badge, call oracle, and update badge. Walker should see a payment too", async () => {
         walkToken = new ethers.Contract(
             walkBadgeAddress, 
             abiWB,
             shelter)  
-
-        //send badge contract some link tokens
-        const approve = await link.connect(shelter).approve(walkBadge.address, ethers.BigNumber.from((10**19).toLocaleString('fullwide', {useGrouping:false})), overrides); //10 link
-        await approve.wait(3)
-        
-        const recieve = await walkBadge.connect(shelter).recieveLink(ethers.BigNumber.from((10**19).toLocaleString('fullwide', {useGrouping:false})), overrides); //10 link
-        await recieve.wait(3)
 
         //create badge
         const createB = await walkBadge.connect(shelter).createBadge(shelter.getAddress());

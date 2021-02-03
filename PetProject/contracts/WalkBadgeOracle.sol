@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
 import "./WalkToken.sol";
-import "@openzeppelin/contracts/token/IERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
     using SafeMath for uint256;
@@ -17,7 +17,7 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
     WalkToken private IERC20WT;
     IERC20 private IERC20Link;
     address private oracle;
-    uint256 private fee = 1000000000000000000;
+    uint256 private fee = 100000000000000000; //currently 10**17
 
     struct WalkerLevel {
         address walker;
@@ -26,7 +26,6 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         uint256 distanceWalked;
         uint256 dogsWalked;
         uint256 totalPaid;
-        //possibly other variables?
     }
 
     mapping(address => WalkerLevel) public AddresstoBadge;
@@ -141,7 +140,7 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         //how do we even put _walker in here? also note these are all returning mul 100.
         address _walker = reqId_Address[_requestId];
         /*
-        results[0]=walksum
+        results[0]=timesum
         results[1]=distancesum
         results[2]=dogcount
         results[3]=totalpayments 
@@ -154,6 +153,7 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         AddresstoBadge[_walker].totalPaid = results[3];
     }
 
+    //need to get this working
     function toString(address account) public pure returns (string memory) {
         return toString(abi.encodePacked(account));
     }
