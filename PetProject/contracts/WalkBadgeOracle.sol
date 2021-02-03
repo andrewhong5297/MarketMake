@@ -1,4 +1,3 @@
-//earnable NFTs with levels
 pragma solidity >=0.6.0;
 pragma experimental ABIEncoderV2;
 

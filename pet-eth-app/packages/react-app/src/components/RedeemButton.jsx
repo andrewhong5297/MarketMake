@@ -14,16 +14,16 @@ export const RedeemButton = (props) => {
           };
 
         const owner = props.provider.getSigner();
-        console.log(await owner.getAddress())
         try {
 
             // console.log((parseInt(formData.value)*(10**20)).toLocaleString('fullwide', {useGrouping:false}))
             //10**20 instead of 10**18 because of conversion rate
             const approve = await props.walkToken.connect(owner).approve(props.walkExchange.address,ethers.BigNumber.from((parseInt(formData.value)*(10**20)).toLocaleString('fullwide', {useGrouping:false})),overrides);
             // await approve.wait(3)
-            
+            console.log(approve)
             const redeemed = await props.walkExchange.connect(owner).redeemWTforDai(ethers.BigNumber.from((parseInt(formData.value)*(10**18)).toLocaleString('fullwide', {useGrouping:false})), overrides);
             // await redeemed.wait(3)
+            console.log(redeemed)
 
             setError(
                 <Alert variant="success" onClose={() => setError(null)} dismissible>
