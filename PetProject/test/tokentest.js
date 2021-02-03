@@ -26,11 +26,11 @@ describe("Pet Project Full Test v1 Local", function () {
           walkToken = await WalkToken.connect(shelter).deploy(ethers.BigNumber.from("20000000000"));
         await walkToken.deployed();
         
-        const WalkExchange = await ethers.getContractFactory(
-            "WalkTokenExchange"
-          );
+        // const WalkExchange = await ethers.getContractFactory(
+        //     "WalkTokenExchange"
+        //   );
 
-        walkExchange = await WalkExchange.connect(shelter).deploy(walkToken.address, dai.address);
+        // walkExchange = await WalkExchange.connect(shelter).deploy(walkToken.address, dai.address);
 
         const WalkBadge = await ethers.getContractFactory(
             "WalkBadge"
@@ -97,9 +97,8 @@ describe("Pet Project Full Test v1 Local", function () {
                         Total dogs walked of ${badgeData[4]}`)
         
         const newFilter = await walkBadge.filters.updatedBadge();
-        
-        console.log(walkBadge.address)
-        console.log(newFilter)
+        const addresses = await walkBadge.getAllAddresses();
+        console.log(addresses)
     });
 
     //Joe to recreate using WalkBadge as template

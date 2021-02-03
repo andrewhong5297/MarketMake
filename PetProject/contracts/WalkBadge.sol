@@ -10,6 +10,7 @@ contract WalkBadge is ReentrancyGuard {
     using SafeMath for uint256;
 
     address public shelter; //default is 0x0
+    address[] public assignedAddresses;
 
     struct WalkerLevel {
         address walker;
@@ -88,6 +89,7 @@ contract WalkBadge is ReentrancyGuard {
                 );
 
             AddresstoBadge[_walker] = createdBadge; //not sure how else to search for tokens held by Address
+            assignedAddresses.push(_walker);
 
             emit newBadge(
                 AddresstoBadge[_walker].walker,
@@ -139,5 +141,13 @@ contract WalkBadge is ReentrancyGuard {
         returns (WalkerLevel memory _badge)
     {
         return AddresstoBadge[_walker];
+    }
+
+    function getAllAddresses()
+        external
+        view
+        returns (address[] memory addresses)
+    {
+        return assignedAddresses;
     }
 }
