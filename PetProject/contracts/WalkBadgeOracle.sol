@@ -14,8 +14,10 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
     address[] public assignedAddresses;
     WalkToken private IERC20WT;
     IERC20 private IERC20Link;
-    address private oracle;
-    uint256 private fee = 100000000000000000; //currently 10**17 or 0.1 link
+    address public oracle;
+    uint256 private fee = 0.1 * 10**18; //0.1 link
+
+    bytes32 public reqIDtest;
 
     struct WalkerLevel {
         address walker;
@@ -70,7 +72,6 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
             AddresstoBadge[_walker].level >= 1,
             "badget has not been created"
         );
-        require(msg.sender == shelter, "only shelter can mint new badges");
 
         uint256 _level = calculateLevel(_walker);
 
@@ -112,22 +113,28 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         oracle = _oracle;
     }
 
-    function updateWalkerStats(bytes32 jobID, address _walker) public {
-        // require(msg.sender == shelter, "only shelter can input data");
+    function updateWalkerStats(address _walker) public {
         require(
             AddresstoBadge[_walker].level >= 1,
-            "badget has not been created"
+            "badge has not been created"
         );
+        bytes32 jobID = "4bbac81fd56b4c98b6d6e794152c1c94";
         Chainlink.Request memory req =
             buildChainlinkRequest(
                 jobID,
                 address(this),
                 this.fulfillStats.selector
             );
-        req.add("address", addressToString(_walker)); //this is fine, it just needs to have '0x' + BigInt(ethAddressAsInt).toString(16).padStart(40, '0') in the adapter.
+        req.add("address", addressToString(_walker));
         bytes32 reqId = sendChainlinkRequestTo(oracle, req, fee);
+        reqIDtest = reqId;
         reqId_Address[reqId] = _walker;
     }
+
+    // function fulfillStats(bytes32 _requestId, uint256 results) public {
+    //     address _walker = reqId_Address[_requestId];
+    //     AddresstoBadge[_walker].timeWalked = results;
+    // }
 
     function fulfillStats(bytes32 _requestId, uint256[] memory results) public {
         //note these are all returning mul 100.
@@ -136,7 +143,7 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         results[0]=timesum
         results[1]=distancesum
         results[2]=dogcount
-        results[3]=totalpayments 
+        results[3]=totalpayments
         */
         uint256 oldPay = AddresstoBadge[_walker].totalPaid;
         IERC20WT.payTo(results[3].sub(oldPay).mul(10**16), _walker); //pay is reported in two decimals, so 10**16 instead of 10**18

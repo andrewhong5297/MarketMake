@@ -146,20 +146,11 @@ function App() {
           </Navbar.Collapse>
         </Navbar>
           <Body>
-            <Image src={logo} alt="react-logo" />
-            <p>
-              Edit <code>packages/react-app/src/App.js</code> and save to reload.
-            </p>
             <RedeemButton 
               provider={provider}
               walkExchange={walkExchange}
               walkToken={walkToken} />
-            <Link href="https://ethereum.org/developers/#getting-started" style={{ marginTop: "8px" }}>
-              Learn Ethereum
-            </Link>
-            <Link href="https://reactjs.org">Learn React</Link>
-            <Link href="https://thegraph.com/docs/quick-start">Learn The Graph</Link>
-        </Body>
+          </Body>
     </div>
   );
 }
