@@ -23,7 +23,12 @@ describe("string_Test", function () {
         // const string2 = await stringTest.connect(shelter).addressToString("0xa55E01a40557fAB9d87F993d8f5344f1b2408072")
         // console.log('0x' + BigInt(string1).toString(16).padStart(40, '0'));
 
-        const slice = await stringTest.connect(shelter).sliceString("00018700000003480000060000010137")
-        console.log(slice.toString()); 
+        // const slice = await stringTest.connect(shelter).sliceString("00018700000003480000060000010137")
+        // console.log(slice.toString()); 
+
+        const slice = await stringTest.connect(shelter).sliceBytes(ethers.utils.formatBytes32String("0018700000034800006000010137"), ethers.BigNumber.from("1"), ethers.BigNumber.from("7"))
+
+        const slicedInt = await stringTest.connect(shelter).set_var();
+        console.log(slicedInt.toString()); 
     });
 })
