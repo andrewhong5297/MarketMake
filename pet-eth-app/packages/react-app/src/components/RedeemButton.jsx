@@ -1,7 +1,7 @@
 import React, { useState, Component } from 'react';
 import { useForm } from "react-hook-form";
 import { ethers } from "ethers";
-import { Button, Alert } from "react-bootstrap"
+import { Button, Alert, Modal } from "react-bootstrap"
 
 export const RedeemButton = (props) => {
 
@@ -12,7 +12,7 @@ export const RedeemButton = (props) => {
         const overrides = {
             gasLimit: ethers.BigNumber.from("1000000"),
           };
-
+          
         const owner = props.provider.getSigner();
         try {
 
@@ -45,19 +45,36 @@ export const RedeemButton = (props) => {
         }
 
         return ( 
-            <React.Fragment>
-                <form onSubmit={handleSubmit(buyOne)}>
-                    <label>
-                    How much Dai to redeem (100 WalkTokens for 1 Dai)?   :  
-                    <input type="text" name="value" ref={register} />
-                    </label>
-                    {/* <label>
-                    :    Fund project for how many years?   :
-                    <input type="text" name="year" ref={register} />
-                    </label> */}
-                    <input type="submit" value="Submit" />
-                    {error}
-                </form>
-            </React.Fragment>
+            <div>
+                <Modal
+                        {...props}
+                        size="lg"
+                        aria-labelledby="contained-modal-title-vcenter"
+                        centered
+                      >
+                        <Modal.Header closeButton>
+                          <Modal.Title id="contained-modal-title-vcenter">
+                            Modal heading
+                          </Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <form onSubmit={handleSubmit(buyOne)}>
+                                    <label>
+                                    How much Dai to redeem (100 WalkTokens for 1 Dai)?   :  
+                                    <input type="text" name="value" ref={register} />
+                                    </label>
+                                    {/* <label>
+                                    :    Fund project for how many years?   :
+                                    <input type="text" name="year" ref={register} />
+                                    </label> */}
+                                    <input type="submit" value="Submit" />
+                                    {error}
+                                </form>
+                            </Modal.Body>
+                        <Modal.Footer>
+                          <Button onClick={props.onHide}>Close</Button>
+                        </Modal.Footer>
+                      </Modal>
+            </div>
          );
     }
