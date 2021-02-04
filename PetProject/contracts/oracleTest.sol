@@ -28,7 +28,67 @@ contract oracleTest is ChainlinkClient {
         sendChainlinkRequestTo(oracle, req, fee);
     }
 
-    function fulfillStats(bytes32 _requestId, uint256 results) public {
-        testReturn = results;
+    function fulfillStats(bytes32 _requestId, string memory results) public {
+        testReturn = sliceString(results); //returns uint
+    }
+
+    function sliceString(string calldata _toSlice)
+        external view
+        returns (uint256 _sliced)
+    {
+        string calldata slicedStr = _toSlice[:8];
+        console.log(slicedStr);
+        uint _sliced = stringToUint(slicedStr);
+        console.log(_sliced);
+        return _sliced;
+    }
+
+     function stringToUint(string memory _amount) internal view returns (uint result) {
+    bytes memory b = bytes(_amount);
+    uint i;
+    uint counterBeforeDot;
+    uint counterAfterDot;
+    result = 0;
+    uint totNum = b.length;
+    totNum--;
+    bool hasDot = false;
+
+    for (i = 0; i < b.length; i++) {
+        uint c = uint(uint8(b[i]));
+
+        if (c >= 48 && c <= 57) {
+            result = result * 10 + (c - 48);
+            counterBeforeDot ++;
+            totNum--;
+        }
+
+        if(c == 46){
+            hasDot = true;
+            break;
+        }
+    }
+
+    if(hasDot) {
+        for (uint j = counterBeforeDot + 1; j < 18; j++) {
+            uint m = uint(uint8(b[j]));
+
+            if (m >= 48 && m <= 57) {
+                result = result * 10 + (m - 48);
+                counterAfterDot ++;
+                totNum--;
+            }
+
+            if(totNum == 0){
+                break;
+            }
+        }
+    }
+     if(counterAfterDot < 18){
+         uint addNum = 18 - counterAfterDot;
+         uint multuply = 10 ** addNum;
+         return result = result * multuply;
+     }
+
+     return result;
     }
 }
