@@ -54,19 +54,15 @@ export const RedeemButton = (props) => {
                       >
                         <Modal.Header closeButton>
                           <Modal.Title id="contained-modal-title-vcenter">
-                            Modal heading
+                            Get paid 1 Dai for every 100 Walk Tokens 
                           </Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
                                 <form onSubmit={handleSubmit(buyOne)}>
                                     <label>
-                                    How much Dai to redeem (100 WalkTokens for 1 Dai)?   :  
+                                    How much Dai do you want to redeem?     
                                     <input type="text" name="value" ref={register} />
                                     </label>
-                                    {/* <label>
-                                    :    Fund project for how many years?   :
-                                    <input type="text" name="year" ref={register} />
-                                    </label> */}
                                     <input type="submit" value="Submit" />
                                     {error}
                                 </form>
