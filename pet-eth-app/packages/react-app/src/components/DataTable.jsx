@@ -44,7 +44,10 @@ export const DataTable = (props) => {
             }, 0)
         ) // sum = 0
 
-        //console.log(data.reduce(...))
+        //console.log(data.reduce(...)) //take distance sum if name is "Emily"
+
+        //take unique set of names
+        //get dictionary of sums based on tab (variable) selected?
 
         console.log(data)
         setTable(
