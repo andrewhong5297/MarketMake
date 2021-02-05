@@ -20,6 +20,8 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
     bytes32 private jobId;
 
     bytes32 public reqIDtest;
+
+    string public encoded;
     uint256 public testReturn;
 
     struct WalkerLevel {
@@ -50,8 +52,8 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         IERC20WT = WalkToken(_WT);
         IERC20Link = IERC20(_link);
         setPublicChainlinkToken(); //this HAS TO BE HERE
-        oracle = address(0xf5A4036CA35B9C017eFA49932DcA4bc8cc781Aa4);
-        jobId = "ec8c8e4225bb4997b9225d3435bc8cec";
+        oracle = address(0xf5A4036CA35B9C017eFA49932DcA4bc8cc781Aa4); //0xAA1DC356dc4B18f30C347798FD5379F3D77ABC5b patrick's oracle
+        jobId = "38b8c67ffa3e4e3cb9487b616b8d4321"; //"27401bbd3c804b3a9a532e439bb10b8f"
         fee = 1 * 10**18; // 1 LINK
     }
 
@@ -75,14 +77,13 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         assignedAddresses.push(_walker);
     }
 
-    function updateBadge(address _walker) external nonReentrant {
+    function updateBadgeLevel(address _walker) external nonReentrant {
         require(
             AddresstoBadge[_walker].level >= 1,
             "badget has not been created"
         );
 
         uint256 _level = calculateLevel(_walker);
-
         AddresstoBadge[_walker].level = _level;
 
         emit updatedBadge(
@@ -132,14 +133,24 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
                 address(this),
                 this.fulfillStats.selector
             );
-        req.add("address", typesLibrary.addressToString(_walker));
+        // string memory params =
+        //     string(
+        //         abi.encodePacked(
+        //             "address=",
+        //             typesLibrary.addressToString(_walker)
+        //         )
+        //     );
+        // encoded = params;
+        // req.add("queryParams", params);
+        // req.add("address", typesLibrary.addressToString(_walker));
+        req.add("dog", typesLibrary.addressToString(_walker)); //"31803877693398533056304374249487059501607363464");
         bytes32 reqId = sendChainlinkRequestTo(oracle, req, fee);
         reqIDtest = reqId;
         reqId_Address[reqId] = _walker;
     }
 
     function fulfillStats(bytes32 _requestId, uint256 results) public {
-        testReturn = typesLibrary.sliceInt(results, 1, 10);
+        testReturn = results; //typesLibrary.sliceInt(results, 1, 10);
         address _walker = reqId_Address[_requestId];
         /*
         results[0]=timesum
@@ -161,7 +172,7 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
             .sliceInt(results, 11, 15)
             .div(10**18);
         AddresstoBadge[_walker].totalPaid = newPay;
-        emit paidTo(msg.sender, payOut, "Walk Pay", block.timestamp);
+        emit paidTo(_walker, payOut, "Walk Pay", block.timestamp);
     }
 
     ////view functions

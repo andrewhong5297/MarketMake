@@ -63,9 +63,9 @@ describe("Pet Project Full Test v1 Kovan", function () {
             abiLP,
             shelter)     
         
-        exchangeAddress="0x312E0E396da67ca07dC40505D2b7E421b841B741"
-        walkTokenAddress="0xbe6937C72A622a3d723301036D62D9eb457234b2"
-        walkBadgeAddress="0x6edCbf1080277480c55bC67C02408D97C5a4282a"
+        walkTokenAddress="0x649c200De35dc9990dB3ac49aC8Ed2237053aA35"
+        exchangeAddress="0x90b709e2bdf140c5D4bFD7A1f046572ce9f2845f"
+        walkBadgeAddress="0x1b5B99dEff7D8dc9e57D51F3fCF2CAa127B60d2D"
         // await LP.connect(shelter).deposit(dai.address, ethers.BigNumber.from("100000000000000000000"), shelter.getAddress(),ethers.BigNumber.from("0")) //100 dai, 10**20
         // await LP.connect(walker).withdraw(dai.address, ethers.BigNumber.from("100000000000000000000"), walker.getAddress())
     });
@@ -80,7 +80,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
           walkTokenAddress=walkToken.address
         
           //this mint is just for exchange purposes
-          const mintTo = await walkToken.connect(shelter).payTo(ethers.BigNumber.from((5**22).toLocaleString('fullwide', {useGrouping:false})),walker.getAddress())
+          const mintTo = await walkToken.connect(shelter).payTo(ethers.BigNumber.from((5*10**22).toLocaleString('fullwide', {useGrouping:false})),walker.getAddress())
           await mintTo.wait(1)
     });
 
@@ -143,36 +143,39 @@ describe("Pet Project Full Test v1 Kovan", function () {
             abiWB,
             shelter)  
 
-        // //create badge
-        // const createB = await walkBadge.connect(walker).createBadge(walker.getAddress(), overrides);
-        // await createB.wait(1)
-        // // const badgeDataBefore = await walkBadge.connect(walker).getBadge(walker.getAddress(), overrides)
-        // // console.log(`${badgeDataBefore[0]} has a badge with:
-        // //                 Level of ${badgeDataBefore[1]}
-        // //                 Total time walked of ${badgeDataBefore[2]}
-        // //                 Total distance walked of ${badgeDataBefore[3]}
-        // //                 Total dogs walked of ${badgeDataBefore[4]}`)
-
-        // //call oracle (check if payTo mint of tokens worked)
-        // const balance = await walkToken.connect(walker).balanceOf(walker.getAddress(), overrides)
-        // console.log("balance of WT before payment ", balance.toString());
+        const walker_address_to_use = "0xCA765911b4588508db72E999263115964c1A31D6" //"0x0592229c68368C7Bd96AeF217bBCb66F7fCd2388";
         
-        // const updateStats = await walkBadge.connect(walker).updateWalkerStats(walker.getAddress(), overrides); //jobID and walker address
-        // await updateStats.wait(6)
+        //create badge
+        const createB = await walkBadge.connect(walker).createBadge(walker_address_to_use, overrides);
+        await createB.wait(1)
+        const badgeDataBefore = await walkBadge.connect(walker).getBadge(walker_address_to_use, overrides)
+        console.log(`${badgeDataBefore[0]} has a badge with:
+                        Level of ${badgeDataBefore[1]}
+                        Total time walked of ${badgeDataBefore[2]}
+                        Total distance walked of ${badgeDataBefore[3]}
+                        Total dogs walked of ${badgeDataBefore[4]}`)
+        
+        //call oracle
+        const balance = await walkToken.connect(walker).balanceOf(walker_address_to_use, overrides)
+        console.log("balance of WT before payment ", balance.toString());
+        
+        ////just commment this out if need to check for return... though wait 10 should be fine
+        const updateStats = await walkBadge.connect(walker).updateWalkerStats(walker_address_to_use, overrides); 
+        await updateStats.wait(10)
 
         const testReturn = await walkBadge.connect(walker).testReturn()
         console.log("test oracle return ", testReturn.toString());
 
         //update badge
-        const updateBadge = await walkBadge.connect(walker).updateBadge(walker.getAddress(), overrides);
+        const updateBadge = await walkBadge.connect(walker).updateBadgeLevel(walker_address_to_use, overrides);
         await updateBadge.wait(2)
 
-        //takes time for this to update
-        const balance2 = await walkToken.connect(walker).balanceOf(walker.getAddress(), overrides)
+        // (check if payTo mint of tokens worked) takes time for this to update
+        const balance2 = await walkToken.connect(walker).balanceOf(walker_address_to_use, overrides)
         console.log("balance of WT after payment ", balance2.toString());
 
         //get badge data
-        const badgeDataAfter = await walkBadge.connect(walker).getBadge(walker.getAddress(), overrides)
+        const badgeDataAfter = await walkBadge.connect(walker).getBadge(walker_address_to_use, overrides)
         console.log(`${badgeDataAfter[0]} has a badge with:
                         Level of ${badgeDataAfter[1]}
                         Total time walked of ${badgeDataAfter[2]}
@@ -180,7 +183,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
                         Total dogs walked of ${badgeDataAfter[4]}`)
     })
 
-    xit("shelter deposit Dai into exchange for walkers' redeemability", async () => {
+    it("shelter deposit Dai into exchange for walkers' redeemability", async () => {
         walkExchange = new ethers.Contract(
             exchangeAddress, 
             abiWTE,
@@ -201,7 +204,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         // console.log(tx)
     });
 
-    xit("exchange deposits Dai into AAVE", async () => {
+    it("exchange deposits Dai into AAVE", async () => {
         walkExchange = new ethers.Contract(
             exchangeAddress, 
             abiWTE,
@@ -212,7 +215,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         await attemptDeposit.wait(1)
     })
 
-    xit("test walker redeem WT for Dai at 1/100 ratio, with withdrawal call from AAVE if balance not enough", async () => {
+    it("test walker redeem WT for Dai at 1/100 ratio, with withdrawal call from AAVE if balance not enough", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,

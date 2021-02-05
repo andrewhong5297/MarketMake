@@ -9,7 +9,7 @@ dataSources:
     network: kovan
     source:
       abi: WalkTokenExchange
-      address: "0xc50C1025Aa78014CA34F49EcE13357bc5b2158ED"
+      address: "0x90b709e2bdf140c5D4bFD7A1f046572ce9f2845f"
       startBlock: 20627917
     mapping:
       kind: ethereum/events
@@ -31,7 +31,7 @@ dataSources:
     network: kovan
     source:
       abi: WalkBadgeOracle
-      address: "0xa0A416C264650BA9F56f5105B763BB87f341177c"
+      address: "0x1b5B99dEff7D8dc9e57D51F3fCF2CAa127B60d2D"
       startBlock: 20627917
     mapping:
       kind: ethereum/events
