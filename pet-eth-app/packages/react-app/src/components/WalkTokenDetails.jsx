@@ -63,7 +63,7 @@ export const WalkTokenDetails = (props) => {
                 <div class="col-md">
                     <Tabs className="justify-content-center" defaultActiveKey="Home" 
                           id="controlled-tab-example">
-                        <Tab eventKey="Home" title="Home">
+                        <Tab eventKey="Home" title="Home" className="tabColor">
                           <div style={{ marginTop: `12px` }}>
                               <Table striped bordered hover>
                                   <thead>
@@ -96,7 +96,7 @@ export const WalkTokenDetails = (props) => {
                               </Table>
                           </div>
                         </Tab>
-                        <Tab eventKey="profile" title="Profile">
+                        <Tab eventKey="profile" title="Profile" className="tabColor">
                         <div style={{ marginTop: `12px` }}>
                               <Table striped bordered hover>
                                   <thead>
@@ -129,7 +129,7 @@ export const WalkTokenDetails = (props) => {
                               </Table>
                           </div>
                         </Tab>
-                        <Tab eventKey="contact" title="Contact">
+                        <Tab eventKey="contact" title="Contact" className="tabColor">
                         <div style={{ marginTop: `12px` }}>
                               <Table striped bordered hover>
                                   <thead>
