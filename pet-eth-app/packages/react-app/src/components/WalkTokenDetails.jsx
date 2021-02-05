@@ -63,7 +63,7 @@ export const WalkTokenDetails = (props) => {
                 <div class="col-md">
                     <Tabs className="justify-content-center" defaultActiveKey="Home" 
                           id="controlled-tab-example">
-                        <Tab eventKey="home" title="Home">
+                        <Tab eventKey="Home" title="Home">
                           <div style={{ marginTop: `12px` }}>
                               <Table striped bordered hover>
                                   <thead>
@@ -178,7 +178,7 @@ export const WalkTokenDetails = (props) => {
                 <div class="col-md">
                     <Tabs className="justify-content-center" defaultActiveKey="Home" 
                           id="controlled-tab-example">
-                        <Tab eventKey="home" title="Home">
+                        <Tab eventKey="Home" title="Distance Walked">
                           <div style={{ marginTop: `12px` }}>
                               <Table striped bordered hover>
                                   <thead>
