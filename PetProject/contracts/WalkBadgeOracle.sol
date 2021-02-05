@@ -20,6 +20,7 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
     bytes32 private jobId;
 
     bytes32 public reqIDtest;
+    uint256 public testReturn;
 
     struct WalkerLevel {
         address walker;
@@ -33,7 +34,7 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
     mapping(address => WalkerLevel) public AddresstoBadge;
     mapping(bytes32 => address) public reqId_Address;
 
-    event paidTo(address payee, uint256 amount, string action);
+    event paidTo(address payee, uint256 amount, string action, uint256 time);
     event updatedBadge(
         address walker,
         uint256 level,
@@ -50,7 +51,7 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         IERC20Link = IERC20(_link);
         setPublicChainlinkToken(); //this HAS TO BE HERE
         oracle = address(0xf5A4036CA35B9C017eFA49932DcA4bc8cc781Aa4);
-        jobId = "928ffd612ed442149b046d5f807c9146";
+        jobId = "ec8c8e4225bb4997b9225d3435bc8cec";
         fee = 1 * 10**18; // 1 LINK
     }
 
@@ -138,7 +139,7 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
     }
 
     function fulfillStats(bytes32 _requestId, uint256 results) public {
-        //note these are all returning mul 100.
+        testReturn = typesLibrary.sliceInt(results, 1, 10);
         address _walker = reqId_Address[_requestId];
         /*
         results[0]=timesum
@@ -147,20 +148,20 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         results[3]=totalpayments
         */
         uint256 oldPay = AddresstoBadge[_walker].totalPaid;
-        // uint256 newPay = typesLibrary.sliceInt(results, 16, 20).div(10**18);
-        uint256 payOut = 10 * 10**18; //newPay.sub(oldPay); remove for testing purposes
+        uint256 newPay = typesLibrary.sliceInt(results, 16, 20).div(10**2); //since the result is mul 100 since decimals aren't handled well.
+        uint256 payOut = newPay.sub(oldPay);
         IERC20WT.payTo(payOut, _walker); //pay is reported in two decimals, so 10**16 instead of 10**18
-        // AddresstoBadge[_walker].timeWalked = typesLibrary
-        //     .sliceInt(results, 1, 5)
-        //     .div(10**18);
-        // AddresstoBadge[_walker].distanceWalked = typesLibrary
-        //     .sliceInt(results, 6, 10)
-        //     .div(10**18);
-        // AddresstoBadge[_walker].dogsWalked = typesLibrary
-        //     .sliceInt(results, 11, 15)
-        //     .div(10**18);
-        // AddresstoBadge[_walker].totalPaid = newPay;
-        emit paidTo(msg.sender, payOut, "Walk Pay");
+        AddresstoBadge[_walker].timeWalked = typesLibrary
+            .sliceInt(results, 1, 5)
+            .div(10**18);
+        AddresstoBadge[_walker].distanceWalked = typesLibrary
+            .sliceInt(results, 6, 10)
+            .div(10**18);
+        AddresstoBadge[_walker].dogsWalked = typesLibrary
+            .sliceInt(results, 11, 15)
+            .div(10**18);
+        AddresstoBadge[_walker].totalPaid = newPay;
+        emit paidTo(msg.sender, payOut, "Walk Pay", block.timestamp);
     }
 
     ////view functions

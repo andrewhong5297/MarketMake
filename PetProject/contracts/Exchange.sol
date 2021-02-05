@@ -19,8 +19,18 @@ contract WalkTokenExchange is ReentrancyGuard {
     IERC20 private IERC20WT;
     ILendingPool private ILP;
 
-    event redeemedDai(address spender, uint256 amount, string action);
-    event boughtToy(address spender, uint256 amount, string action);
+    event redeemedDai(
+        address spender,
+        uint256 amount,
+        string action,
+        uint256 time
+    );
+    event boughtToy(
+        address spender,
+        uint256 amount,
+        string action,
+        uint256 time
+    );
 
     constructor(
         address _WT,
@@ -97,10 +107,10 @@ contract WalkTokenExchange is ReentrancyGuard {
             withdrawAAVE(_DaitoRedeem, msg.sender); //withdraw only required amount. later this should be always like 30% of dai is redeemable, or some fraction of all walktokens not owned by shelter.
         }
 
-        emit redeemedDai(msg.sender, WTneeded, "Redeemed Dai");
+        emit redeemedDai(msg.sender, WTneeded, "Redeemed Dai", block.timestamp);
     }
 
-    //Joe to write this function
+    //Joe to write this function, interface with NFT contract to mint. similar to how Walk Token has a payTo function for another contract to call.
     //function buyNFT()
     //emit boughtToy()
 }

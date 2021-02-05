@@ -25,8 +25,6 @@ import logo from "./ethereumLogo.png";
 import useWeb3Modal from "./hooks/useWeb3Modal";
 
 import { ethers } from "ethers";
-import { useForm } from "react-hook-form";
-import { addresses, abis } from "@project/contracts";
 import GET_TRANSFERS from "./graphql/subgraph";
 import * as Realm from "realm-web";
 import { WalkTokenDetails } from "./components/WalkTokenDetails";
@@ -37,6 +35,7 @@ const { abi: abiWTE } = require("./abis/WalkTokenExchange.json");
 const { abi: abiWT } = require("./abis/WalkToken.json");
 
 //https://api.thegraph.com/subgraphs/name/andrewhong5297/walktokentransfers add graphQL query for this later
+//https://kovan.etherscan.io/address/0xbe6937c72a622a3d723301036d62d9eb457234b2?fromaddress=0xa55E01a40557fAB9d87F993d8f5344f1b2408072 use this filtering for etherscan linking later
 async function getSpecificWalkerData(name) {
   const app = new Realm.App("petproject-sfwui");
   await app.logIn(Realm.Credentials.emailPassword("test@gmail.com", "test123"));

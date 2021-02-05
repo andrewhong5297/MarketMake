@@ -3,5 +3,5 @@ type Transfer @entity {
   from: String!
   action: String!
   value: BigInt!
-  createdAt: BigInt
+  createdAt: BigInt!
 }

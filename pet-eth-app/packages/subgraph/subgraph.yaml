@@ -9,7 +9,8 @@ dataSources:
     network: kovan
     source:
       abi: WalkTokenExchange
-      address: "0xF60014Ed4681F76704BbEbf99d83ff08D5Bf4894"
+      address: "0xc50C1025Aa78014CA34F49EcE13357bc5b2158ED"
+      startBlock: 20627917
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -20,9 +21,9 @@ dataSources:
       entities:
         - Transfer
       eventHandlers:
-        - event: redeemedDai(address,uint256,string)
+        - event: redeemedDai(address,uint256,string,uint256)
           handler: handleRedeem
-        - event: boughtToy(address,uint256,string)
+        - event: boughtToy(address,uint256,string,uint256)
           handler: handleBought
       file: ./src/mapping.ts
   - kind: ethereum/contract
@@ -30,7 +31,8 @@ dataSources:
     network: kovan
     source:
       abi: WalkBadgeOracle
-      address: "0xc350F245D2B1Bde84fEde4d695d98d0B5C430f57"
+      address: "0xa0A416C264650BA9F56f5105B763BB87f341177c"
+      startBlock: 20627917
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -41,6 +43,6 @@ dataSources:
       entities:
         - Transfer
       eventHandlers:
-        - event: paidTo(address,uint256,string)
+        - event: paidTo(address,uint256,string,uint256)
           handler: handlePay
       file: ./src/mapping.ts
