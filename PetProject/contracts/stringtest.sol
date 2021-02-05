@@ -1,69 +1,25 @@
-pragma solidity >=0.4.0;
+pragma solidity >=0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "hardhat/console.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
-contract oracleTest is ChainlinkClient {
+contract stringtest {
     using SafeMath for uint256;
+    uint256 public set_var;
 
-    uint256 public testReturn;
-
-    IERC20 private IERC20Link;
-
-    uint256 public fee;
-    address public oracle;
-    bytes32 public jobId;
-
-    constructor() public {
-        setPublicChainlinkToken(); //this HAS TO BE HERE
-        oracle = address(0xf5A4036CA35B9C017eFA49932DcA4bc8cc781Aa4);
-        jobId = "b6c39c0cc825449ca309866b2fe18c6d";
-        fee = 2 * 10**18; // 2 LINK
-    }
-
-    function recieveLink(address _erc20, uint256 _value) external {
-        // require(msg.sender == shelter, "only shelter can deposit Link");
-        //must have approval first from owner address to this contract address
-        IERC20Link = IERC20(_erc20);
-        IERC20Link.transferFrom(msg.sender, address(this), _value);
-    }
-
-    function approveLinkSend(
-        address _erc20,
-        address _oracle,
-        uint256 _value
-    ) external {
-        // require(msg.sender == shelter, "only shelter can deposit Link");
-        //must have approval first from owner address to this contract address
-        IERC20Link = IERC20(_erc20);
-        IERC20Link.approve(_oracle, _value);
-    }
-
-    function testOracle() public {
-        Chainlink.Request memory req =
-            buildChainlinkRequest(
-                jobId,
-                address(this),
-                this.fulfillStats.selector
-            );
-        sendChainlinkRequestTo(oracle, req, fee);
-    }
-
-    function fulfillStats(bytes32 _requestId, bytes32 results) public {
-        testReturn = sliceBytes(results, 1, 7).div(10**18); //returns uint 10**18 so need to divide to get right amount. Should give us 18700 or something like that
-    }
-
-    ///string utils
     function sliceBytes(
         bytes32 _toSlice,
         uint256 start,
         uint256 end
-    ) internal returns (uint256 _sliced) {
+    ) public returns (uint256 _sliced) {
         string memory _sliceable = bytes32ToString(_toSlice);
+        console.log("bytes to string ", _sliceable);
         string memory slicedStr = getSlice(start, end, _sliceable);
+        console.log("string slice ", slicedStr);
         uint256 _sliced = stringToUint(slicedStr);
+        console.log("string to int ", _sliced);
+        set_var = _sliced.div(10**18);
         return _sliced;
     }
 
@@ -76,6 +32,7 @@ contract oracleTest is ChainlinkClient {
         for (uint256 i = 0; i <= end - begin; i++) {
             a[i] = bytes(text)[i + begin - 1];
         }
+        // console.log("in getSlice: ", a);
         return string(a);
     }
 
@@ -147,4 +104,68 @@ contract oracleTest is ChainlinkClient {
         }
         return string(bytesStringTrimmed);
     }
+
+    ////string to int stuff
+    // function otherAddressToString(address _add)
+    //     external
+    //     view
+    //     returns (string memory _addstring)
+    // {
+    //     console.log("address version, ", _add);
+    //     uint256 ethAddressAsInt = uint256(_add);
+    //     console.log("int version, ", ethAddressAsInt);
+    //     string memory stringEthAdd = uint2str(ethAddressAsInt);
+    //     console.log("string version, ", stringEthAdd);
+    //     // console.log("bytes version, ", bytes(_add));
+
+    //     // string memory finalOutput =
+    //     //     "0x" + BigInt(ethAddressAsInt).toString(16).padStart(40, "0");
+
+    //     // console.log("string version, ", ethAddressAsInt);
+    //     return stringEthAdd;
+    // }
+
+    // function addressToString(address _pool)
+    //     public
+    //     pure
+    //     returns (string memory _uintAsString)
+    // {
+    //     uint256 _i = uint256(_pool);
+    //     if (_i == 0) {
+    //         return "0";
+    //     }
+    //     uint256 j = _i;
+    //     uint256 len;
+    //     while (j != 0) {
+    //         len++;
+    //         j /= 10;
+    //     }
+    //     bytes memory bstr = new bytes(len);
+    //     uint256 k = len - 1;
+    //     while (_i != 0) {
+    //         bstr[k--] = bytes1(uint8(48 + (_i % 10)));
+    //         _i /= 10;
+    //     }
+    //     return string(bstr);
+    // }
+
+    // function uint2str(uint256 _i) internal pure returns (string memory str) {
+    //     if (_i == 0) {
+    //         return "0";
+    //     }
+    //     uint256 j = _i;
+    //     uint256 length;
+    //     while (j != 0) {
+    //         length++;
+    //         j /= 10;
+    //     }
+    //     bytes memory bstr = new bytes(length);
+    //     uint256 k = length;
+    //     j = _i;
+    //     while (j != 0) {
+    //         bstr[--k] = bytes1(uint8(48 + (j % 10)));
+    //         j /= 10;
+    //     }
+    //     str = string(bstr);
+    // }
 }
