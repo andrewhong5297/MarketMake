@@ -14,7 +14,7 @@ import {
 } from "react-bootstrap";
 
 export const DataTable = (props) => {
-    const [data, setData] = useState("Hello");
+    const [data, setData] = useState();
     const [table , setTable] = useState(
     <div>
         <Table striped bordered hover>
@@ -29,32 +29,56 @@ export const DataTable = (props) => {
         </Table>
     </div>)
 
-    const updateData = async () => {
-        const newData = await props.onFetch();
-        setData(newData);
-    }
+    React.useEffect(() => {
+        props.onFetchAll().then(response=>setData(response));
+    }, []);
 
-    useEffect(() => {
+    //should load after setData() has changed... not on click
+    const createMapping = () => {
+        const arr = [1,1,2,3,4,5,6]
+
+        //this is key for getting to totals for each person. Try to get the distance sum first. 
+        console.log(
+            arr.reduce((sum,d)=>{
+            return sum + d //d is each element of arr
+            }, 0)
+        ) // sum = 0
+
+        //console.log(data.reduce(...))
+
+        console.log(data)
         setTable(
             <div>
                 <Table striped bordered hover>
-                    <thead>
-                    <tr>
-                        <th>{data[0]["Dog_Name"]}</th>
-                        <th>{data[0]["Distance_Walked"]}</th>
-                        <th>{data[0]["Time_Walked"]}</th>
-                        <th>{data[0]["Walker_Name"]}</th>
-                    </tr>
+                        <thead>
+                        <tr>
+                            <th>Dog_Name</th>
+                            <th>Distance_Walked</th>
+                            <th>Time_Walked</th>
+                            <th>Walker_Name</th>
+                            <th>UNIX_Timestamp</th>
+                        </tr>
+                        </thead>
+                        <thead>
+                        {data.map((row, index) => (
+                            <tr id={index}>
+                                <td>{row["Dog_Name"]}</td>
+                                <td>{row["Distance_Walked"]}</td>
+                                <td>{row["Time_Walked"]}</td>
+                                <td>{row["Walker_Name"]}</td>
+                                <td>{row["UNIX_Timestamp"]}</td>
+                            </tr>
+                        ))}
                     </thead>
                 </Table>
             </div>)
-      }, [data]);
+    }
     
   return (
     <Card>
     <Card.Body>
     {table}
-    <Button onClick={updateData}>update data</Button>
+    <Button onClick={createMapping}>update data</Button>
     <div class="container">
         <div class="row">
         <div class="col-md">

@@ -36,14 +36,16 @@ const fetch = require("node-fetch");
 const { abi: abiWTE } = require("./abis/WalkTokenExchange.json");
 const { abi: abiWT } = require("./abis/WalkToken.json");
 
-async function getWalkerData(token) {
+async function getSpecificWalkerData(name) {
+  const app = new Realm.App("petproject-sfwui");
+  await app.logIn(Realm.Credentials.emailPassword("test@gmail.com", "test123"));
   const url =
     "https://realm.mongodb.com/api/client/v2.0/app/petproject-sfwui/graphql";
   const submittedNameFromContract = "Andrew"; //probably only have to pass address to the contract.
   const query = JSON.stringify({
     query: `
       query {
-          walks (query: {Walker_Name: "${submittedNameFromContract}"}, sortBy: TIME_WALKED_ASC) {
+          walks (query: {Walker_Name: "${name}"}, sortBy: UNIX_TIMESTAMP_DESC) {
               Distance_Walked
               Dog_Name
               Time_Walked
@@ -57,7 +59,7 @@ async function getWalkerData(token) {
 
   const otherParam = {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${app.currentUser.accessToken}`,
     },
     body: query,
     method: "POST",
@@ -66,16 +68,42 @@ async function getWalkerData(token) {
   const pet_response = await fetch(url, otherParam).then((data) => {
     return data.json();
   }).then(res=>{return res.data.walks});
-  console.log(pet_response)
   return await pet_response;
 }
 
-const loginAndFetchWalks = async () => {
+async function getAllWalkerData() {
   const app = new Realm.App("petproject-sfwui");
   await app.logIn(Realm.Credentials.emailPassword("test@gmail.com", "test123"));
-  const finaldata = await getWalkerData(app.currentUser.accessToken);
-  return finaldata;
-};
+  const url =
+    "https://realm.mongodb.com/api/client/v2.0/app/petproject-sfwui/graphql";
+  const query = JSON.stringify({
+    query: `
+      query {
+          walks (sortBy: UNIX_TIMESTAMP_DESC) {
+              Distance_Walked
+              Dog_Name
+              Time_Walked
+              UNIX_Timestamp
+              Walker_Address
+              Walker_Name
+              _id
+          }
+        }`,
+  });
+
+  const otherParam = {
+    headers: {
+      Authorization: `Bearer ${app.currentUser.accessToken}`,
+    },
+    body: query,
+    method: "POST",
+  };
+
+  const pet_response = await fetch(url, otherParam).then((data) => {
+    return data.json();
+  }).then(res=>{return res.data.walks});
+  return await pet_response;
+}
 
 function WalletButton({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
   return (
@@ -150,7 +178,8 @@ function App() {
           walkToken={walkToken}
         />
         <DataTable 
-          onFetch={()=>loginAndFetchWalks()}
+          onFetch={()=>getSpecificWalkerData()}
+          onFetchAll={()=>getAllWalkerData()}
         />
       </Container>
     </div>
