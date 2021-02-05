@@ -18,18 +18,25 @@ describe("string_Test", function () {
           );
           stringTest = await StringTest.connect(shelter).deploy();
         await stringTest.deployed();
-
+        
+        ////contract to oracle
         // const string1 = await stringTest.connect(shelter).otherAddressToString("0x0592229c68368C7Bd96AeF217bBCb66F7fCd2388")
         // const string2 = await stringTest.connect(shelter).addressToString("0xa55E01a40557fAB9d87F993d8f5344f1b2408072")
         // console.log('0x' + BigInt(string1).toString(16).padStart(40, '0'));
 
+        // oracle to contract
         // const slice = await stringTest.connect(shelter).sliceString("00018700000003480000060000010137")
         // console.log(slice.toString()); 
 
         // const slice = await stringTest.connect(shelter).sliceBytes(ethers.utils.formatBytes32String("0018700000034800006000010137"), ethers.BigNumber.from("1"), ethers.BigNumber.from("7"))
+        // const slice = await stringTest.connect(shelter).sliceBytes("0x3030313837303030303030333438303030303630303030313031333700000000", ethers.BigNumber.from("1"), ethers.BigNumber.from("7"))
         
-        const slice = await stringTest.connect(shelter).sliceBytes("0x3030313837303030303030333438303030303630303030313031333700000000", ethers.BigNumber.from("1"), ethers.BigNumber.from("7"))
+        const slice = await stringTest.connect(shelter).sliceInt(ethers.BigNumber.from("18700000034800006000010137")) //still debugging because it needs to go from int to string.
+        
         const slicedInt = await stringTest.connect(shelter).set_var();
         console.log(slicedInt.toString()); 
+        const bytesString = await stringTest.connect(shelter).result_bytes_pub();
+        console.log(bytesString); 
+        console.log("expected bytes hexidecimal: ", ethers.utils.formatBytes32String("18700000034800006000010137"))
     });
 })

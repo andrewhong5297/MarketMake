@@ -8,10 +8,11 @@ function mnemonic() {
   return fs.readFileSync("./test/mnemonic.txt").toString().trim();
 }
 describe("Pet Project Full Test v1 Kovan", function () {
-    let oracleTest, walkBadge, walkExchange; //our contracts
+    let oracleTest, walkBadge, walkExchange, typesLibrary; //our contracts
     let dai, link, LP, LPAP; //already deployed contracts
     let shelter,  walker, walker_two; //users
-    let overrides, oracleTestAddress;
+    let overrides
+    let oracleTestAddress
 
     it("deploy/setup Kovan contracts", async () => {
         overrides = {
@@ -31,16 +32,29 @@ describe("Pet Project Full Test v1 Kovan", function () {
             abiDai,
             shelter)    
         
-            oracleTestAddress = "0xC18930FD7eeDDc70257b47F830889E349e3cd185"
+            oracleTestAddress = "0xf81fbd80B6D9Cf8F2868707D6692164c798fFb29"
     });
 
    it("deploy oracle and test", async () => {
+        const TypesLibrary = await ethers.getContractFactory(
+          "typesLibrary"
+        );
+        typesLibrary = await TypesLibrary.connect(shelter).deploy(overrides); //1,000,000 Walktokens, with 18 decimals. 
+        await typesLibrary.deployed()
+        console.log("library at: ", typesLibrary.address)
+
         const OracleTest = await ethers.getContractFactory(
-           "oracleTest"
+           "oracleTest",
+           {
+            libraries: {
+              typesLibrary: typesLibrary.address
+            }
+          }
          );
          oracleTest = await OracleTest.connect(shelter).deploy(overrides); //1,000,000 Walktokens, with 18 decimals. 
          await oracleTest.deployed()
          oracleTestAddress = oracleTest.address
+         console.log("Oracle at: ", oracleTest.address)
 
          //send badge contract 1 link token
         const approve = await link.connect(shelter).approve(oracleTest.address, ethers.BigNumber.from((2*10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
@@ -48,10 +62,6 @@ describe("Pet Project Full Test v1 Kovan", function () {
         
         const recieve = await oracleTest.connect(shelter).recieveLink("0xa36085f69e2889c224210f603d836748e7dc0088", ethers.BigNumber.from((2*10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
         await recieve.wait(2)
-
-        const preresult = await oracleTest.connect(shelter).testReturn();
-        console.log("link recieved, showing pretest result")
-        console.log(preresult.toString())
    });
 
    it("call oracle", async () =>{
@@ -61,9 +71,11 @@ describe("Pet Project Full Test v1 Kovan", function () {
       shelter)
       
       const update = await oracleTest.connect(shelter).testOracle(overrides);
-      await update.wait(1)
+      await update.wait(6)
 
       const result = await oracleTest.connect(shelter).testReturn();
-      console.log(result.toString())
+      console.log("Expect 18700: ", result.toString())
+      const b_result = await oracleTest.connect(shelter).testRawReturn();
+      console.log("raw: ", b_result.toString())
    })
 })
