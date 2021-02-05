@@ -62,6 +62,6 @@ contract oracleTest is ChainlinkClient {
 
     function fulfillStats(bytes32 _requestId, uint256 results) public {
         testRawReturn = results;
-        testReturn = typesLibrary.sliceInt(results).div(10**18); //returns uint 10**18 so need to divide to get right amount. Should give us 18700 or something like that
+        testReturn = typesLibrary.sliceInt(results, 1, 5).div(10**18); //returns uint 10**18 so need to divide to get right amount. Should give us 18700 or something like that
     }
 }

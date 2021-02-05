@@ -19,6 +19,9 @@ contract WalkTokenExchange is ReentrancyGuard {
     IERC20 private IERC20WT;
     ILendingPool private ILP;
 
+    event redeemedDai(address spender, uint256 amount, string action);
+    event boughtToy(address spender, uint256 amount, string action);
+
     constructor(
         address _WT,
         address _Dai,
@@ -93,9 +96,11 @@ contract WalkTokenExchange is ReentrancyGuard {
         if (contractBalanceDai < _DaitoRedeem) {
             withdrawAAVE(_DaitoRedeem, msg.sender); //withdraw only required amount. later this should be always like 30% of dai is redeemable, or some fraction of all walktokens not owned by shelter.
         }
+
+        emit redeemedDai(msg.sender, WTneeded, "Redeemed Dai");
     }
 
     //Joe to write this function
     //function buyNFT()
-    //
+    //emit boughtToy()
 }

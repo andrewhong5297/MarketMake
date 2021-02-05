@@ -19,7 +19,7 @@ function mnemonic2() {
 
 //make sure you've switched defaultnetwork to Kovan and put a mnemonic.txt file in the test folder
 describe("Pet Project Full Test v1 Kovan", function () {
-    let walkToken, walkBadge, walkExchange; //our contracts
+    let walkToken, walkBadge, walkExchange, typesLibrary; //our contracts
     let dai, link, LP, LPAP; //already deployed contracts
     let shelter,  walker, walker_two; //users
     let overrides;
@@ -59,11 +59,9 @@ describe("Pet Project Full Test v1 Kovan", function () {
         const LPaddress = await LPAP.connect(shelter).getLendingPool();
 
         LP = new ethers.Contract(
-            LPaddress, //"0x9FE532197ad76c5a68961439604C037EB79681F0" listed address in their docs is different from the LPaddress. Not sure which one to use. 
+            LPaddress,
             abiLP,
             shelter)     
-
-        const walkerAccount = await LP.getUserAccountData(shelter.getAddress())
         
         exchangeAddress="0x3d3617813FCF202c7d4e7c7f8AA95950C4433650"
         walkTokenAddress="0xD50C749345450973C2b89f273E1a16c8C2629f89"
@@ -72,7 +70,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         // await LP.connect(walker).withdraw(dai.address, ethers.BigNumber.from("100000000000000000000"), walker.getAddress())
     });
 
-    xit("deploy walkToken", async () => {
+    it("deploy walkToken", async () => {
          const WalkToken = await ethers.getContractFactory(
             "WalkToken"
           );
@@ -85,7 +83,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
           await mintTo.wait(1)
     });
 
-    xit("deploy walkExchange", async () => {
+    it("deploy walkExchange", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,
@@ -101,34 +99,36 @@ describe("Pet Project Full Test v1 Kovan", function () {
         exchangeAddress=walkExchange.address
     })
 
-    xit("deploy walkBadge", async () => {
-        walkToken = new ethers.Contract(
-            walkTokenAddress, 
-            abiWT,
-            shelter)     
-
-        const WalkBadge = await ethers.getContractFactory(
-            "WalkBadgeOracle"
+    it("deploy walkBadge", async () => {
+        const TypesLibrary = await ethers.getContractFactory(
+            "typesLibrary"
           );
+        typesLibrary = await TypesLibrary.connect(shelter).deploy(overrides); 
+        await typesLibrary.deployed()
+        console.log("library at: ", typesLibrary.address)
 
-        walkBadge = await WalkBadge.connect(shelter).deploy(walkToken.address, link.address);
+        const WalkBadgeOracle = await ethers.getContractFactory(
+            "WalkBadgeOracle",
+            {
+            libraries: {
+            typesLibrary: typesLibrary.address
+            }
+        }
+        );
+        walkBadge = await WalkBadgeOracle.connect(shelter).deploy(walkTokenAddress, link.address, overrides); 
         await walkBadge.deployed()
-        console.log("Badge Address: ", walkBadge.address)
-        walkBadgeAddress=walkBadge.address
+        walkBadgeAddress = walkBadge.address
+        console.log("WalkBadge address: ", walkBadge.address)
 
-        //set badge contract to be able to payTo
-        const setting = await walkToken.connect(shelter).changeBadge(walkBadge.address)
-        await setting.wait(1)
-
-        //send badge contract 1 link token
-        const approve = await link.connect(shelter).approve(walkBadge.address, ethers.BigNumber.from((10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
+        //send badge contract link token
+        const approve = await link.connect(shelter).approve(walkBadgeAddress, ethers.BigNumber.from((2*10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
         await approve.wait(1)
         
-        const recieve = await walkBadge.connect(shelter).recieveLink(ethers.BigNumber.from((10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
+        const recieve = await walkBadge.connect(shelter).recieveLink(ethers.BigNumber.from((2*10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
         await recieve.wait(1)
 
-        const oraclej = await walkBadge.connect(shelter).setOracleAddress("0xf5A4036CA35B9C017eFA49932DcA4bc8cc781Aa4") //address of node op. dont forget to update jobid and fee too
-        await oraclej.wait(1)
+        // const oraclej = await walkBadge.connect(shelter).setOracleAddress("0xf5A4036CA35B9C017eFA49932DcA4bc8cc781Aa4") //address of node op. dont forget to update jobid and fee too
+        // await oraclej.wait(1)
     })
 
     it("walker create badge, call oracle, and update badge. Walker should see a payment too", async () => {
@@ -142,45 +142,40 @@ describe("Pet Project Full Test v1 Kovan", function () {
             abiWB,
             shelter)  
 
-        // //create badge
-        // const createB = await walkBadge.connect(walker).createBadge(walker.getAddress(), overrides);
-        // await createB.wait(1)
-        // const badgeDataBefore = await walkBadge.connect(walker).getBadge(walker.getAddress(), overrides)
-        // console.log(`${badgeDataBefore[0]} has a badge with:
-        //                 Level of ${badgeDataBefore[1]}
-        //                 Total time walked of ${badgeDataBefore[2]}
-        //                 Total distance walked of ${badgeDataBefore[3]}
-        //                 Total dogs walked of ${badgeDataBefore[4]}`)
+        //create badge
+        const createB = await walkBadge.connect(walker).createBadge(walker.getAddress(), overrides);
+        await createB.wait(1)
+        const badgeDataBefore = await walkBadge.connect(walker).getBadge(walker.getAddress(), overrides)
+        console.log(`${badgeDataBefore[0]} has a badge with:
+                        Level of ${badgeDataBefore[1]}
+                        Total time walked of ${badgeDataBefore[2]}
+                        Total distance walked of ${badgeDataBefore[3]}
+                        Total dogs walked of ${badgeDataBefore[4]}`)
 
-        // //call oracle (check if payTo mint of tokens worked)
-        // const balance = await walkToken.connect(shelter).balanceOf(walker.getAddress(), overrides)
-        // console.log("balance of WT before payment ", balance.toString());
-
-        const orc = await walkBadge.connect(walker).oracle();
-        console.log("oracle at: ", orc);
-        const reqID = await walkBadge.connect(walker).reqIDtest();
-        console.log(reqID);
+        //call oracle (check if payTo mint of tokens worked)
+        const balance = await walkToken.connect(shelter).balanceOf(walker.getAddress(), overrides)
+        console.log("balance of WT before payment ", balance.toString());
         
-        // const updateStats = await walkBadge.connect(walker).updateWalkerStats(walker.getAddress(), overrides); //jobID and walker address
-        // await updateStats.wait(3)
+        const updateStats = await walkBadge.connect(walker).updateWalkerStats(walker.getAddress(), overrides); //jobID and walker address
+        await updateStats.wait(3)
         
-        // const balance2 = await walkToken.connect(shelter).balanceOf(walker.getAddress(), overrides)
-        // console.log("balance of WT after payment ", balance2.toString());
+        const balance2 = await walkToken.connect(shelter).balanceOf(walker.getAddress(), overrides)
+        console.log("balance of WT after payment ", balance2.toString());
 
-        //update badge
-        const updateBadge = await walkBadge.connect(walker).updateBadge(walker.getAddress(), overrides);
-        await updateBadge.wait(1)
+        // //update badge
+        // const updateBadge = await walkBadge.connect(walker).updateBadge(walker.getAddress(), overrides);
+        // await updateBadge.wait(1)
 
-        //get badge data
-        const badgeDataAfter = await walkBadge.connect(walker).getBadge(walker.getAddress(), overrides)
-        console.log(`${badgeDataAfter[0]} has a badge with:
-                        Level of ${badgeDataAfter[1]}
-                        Total time walked of ${badgeDataAfter[2]}
-                        Total distance walked of ${badgeDataAfter[3]}
-                        Total dogs walked of ${badgeDataAfter[4]}`)
+        // //get badge data
+        // const badgeDataAfter = await walkBadge.connect(walker).getBadge(walker.getAddress(), overrides)
+        // console.log(`${badgeDataAfter[0]} has a badge with:
+        //                 Level of ${badgeDataAfter[1]}
+        //                 Total time walked of ${badgeDataAfter[2]}
+        //                 Total distance walked of ${badgeDataAfter[3]}
+        //                 Total dogs walked of ${badgeDataAfter[4]}`)
     })
 
-    xit("shelter deposit Dai into exchange for walkers' redeemability", async () => {
+    it("shelter deposit Dai into exchange for walkers' redeemability", async () => {
         walkExchange = new ethers.Contract(
             exchangeAddress, 
             abiWTE,
@@ -201,7 +196,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         // console.log(tx)
     });
 
-    xit("exchange deposits Dai into AAVE", async () => {
+    it("exchange deposits Dai into AAVE", async () => {
         walkExchange = new ethers.Contract(
             exchangeAddress, 
             abiWTE,
@@ -212,7 +207,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         await attemptDeposit.wait(1)
     })
 
-    xit("test walker redeem WT for Dai at 1/100 ratio, with withdrawal call from AAVE if balance not enough", async () => {
+    it("test walker redeem WT for Dai at 1/100 ratio, with withdrawal call from AAVE if balance not enough", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,

@@ -1,26 +1,46 @@
 specVersion: 0.0.2
 description: Subgraph that indexes the blockchain data
-repository: https://github.com/sablierhq/sablier-subgraph
+repository: https://github.com/andrewhong5297/MarketMake/tree/master/pet-eth-app/packages/subgraph
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: CeaErc20
-    network: mainnet
+    name: WalkTokenExchange
+    network: kovan
     source:
-      abi: erc20
-      address: "0xc1C0472c0C80bCcDC7F5D01A376Bd97a734B8815"
+      abi: WalkTokenExchange
+      address: "0xF60014Ed4681F76704BbEbf99d83ff08D5Bf4894"
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
       abis:
-        - name: erc20
-          file: ../contracts/src/abis/erc20.json
+        - name: WalkTokenExchange
+          file: ./abis/WalkTokenExchange.json
       entities:
-        - Token
         - Transfer
       eventHandlers:
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-      file: ./src/mappings/transfers.ts
+        - event: redeemedDai(address,uint256,string)
+          handler: handleRedeem
+        - event: boughtToy(address,uint256,string)
+          handler: handleBought
+      file: ./src/mapping.ts
+  - kind: ethereum/contract
+    name: WalkBadgeOracle
+    network: kovan
+    source:
+      abi: WalkBadgeOracle
+      address: "0xc350F245D2B1Bde84fEde4d695d98d0B5C430f57"
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
+      abis:
+        - name: WalkBadgeOracle
+          file: ./abis/WalkBadgeOracle.json
+      entities:
+        - Transfer
+      eventHandlers:
+        - event: paidTo(address,uint256,string)
+          handler: handlePay
+      file: ./src/mapping.ts

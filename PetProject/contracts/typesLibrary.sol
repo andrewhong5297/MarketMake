@@ -6,9 +6,13 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 library typesLibrary {
     using SafeMath for uint256;
 
-    function sliceInt(uint256 _int) public pure returns (uint256) {
+    function sliceInt(
+        uint256 _int,
+        uint256 start,
+        uint256 end
+    ) public pure returns (uint256) {
         bytes32 result_bytes = stringToBytes32(uint2str(_int));
-        uint256 _sliced = sliceBytes(result_bytes, 1, 6); //in this case, int losses first two 0s. fine for demo but will be problem later maybe.
+        uint256 _sliced = sliceBytes(result_bytes, start, end); //in this case, int losses first two 0s. fine for demo but will be problem later maybe.
         return _sliced;
     }
 

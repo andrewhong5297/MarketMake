@@ -1,13 +1,7 @@
-type Token @entity {
-  id: ID!
-  decimals: Int
-  name: String
-  symbol: String
-}
-
 type Transfer @entity {
   id: ID!
   from: String!
-  to: String!
+  action: String!
   value: BigInt!
+  createdAt: BigInt
 }

@@ -10,6 +10,6 @@
     "auth": "graph auth https://api.thegraph.com/ $GRAPH_ACCESS_TOKEN",
     "build": "graph build",
     "codegen": "graph codegen --output-dir src/types/",
-    "deploy": "graph deploy paulrberg/create-eth-app --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
+    "deploy": "graph deploy andrewhong5297/walktokentransfers --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
   }
 }

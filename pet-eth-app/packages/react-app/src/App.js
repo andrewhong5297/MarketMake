@@ -36,6 +36,7 @@ const fetch = require("node-fetch");
 const { abi: abiWTE } = require("./abis/WalkTokenExchange.json");
 const { abi: abiWT } = require("./abis/WalkToken.json");
 
+//https://api.thegraph.com/subgraphs/name/andrewhong5297/walktokentransfers add graphQL query for this later
 async function getSpecificWalkerData(name) {
   const app = new Realm.App("petproject-sfwui");
   await app.logIn(Realm.Credentials.emailPassword("test@gmail.com", "test123"));

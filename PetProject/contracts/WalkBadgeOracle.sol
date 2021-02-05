@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
 import "./WalkToken.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./typesLibrary.sol";
 
 contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
     using SafeMath for uint256;
@@ -15,7 +16,8 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
     WalkToken private IERC20WT;
     IERC20 private IERC20Link;
     address public oracle;
-    uint256 private fee = 0.1 * 10**18; //0.1 link
+    uint256 private fee; //0.1 link
+    bytes32 private jobId;
 
     bytes32 public reqIDtest;
 
@@ -31,6 +33,7 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
     mapping(address => WalkerLevel) public AddresstoBadge;
     mapping(bytes32 => address) public reqId_Address;
 
+    event paidTo(address payee, uint256 amount, string action);
     event updatedBadge(
         address walker,
         uint256 level,
@@ -45,6 +48,10 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         shelter = msg.sender;
         IERC20WT = WalkToken(_WT);
         IERC20Link = IERC20(_link);
+        setPublicChainlinkToken(); //this HAS TO BE HERE
+        oracle = address(0xf5A4036CA35B9C017eFA49932DcA4bc8cc781Aa4);
+        jobId = "928ffd612ed442149b046d5f807c9146";
+        fee = 1 * 10**18; // 1 LINK
     }
 
     function recieveLink(uint256 _value) external {
@@ -118,25 +125,19 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
             AddresstoBadge[_walker].level >= 1,
             "badge has not been created"
         );
-        bytes32 jobID = "4bbac81fd56b4c98b6d6e794152c1c94";
         Chainlink.Request memory req =
             buildChainlinkRequest(
-                jobID,
+                jobId,
                 address(this),
                 this.fulfillStats.selector
             );
-        req.add("address", addressToString(_walker));
+        req.add("address", typesLibrary.addressToString(_walker));
         bytes32 reqId = sendChainlinkRequestTo(oracle, req, fee);
         reqIDtest = reqId;
         reqId_Address[reqId] = _walker;
     }
 
-    // function fulfillStats(bytes32 _requestId, uint256 results) public {
-    //     address _walker = reqId_Address[_requestId];
-    //     AddresstoBadge[_walker].timeWalked = results;
-    // }
-
-    function fulfillStats(bytes32 _requestId, uint256[] memory results) public {
+    function fulfillStats(bytes32 _requestId, uint256 results) public {
         //note these are all returning mul 100.
         address _walker = reqId_Address[_requestId];
         /*
@@ -146,35 +147,20 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         results[3]=totalpayments
         */
         uint256 oldPay = AddresstoBadge[_walker].totalPaid;
-        IERC20WT.payTo(results[3].sub(oldPay).mul(10**16), _walker); //pay is reported in two decimals, so 10**16 instead of 10**18
-        AddresstoBadge[_walker].timeWalked = results[0];
-        AddresstoBadge[_walker].distanceWalked = results[1];
-        AddresstoBadge[_walker].dogsWalked = results[2];
-        AddresstoBadge[_walker].totalPaid = results[3];
-    }
-
-    function addressToString(address _pool)
-        public
-        pure
-        returns (string memory _uintAsString)
-    {
-        uint256 _i = uint256(_pool);
-        if (_i == 0) {
-            return "0";
-        }
-        uint256 j = _i;
-        uint256 len;
-        while (j != 0) {
-            len++;
-            j /= 10;
-        }
-        bytes memory bstr = new bytes(len);
-        uint256 k = len - 1;
-        while (_i != 0) {
-            bstr[k--] = bytes1(uint8(48 + (_i % 10)));
-            _i /= 10;
-        }
-        return string(bstr);
+        // uint256 newPay = typesLibrary.sliceInt(results, 16, 20).div(10**18);
+        uint256 payOut = 10 * 10**18; //newPay.sub(oldPay); remove for testing purposes
+        IERC20WT.payTo(payOut, _walker); //pay is reported in two decimals, so 10**16 instead of 10**18
+        // AddresstoBadge[_walker].timeWalked = typesLibrary
+        //     .sliceInt(results, 1, 5)
+        //     .div(10**18);
+        // AddresstoBadge[_walker].distanceWalked = typesLibrary
+        //     .sliceInt(results, 6, 10)
+        //     .div(10**18);
+        // AddresstoBadge[_walker].dogsWalked = typesLibrary
+        //     .sliceInt(results, 11, 15)
+        //     .div(10**18);
+        // AddresstoBadge[_walker].totalPaid = newPay;
+        emit paidTo(msg.sender, payOut, "Walk Pay");
     }
 
     ////view functions

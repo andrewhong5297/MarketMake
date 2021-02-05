@@ -39,7 +39,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         const TypesLibrary = await ethers.getContractFactory(
           "typesLibrary"
         );
-        typesLibrary = await TypesLibrary.connect(shelter).deploy(overrides); //1,000,000 Walktokens, with 18 decimals. 
+        typesLibrary = await TypesLibrary.connect(shelter).deploy(overrides); 
         await typesLibrary.deployed()
         console.log("library at: ", typesLibrary.address)
 
@@ -51,12 +51,12 @@ describe("Pet Project Full Test v1 Kovan", function () {
             }
           }
          );
-         oracleTest = await OracleTest.connect(shelter).deploy(overrides); //1,000,000 Walktokens, with 18 decimals. 
+         oracleTest = await OracleTest.connect(shelter).deploy(overrides); 
          await oracleTest.deployed()
          oracleTestAddress = oracleTest.address
          console.log("Oracle at: ", oracleTest.address)
 
-         //send badge contract 1 link token
+         //send badge contract link token
         const approve = await link.connect(shelter).approve(oracleTest.address, ethers.BigNumber.from((2*10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
         await approve.wait(1)
         
