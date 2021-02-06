@@ -287,11 +287,13 @@ export const WalkTokenDetails = (props) => {
                         </div>
                       </Tab>
                       <Tab eventKey="Marketplace" title="Marketplace" className="tabColor">
-                          <Marketplace 
+                        <div style={{ marginTop: `12px`, overflow: "auto", height: "250px"}}>
+                        <Marketplace 
                           provider={props.provider}
                           walkExchange={props.walkExchange}
                           walkToken={props.walkToken}
                           walkBadge={props.walkBadge}/>
+                        </div>
                       </Tab>
                   </Tabs>                    
               </div>

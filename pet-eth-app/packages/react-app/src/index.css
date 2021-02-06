@@ -48,3 +48,9 @@ code {
 .tabColor {
   background-color: #ffffff;
 }
+
+.scrollBadge {
+  display: flex;
+  overflow-x: scroll;
+  width: 100%;
+}

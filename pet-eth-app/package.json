@@ -32,6 +32,7 @@
     "ethers": "^5.0.27",
     "react-bootstrap": "^1.4.3",
     "react-hook-form": "^6.15.1",
+    "react-horizontal-scrolling-menu": "^0.7.9",
     "realm-web": "^1.2.0"
   }
 }
