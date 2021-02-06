@@ -1,6 +1,6 @@
 # MarketMake Hackathon 2021 Product: FidoByte
 
-## ![alt text](https://github.com/andrewhong5297/MarketMake/FidoFlow.png?raw=true)
+## ![alt text](https://github.com/andrewhong5297/MarketMake/blob/master/FidoFlow.PNG)
 
 ###Visit the frontend: fidobyte.surge.sh
 
