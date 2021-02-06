@@ -1,4 +1,6 @@
-# MarketMake Hackathon 2021 Product: FidoByte
+# FidoByte: The tokenized shelter dog-walking protocol
+
+### A MarketMake Hackathon 2021 Product
 
 ## ![alt text](https://github.com/andrewhong5297/MarketMake/blob/master/FidoFlow.PNG)
 
@@ -36,5 +38,5 @@
 
 - Solidity
 - The Graph API
-- Chainlink
+- Chainlink Oracle and External Adapters
 - AAVE Risk Framework
