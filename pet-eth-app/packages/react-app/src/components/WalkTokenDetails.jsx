@@ -17,6 +17,12 @@ import { RedeemButton } from "./RedeemButton";
 export const WalkTokenDetails = (props) => {
   const [modalShow, setModalShow] = React.useState(false);
 
+  // get live balance. need Diego's async pattern
+  // const balance = await props.walkToken.connect(owner).balanceOf(owner.getAddress());
+  // const numBalance = balance.toString();
+
+  //get theGraph query here for first data
+
   return (
     <div>
       <br></br>
@@ -41,7 +47,7 @@ export const WalkTokenDetails = (props) => {
                   <Row>
                     <Col>
                     <Container style={{display: "flex", justifyContent: "center", alignItems: "center" }} React Center>
-                    <Button style = {{fontSize: 14}}>Shop Marketplace</Button> &nbsp;&nbsp;&nbsp;
+                    <Button style = {{fontSize: 14}}>Claim Tokens</Button> &nbsp;&nbsp;&nbsp;
                       <Button style = {{fontSize: 14}}
                         onClick={() => setModalShow(true)}
                         variant="secondary"
@@ -61,9 +67,15 @@ export const WalkTokenDetails = (props) => {
                 </div>
 
                 <div class="col-md">
-                    <Tabs className="justify-content-center" defaultActiveKey="Home" 
+                    <Tabs className="justify-content-center" defaultActiveKey="Profile" 
                           id="controlled-tab-example">
-                        <Tab eventKey="Home" title="Home" className="tabColor">
+                        <Tab eventKey="Profile" title="Marketplace" className="tabColor">
+                          <div style={{ marginTop: `12px` }}>
+                            <Button>buy things</Button>
+                            <Button>redeem new Badge</Button>
+                          </div>
+                        </Tab>
+                        <Tab eventKey="Home" title="Transactions" className="tabColor">
                           <div style={{ marginTop: `12px` }}>
                               <Table striped bordered hover>
                                   <thead>
@@ -72,72 +84,6 @@ export const WalkTokenDetails = (props) => {
                                       <th>First Name</th>
                                       <th>Last Name</th>
                                       <th>Username</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody >
-                                    <tr>
-                                      <td>1</td>
-                                      <td>Mark</td>
-                                      <td>Otto</td>
-                                      <td>@mdo</td>
-                                    </tr>
-                                    <tr>
-                                      <td>2</td>
-                                      <td>Jacob</td>
-                                      <td>Thornton</td>
-                                      <td>@fat</td>
-                                    </tr>
-                                    <tr>
-                                      <td>3</td>
-                                      <td colSpan="2">Larry the Bird</td>
-                                      <td>@twitter</td>
-                                    </tr>
-                                  </tbody>
-                              </Table>
-                          </div>
-                        </Tab>
-                        <Tab eventKey="profile" title="Profile" className="tabColor">
-                        <div style={{ marginTop: `12px` }}>
-                              <Table striped bordered hover>
-                                  <thead>
-                                    <tr>
-                                      <th>#</th>
-                                      <th>zFirst Name</th>
-                                      <th>zLast Name</th>
-                                      <th>zUsername</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody >
-                                    <tr>
-                                      <td>1</td>
-                                      <td>Mark</td>
-                                      <td>Otto</td>
-                                      <td>@mdo</td>
-                                    </tr>
-                                    <tr>
-                                      <td>2</td>
-                                      <td>Jacob</td>
-                                      <td>Thornton</td>
-                                      <td>@fat</td>
-                                    </tr>
-                                    <tr>
-                                      <td>3</td>
-                                      <td colSpan="2">Larry the Bird</td>
-                                      <td>@twitter</td>
-                                    </tr>
-                                  </tbody>
-                              </Table>
-                          </div>
-                        </Tab>
-                        <Tab eventKey="contact" title="Contact" className="tabColor">
-                        <div style={{ marginTop: `12px` }}>
-                              <Table striped bordered hover>
-                                  <thead>
-                                    <tr>
-                                      <th>#</th>
-                                      <th>xFirst Name</th>
-                                      <th>xLast Name</th>
-                                      <th>xUsername</th>
                                     </tr>
                                   </thead>
                                   <tbody >

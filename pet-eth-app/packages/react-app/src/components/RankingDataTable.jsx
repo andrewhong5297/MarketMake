@@ -13,7 +13,7 @@ import {
   Modal,
 } from "react-bootstrap";
 
-export const DataTable = (props) => {
+export const RankingDataTable = (props) => {
     const [data, setData] = useState();
     const [table , setTable] = useState(
     <div>
@@ -80,7 +80,6 @@ export const DataTable = (props) => {
   return (
     <Card>
     <Card.Body>
-    {table}
     <Button onClick={createMapping}>update data</Button>
     <div class="container">
         <div class="row">
@@ -89,35 +88,7 @@ export const DataTable = (props) => {
                     id="controlled-tab-example">
                 <Tab eventKey="Home" title="Distance Walked">
                     <div style={{ marginTop: `12px` }}>
-                        <Table striped bordered hover>
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Username</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Mark</td>
-                                <td>Otto</td>
-                                <td>@mdo</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Jacob</td>
-                                <td>Thornton</td>
-                                <td>@fat</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td colSpan="2">Larry the Bird</td>
-                                <td>@twitter</td>
-                            </tr>
-                            </tbody>
-                        </Table>
+                    {table}
                     </div>
                 </Tab>
                 <Tab eventKey="profile" title="Profile">

@@ -28,20 +28,47 @@ import { ethers } from "ethers";
 import GET_TRANSFERS from "./graphql/subgraph";
 import * as Realm from "realm-web";
 import { WalkTokenDetails } from "./components/WalkTokenDetails";
-import { DataTable } from "./components/DataTable";
+import { RankingDataTable } from "./components/RankingDataTable";
 
 const fetch = require("node-fetch");
 const { abi: abiWTE } = require("./abis/WalkTokenExchange.json");
 const { abi: abiWT } = require("./abis/WalkToken.json");
 
-//https://api.thegraph.com/subgraphs/name/andrewhong5297/walktokentransfers add graphQL query for this later
+//https://api.thegraph.com/subgraphs/name/andrewhong5297/walktokentransfers get actions by address
+async function getGraphTransfers(address) {
+  const url =
+    "https://api.thegraph.com/subgraphs/name/andrewhong5297/walktokentransfers";
+  const query = JSON.stringify({
+    query: `
+      query {
+          transfers(where: {from: "${address.toLowerCase()}"}) {
+            id
+            from
+            action
+            value
+            createdAt
+          }
+        }`,
+  });
+
+  const otherParam = {
+    body: query,
+    method: "POST",
+  };
+
+  const pet_response = await fetch(url, otherParam).then((data) => {
+    return data.json();
+  }).then(res=>{return res.data.transfers});
+  console.log("theGraph: ", pet_response);
+  return await pet_response;
+}
+
 //https://kovan.etherscan.io/address/0xbe6937c72a622a3d723301036d62d9eb457234b2?fromaddress=0xa55E01a40557fAB9d87F993d8f5344f1b2408072 use this filtering for etherscan linking later
 async function getSpecificWalkerData(name) {
   const app = new Realm.App("petproject-sfwui");
   await app.logIn(Realm.Credentials.emailPassword("test@gmail.com", "test123"));
   const url =
     "https://realm.mongodb.com/api/client/v2.0/app/petproject-sfwui/graphql";
-  const submittedNameFromContract = "Andrew"; //probably only have to pass address to the contract.
   const query = JSON.stringify({
     query: `
       query {
@@ -122,12 +149,6 @@ function WalletButton({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
   );
 }
 
-////to-do list for marketmake
-//function to redeem badge
-//function to redeem real monies
-//function to buy NFT (dog toy)
-//function to show rankings of walkers
-//query to show most recent walks... insert data that multiplies? or just do that post response
 function App() {
   const { loading, error, data } = useQuery(GET_TRANSFERS);
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal();
@@ -135,7 +156,7 @@ function App() {
   React.useEffect(() => {
     if (!loading && !error && data && data.transfers) {
       console.log({ transfers: data.transfers });
-      // loginAndFetchWalks();
+      // getGraphTransfers("0xa55E01a40557fAB9d87F993d8f5344f1b2408072");
     }
   }, [loading, error, data]);
 
@@ -177,9 +198,10 @@ function App() {
           walkExchange={walkExchange}
           walkToken={walkToken}
         />
-        <DataTable 
+        <RankingDataTable 
           onFetch={()=>getSpecificWalkerData()}
           onFetchAll={()=>getAllWalkerData()}
+          onGraph={()=>getGraphTransfers()}
         />
       </Container>
     </div>
