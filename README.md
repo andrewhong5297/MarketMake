@@ -2,7 +2,7 @@
 
 ## ![alt text](https://github.com/andrewhong5297/MarketMake/blob/master/FidoFlow.PNG)
 
-### Visit the frontend: fidobyte.surge.sh
+### Visit the frontend: https://fidobyte.surge.sh/
 
 ### Run it locally, contracts are deployed on Kovan:
 
