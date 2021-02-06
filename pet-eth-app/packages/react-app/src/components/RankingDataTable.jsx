@@ -38,13 +38,13 @@ export const RankingDataTable = (props) => {
     }, [])
 
     const createMapping = () => {
-        const arr = [1,1,2,3,4,5,6]
-        //this is key for getting to totals for each person. Try to get the distance sum first. 
-        console.log(
-            arr.reduce((sum,d)=>{
-            return sum + d.Distance_Walked //d is each element of arr
-            }, 0)
-        ) // sum = 0
+        // const arr = [1,1,2,3,4,5,6]
+        // //this is key for getting to totals for each person. Try to get the distance sum first. 
+        // console.log(
+        //     arr.reduce((sum,d)=>{
+        //     return sum + d.Distance_Walked //d is each element of arr
+        //     }, 0)
+        // ) // sum = 0
 
         //https://stackoverflow.com/questions/40668896/format-json-data-in-javascript-like-a-pivot-table
         const arr = [{"category":"Amazon","month":"Feb","total":9.75},
