@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import ScrollMenu from 'react-horizontal-scrolling-menu';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../index.css";
+import badges from "./badges.png";
 import {
   Row,
   Col,
@@ -20,8 +22,9 @@ export const Marketplace = (props) => {
     //need create and upgrade badge buttons (in marketplace)
     //need NFT buy button and toy representation.
     return (
-            <div style={{ marginTop: `12px`}}>
+            <div style={{ marginTop: `12px`}}> 
               <Container style={{display: "flex", justifyContent: "center", alignItems: "center" }} React Center>
+              <img src={badges} style = {{ marginTop: `12px`, overflow: "auto"}} className= "scrollBadge"/> &nbsp;&nbsp;&nbsp;
               <Button onClick={badgeStuff} style = {{fontSize: 14}} disabled={isBadgeLoading ? true : false}>
                           { isBadgeLoading
                           ? <Spinner 
