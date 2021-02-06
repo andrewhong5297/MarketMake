@@ -47,7 +47,6 @@ export const RankingDataTable = (props) => {
             setTimeData(createMapping("Time_Walked"))
             setDogsData(createMapping("Dog_Name"))
         }
-        console.log(data)
     },[isLoading])
 
     const createMapping = (field) => {
