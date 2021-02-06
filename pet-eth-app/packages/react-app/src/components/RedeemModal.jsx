@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { ethers } from "ethers";
-import { Button, Alert, Modal } from "react-bootstrap"
+import { Spinner, Button, Alert, Modal } from "react-bootstrap"
 
 export const RedeemModal = (props) => {
 
     const { register, handleSubmit } = useForm();
+    const [isRedeeming, setRedeeming] = useState(false)
     const [error, setError] = useState()
 
     const buyOne = async (formData) => {
@@ -21,8 +22,9 @@ export const RedeemModal = (props) => {
             //10**20 instead of 10**18 because of conversion rate
             const approve = await props.walkToken.connect(owner).approve(props.walkExchange.address,ethers.BigNumber.from((parseInt(formData.value)*(10**20)).toLocaleString('fullwide', {useGrouping:false})),overrides);
             const redeemed = await props.walkExchange.connect(owner).redeemWTforDai(ethers.BigNumber.from((parseInt(formData.value)*(10**18)).toLocaleString('fullwide', {useGrouping:false})), overrides);
+            setRedeeming(true)
             await redeemed.wait(3)
-
+            setRedeeming(false)
             setError(
                 <Alert variant="success" onClose={() => setError(null)} dismissible>
                     <Alert.Heading>Transaction went through, Dai recieved!</Alert.Heading>
@@ -31,6 +33,7 @@ export const RedeemModal = (props) => {
          }
          catch(e) {
             console.error(e)
+            setRedeeming(false)
             setError(
                     <Alert variant="danger" onClose={() => setError(null)} dismissible>
                         <Alert.Heading>Transaction Error</Alert.Heading>
@@ -61,7 +64,16 @@ export const RedeemModal = (props) => {
                                     How much Dai do you want to redeem?     
                                     <input type="text" name="value" ref={register} />
                                     </label>
-                                    <input type="submit" value="Submit" />
+                                    <input type="submit" value="Submit" disabled={isRedeeming ? true : false}/>&nbsp;&nbsp;
+                                    {isRedeeming
+                                    ? <Spinner 
+                                      as="span"
+                                      animation="border"
+                                      size="sm"
+                                      role="status"
+                                      aria-hidden="true"/>
+                                    : null
+                                    }
                                     {error}
                                 </form>
                             </Modal.Body>
