@@ -5,7 +5,8 @@ import {
   Row,
   Col,
   Button,
-  Spinner
+  Spinner,
+  Container
 } from "react-bootstrap";
 import { ethers } from "ethers";
 
@@ -19,8 +20,9 @@ export const Marketplace = (props) => {
     //need create and upgrade badge buttons (in marketplace)
     //need NFT buy button and toy representation.
     return (
-            <div style={{ marginTop: `12px` }}>
-                <Button onClick={badgeStuff} style = {{fontSize: 14}} disabled={isBadgeLoading ? true : false}>
+            <div style={{ marginTop: `12px`}}>
+              <Container style={{display: "flex", justifyContent: "center", alignItems: "center" }} React Center>
+              <Button onClick={badgeStuff} style = {{fontSize: 14}} disabled={isBadgeLoading ? true : false}>
                           { isBadgeLoading
                           ? <Spinner 
                           as="span"
@@ -30,8 +32,8 @@ export const Marketplace = (props) => {
                           aria-hidden="true" />
                           : null
                           } 
-                          &nbsp;&nbsp;Create or Update Badge&nbsp;&nbsp;</Button>
-                <Button onClick={badgeStuff} style = {{fontSize: 14}} disabled={isToyLoading ? true : false}>
+                          &nbsp;&nbsp;Create or Update Badge&nbsp;&nbsp;</Button> &nbsp;&nbsp;&nbsp;
+                <Button onClick={badgeStuff} style = {{fontSize: 14}} variant = "secondary" disabled={isToyLoading ? true : false}>
                           { isToyLoading
                           ? <Spinner 
                           as="span"
@@ -42,5 +44,6 @@ export const Marketplace = (props) => {
                           : null
                           } 
                           &nbsp;&nbsp;Buy Dog Toy&nbsp;&nbsp;</Button>
+              </Container>
             </div>
     )}

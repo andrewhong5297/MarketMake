@@ -7,6 +7,7 @@ import {
   Card,
   Table,
   Spinner,
+  Button
 } from "react-bootstrap";
 
 //should we keep a most recent walks tab? then a seperate leaderboard tab?
@@ -82,7 +83,7 @@ export const RankingDataTable = (props) => {
             <div class="col-md">
                 <Tabs className="justify-content-center" defaultActiveKey="distances" 
                         id="controlled-tab-example">
-                    <Tab eventKey="distances" title="Distance Walked">
+                    <Tab eventKey="distances" title="Distance Walked" className="tabColor">
                         <div style={{ marginTop: `12px`, overflow: "auto", height: "600px"}}>
                         <Table striped bordered hover>
                             <thead>
@@ -111,11 +112,14 @@ export const RankingDataTable = (props) => {
                         </Table>
                         </div>
                     </Tab>
-                    <Tab eventKey="times" title="Time Walked">
+                    <Tab eventKey="times" title="Time Walked" className="tabColor">
+                    <div style={{ marginTop: `12px`, overflow: "auto", height: "600px"}} />
                     </Tab>
-                    <Tab eventKey="dogs" title="Dogs Walked">
+                    <Tab eventKey="dogs" title="Dogs Walked" className="tabColor">
+                    <div style={{ marginTop: `12px`, overflow: "auto", height: "600px"}} />
                     </Tab>
-                    <Tab eventKey="contact" title="Badges">
+                    <Tab eventKey="contact" title="Badges" className="tabColor">
+                    <div style={{ marginTop: `12px`, overflow: "auto", height: "600px"}} />
                         {/* should query all badges and show top levels */}
                     </Tab>
                 </Tabs>                    
