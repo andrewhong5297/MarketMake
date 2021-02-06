@@ -192,7 +192,7 @@ export const WalkTokenDetails = (props) => {
                         isBalanceLoading
                         ? <Spinner animation="border" variant="dark" />
                         : 
-                        <div>{balance} WT</div>
+                        <div>{balance} <span style={{fontSize: 30}}>WT</span></div>
                       }
                   </Card.Text>
                   <Card.Text className="usdConversion">
