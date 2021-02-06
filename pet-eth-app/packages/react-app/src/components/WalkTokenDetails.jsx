@@ -67,7 +67,7 @@ export const WalkTokenDetails = (props) => {
         // await props.walkBadge.connect(burner).getBadge("0xa55E01a40557fAB9d87F993d8f5344f1b2408072")
         // console.log(balance.toString())
         // setBalance(balance.toString());
-      } catch (e) {
+      } catch (e) {     
         setError(e)
         }
         // hide spinner and show error or data
