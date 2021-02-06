@@ -49,34 +49,32 @@ export const WalkTokenDetails = (props) => {
     const [isLoading, setLoading] = useState(true);
     const [isGraphLoading, setGraphLoading] = useState(true);
     const [balance, setBalance] = useState();
+    const [usdAmount, setUSD] = useState("0");
     const [data, setData] = useState();
     const [modalShow, setModalShow] = useState(false);
 
-    const fetchData = async () => {
-      // start showing spinner
+    const reduceTwoDecimalsBI = (BigIntString) => {
+      let returnV = BigIntString.slice(0,-16)
+      const numberLen = returnV.length
+      returnV = returnV.slice(0,numberLen-2) + "." + returnV.slice(numberLen-2,numberLen)
+      return returnV
+    }
+
+    const fetchBalance = async () => {
       setLoading(true);
       try {          
-        
-        // let statusCheck = props.provider
-        // while(statusCheck==undefined){
-        //   console.log("loading provider...")
-        //   statusCheck = props.provider
-        // }
-        // const owner = props.provider.getSigner();
-        // const balance = await props.walkToken.connect(owner).balanceOf("0xa55E01a40557fAB9d87F993d8f5344f1b2408072");
+        const owner = props.provider.getSigner();
+        const balance = await props.walkToken.connect(owner).balanceOf("0xa55E01a40557fAB9d87F993d8f5344f1b2408072");
         // await props.walkBadge.connect(burner).getBadge("0xa55E01a40557fAB9d87F993d8f5344f1b2408072")
-        // console.log(balance.toString())
-        // setBalance(balance.toString());
+        setBalance(reduceTwoDecimalsBI(balance.toString()));
       } catch (e) {
         setError(e)
         }
-        // hide spinner and show error or data
         setLoading(false)
         setError(null)
     }
 
     const fetchGraphData = async () => {
-      // start showing spinner
       setGraphLoading(true);
       try {          
         const response = await getGraphTransfers("0xa55E01a40557fAB9d87F993d8f5344f1b2408072")
@@ -85,20 +83,35 @@ export const WalkTokenDetails = (props) => {
       } catch (e) {
         setError(e)
         }
-        // hide spinner and show error or data
         setGraphLoading(false)
         setError(null)
     }
 
+    //this affects sign of transaction shown
+    const checkActionType = () => {if(data[0]["action"]=="Walk Pay") {
+      return "+" + reduceTwoDecimalsBI(data[0].value)
+    }
+    else {
+      return "-" + reduceTwoDecimalsBI(data[0].value)
+    }}
+
+    //need claim tokens button (request oracle call)
+    //need create and upgrade badge buttons (in marketplace)
+
+    //update all data when provider loads in
     useEffect(() => {
-    // fetchData()
+    fetchBalance()
     fetchGraphData()
-    }, [])
+    }, [props.provider])
+
+    //update USD balance
+    useEffect(() => {
+      setUSD((parseInt(balance)/100).toString())
+    }, [balance])
 
   return (
     <div>
       <br></br>
-      <Button onClick={fetchData} >transfer WT</Button>
         <Card>
           <Card.Body className="customCard">
             <div class="container">
@@ -109,18 +122,23 @@ export const WalkTokenDetails = (props) => {
                       <Card.Title className="customCardTitle">Total Walk Tokens (WT)</Card.Title>
                     </Col>
                   </Row>
-                  <Card.Text className="tokenFluctuation">+ 10 WT
+                  <Card.Text className="tokenFluctuation">
+                                {
+                                  isGraphLoading
+                                  ? <Spinner animation="border" variant="dark" />
+                                  : checkActionType()
+                                }
                   </Card.Text>
                   <Card.Text className="walkTokenCount">
                       {
                       isLoading
                       ? <Spinner animation="border" variant="dark" />
                       : 
-                      <div>{balance}</div>
+                      <div>{balance} WT</div>
                       }
                   </Card.Text>
                   <Card.Text className="usdConversion">
-                  = XYZ USD
+                  ${usdAmount}
                   </Card.Text>
                   <Row>
                     <Col>
