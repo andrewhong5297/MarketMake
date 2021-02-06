@@ -57,7 +57,7 @@ export const RankingDataTable = (props) => {
                 <Tabs className="justify-content-center" defaultActiveKey="distances" 
                         id="controlled-tab-example">
                     <Tab eventKey="distances" title="Distance Walked">
-                        <div style={{ marginTop: `12px` }}>
+                        <div style={{ marginTop: `12px`, overflow: "auto", height: "600px"}}>
                         <Table striped bordered hover>
                             <thead>
                             <tr>

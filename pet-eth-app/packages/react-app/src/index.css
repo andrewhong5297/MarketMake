@@ -21,8 +21,14 @@ code {
   font-size: 18px;
 }
 
-.tokenFluctuation {
+.tokenFluctuationUp {
   color: #5abe6a;
+  font-size: 18px;
+  text-align: center;
+}
+
+.tokenFluctuationDown {
+  color: #8e1600;
   font-size: 18px;
   text-align: center;
 }

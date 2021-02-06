@@ -13,6 +13,7 @@ import {
   Spinner
 } from "react-bootstrap";
 import { RedeemButton } from "./RedeemButton";
+import { Marketplace } from "./Marketplace";
 import { ethers } from "ethers";
 const fetch = require("node-fetch");
 
@@ -88,11 +89,11 @@ export const WalkTokenDetails = (props) => {
     }
 
     //this affects sign of transaction shown. probably a cleaner way of doing this.
-    const checkActionType = () => {if(data[0]["action"]=="Walk Pay") {
-      return "+" + reduceTwoDecimalsBI(data[0].value)
+    const checkActionType = () => {if(data[data.length-1]["action"]=="Walk Pay") {
+      return (<div className="tokenFluctuationUp">{"+" + reduceTwoDecimalsBI(data[data.length-1].value)}</div>)
     }
     else {
-      return "-" + reduceTwoDecimalsBI(data[0].value)
+      return (<div className="tokenFluctuationDown">{"-" + reduceTwoDecimalsBI(data[data.length-1].value)}</div>)
     }}
 
     const getDateFromUnix = (unix_timestamp) => {
@@ -129,7 +130,7 @@ export const WalkTokenDetails = (props) => {
                       <Card.Title className="customCardTitle">Total Walk Tokens (WT)</Card.Title>
                     </Col>
                   </Row>
-                  <Card.Text className="tokenFluctuation">
+                  <Card.Text>
                       {
                         isGraphLoading
                         ? <Spinner animation="border" variant="dark" />
@@ -155,7 +156,7 @@ export const WalkTokenDetails = (props) => {
                         onClick={() => setModalShow(true)}
                         variant="secondary"
                       >
-                        Redeem USD
+                        Redeem Dai (USD)
                       </Button >
                       <RedeemButton
                         show={modalShow}
@@ -173,7 +174,7 @@ export const WalkTokenDetails = (props) => {
                     <Tabs className="justify-content-center" defaultActiveKey="Transactions" 
                           id="controlled-tab-example">
                         <Tab eventKey="Transactions" title="Transactions" className="tabColor">
-                          <div style={{ marginTop: `12px` }}>
+                          <div style={{ marginTop: `12px`, overflow: "auto", height: "250px"}}>
                               <Table striped bordered hover>
                                   <thead>
                                     <tr>
@@ -201,12 +202,11 @@ export const WalkTokenDetails = (props) => {
                               </Table>
                           </div>
                         </Tab>
-                        {/* //this should be its own component!!! */}
                         <Tab eventKey="Marketplace" title="Marketplace" className="tabColor">
-                          <div style={{ marginTop: `12px` }}>
-                            <Button>buy things</Button>
-                            <Button>redeem new Badge</Button>
-                          </div>
+                           <Marketplace 
+                            provider={props.provider}
+                            walkExchange={props.walkExchange}
+                            walkToken={props.walkToken}/>
                         </Tab>
                     </Tabs>                    
                 </div>
