@@ -9,6 +9,7 @@ import {
   Spinner,
 } from "react-bootstrap";
 
+//should we keep a most recent walks tab? then a seperate leaderboard tab?
 export const RankingDataTable = (props) => {
     const [error, setError] = useState(null)
     const [isLoading, setLoading] = useState(true)
