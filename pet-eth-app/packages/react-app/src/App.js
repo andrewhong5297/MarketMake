@@ -1,32 +1,19 @@
 import React from "react";
-import { Contract } from "@ethersproject/contracts";
-import { getDefaultProvider } from "@ethersproject/providers";
-import { useQuery } from "@apollo/react-hooks";
 
 import {
   Navbar,
   Nav,
-  NavDropdown,
-  Table,
-  Tab,
-  Tabs,
   Button,
   Container,
-  Row,
-  Col,
-  Card,
-  Dropdown,
-  Alert,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import { Body, Header, Image, Link } from "./components";
-import logo from "./ethereumLogo.png";
 import useWeb3Modal from "./hooks/useWeb3Modal";
 
 import { ethers } from "ethers";
-import GET_TRANSFERS from "./graphql/subgraph";
+import {JsonRpcProvider} from "@ethersproject/providers";
 import * as Realm from "realm-web";
+
 import { WalkTokenDetails } from "./components/WalkTokenDetails";
 import { RankingDataTable } from "./components/RankingDataTable";
 
@@ -34,36 +21,6 @@ const fetch = require("node-fetch");
 const { abi: abiWTE } = require("./abis/WalkTokenExchange.json");
 const { abi: abiWT } = require("./abis/WalkToken.json");
 
-//https://api.thegraph.com/subgraphs/name/andrewhong5297/walktokentransfers get actions by address
-async function getGraphTransfers(address) {
-  const url =
-    "https://api.thegraph.com/subgraphs/name/andrewhong5297/walktokentransfers";
-  const query = JSON.stringify({
-    query: `
-      query {
-          transfers(where: {from: "${address.toLowerCase()}"}) {
-            id
-            from
-            action
-            value
-            createdAt
-          }
-        }`,
-  });
-
-  const otherParam = {
-    body: query,
-    method: "POST",
-  };
-
-  const pet_response = await fetch(url, otherParam).then((data) => {
-    return data.json();
-  }).then(res=>{return res.data.transfers});
-  console.log("theGraph: ", pet_response);
-  return await pet_response;
-}
-
-//https://kovan.etherscan.io/address/0xbe6937c72a622a3d723301036d62d9eb457234b2?fromaddress=0xa55E01a40557fAB9d87F993d8f5344f1b2408072 use this filtering for etherscan linking later
 async function getSpecificWalkerData(name) {
   const app = new Realm.App("petproject-sfwui");
   await app.logIn(Realm.Credentials.emailPassword("test@gmail.com", "test123"));
@@ -150,39 +107,36 @@ function WalletButton({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
 }
 
 function App() {
-  const { loading, error, data } = useQuery(GET_TRANSFERS);
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal();
-
-  React.useEffect(() => {
-    if (!loading && !error && data && data.transfers) {
-      console.log({ transfers: data.transfers });
-      // getGraphTransfers("0xa55E01a40557fAB9d87F993d8f5344f1b2408072");
-    }
-  }, [loading, error, data]);
+  const mainnetProvider = new ethers.providers.InfuraProvider("kovan", {
+    projectId: "d635ea6eddda4720824cc8b24380e4a9",
+    projectSecret: "b4ea2b15f0614105a64f0e8ba1f2bffa"
+  });
 
   //contracts
   let walkExchange = new ethers.Contract(
-    "0x226AD4B41EC8cfe8157d095DCd382614bFBE2037",
+    "0x90b709e2bdf140c5D4bFD7A1f046572ce9f2845f",
     abiWTE,
     provider
   );
 
   let walkToken = new ethers.Contract(
-    "0x13e5Cc4beAF377BcC4318A6AB3698CE846f4FA85",
+    "0x649c200De35dc9990dB3ac49aC8Ed2237053aA35",
     abiWT,
     provider
   );
 
   return (
-    <div>
+    <div style={{ 
+      backgroundImage: `url("https://i.pinimg.com/564x/77/ad/6c/77ad6c7c8b25b1929ee48420665db07b.jpg")`}}>
       <Navbar bg="light" expand="lg">
-        <Navbar.Brand href="#home">Pet NFT</Navbar.Brand>
+        <Navbar.Brand href="#home">FidoByte</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
-            <Nav.Link href="#home">Home</Nav.Link>
+            <Nav.Link href="https://youtube.com">Pitch Video</Nav.Link>
             <Nav.Link href="https://hack.ethglobal.co/marketmake/teams/rechblh1Znn8U0uzU/recpnc2Ir529X7aJI">
-              MarketMake Link
+              MarketMake Profile Link
             </Nav.Link>
           </Nav>
           <WalletButton
@@ -194,6 +148,7 @@ function App() {
       </Navbar>
       <Container>
         <WalkTokenDetails
+          infura={mainnetProvider}
           provider={provider}
           walkExchange={walkExchange}
           walkToken={walkToken}
@@ -201,7 +156,6 @@ function App() {
         <RankingDataTable 
           onFetch={()=>getSpecificWalkerData()}
           onFetchAll={()=>getAllWalkerData()}
-          onGraph={()=>getGraphTransfers()}
         />
       </Container>
     </div>

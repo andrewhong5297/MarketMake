@@ -1,4 +1,4 @@
-import React, { useState, Component } from 'react';
+import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { ethers } from "ethers";
 import { Button, Alert, Modal } from "react-bootstrap"

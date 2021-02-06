@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../index.css";
 import {
@@ -10,16 +10,83 @@ import {
   Tabs,
   Card,
   Table,
-  Modal,
+  Spinner
 } from "react-bootstrap";
 import { RedeemButton } from "./RedeemButton";
+import { ethers } from "ethers";
+const fetch = require("node-fetch");
+
+//https://api.thegraph.com/subgraphs/name/andrewhong5297/walktokentransfers get actions by address
+async function getGraphTransfers(address) {
+  const url =
+    "https://api.thegraph.com/subgraphs/name/andrewhong5297/walktokentransfers";
+  const query = JSON.stringify({
+    query: `
+      query {
+          transfers(where: {from: "${address.toLowerCase()}"}) {
+            id
+            from
+            action
+            value
+            createdAt
+          }
+        }`,
+  });
+
+  const otherParam = {
+    body: query,
+    method: "POST",
+  };
+
+  const pet_response = await fetch(url, otherParam).then((data) => {
+    return data.json();
+  }).then(res=>{return res.data.transfers});
+  return await pet_response;
+}
 
 export const WalkTokenDetails = (props) => {
-  const [modalShow, setModalShow] = React.useState(false);
+    const [error, setError] = useState(null);
+    const [isLoading, setLoading] = useState(true);
+    const [isGraphLoading, setGraphLoading] = useState(true);
+    const [balance, setBalance] = useState();
+    const [data, setData] = useState();
+    const [modalShow, setModalShow] = useState(false);
 
-  // get live balance. need Diego's async pattern
-  // const balance = await props.walkToken.connect(owner).balanceOf(owner.getAddress());
-  // const numBalance = balance.toString();
+    const fetchData = async () => {
+      // start showing spinner
+      setLoading(true);
+      try {          
+        // const owner = props.mainetProvider
+        // const balance = await props.walkToken.connect(owner).balanceOf(owner.getAddress());
+        // console.log(balance.toString())
+        // setBalance(balance.toString());
+      } catch (e) {
+        setError(e)
+        }
+        // hide spinner and show error or data
+        setLoading(false)
+        setError(null)
+    }
+
+    const fetchGraphData = async () => {
+      // start showing spinner
+      setGraphLoading(true);
+      try {          
+        const response = await getGraphTransfers("0xa55E01a40557fAB9d87F993d8f5344f1b2408072")
+        console.log(response)
+        setData(response);
+      } catch (e) {
+        setError(e)
+        }
+        // hide spinner and show error or data
+        setGraphLoading(false)
+        setError(null)
+    }
+
+    useEffect(() => {
+    // fetchData()
+    fetchGraphData()
+    }, [])
 
   //get theGraph query here for first data
 
@@ -39,7 +106,12 @@ export const WalkTokenDetails = (props) => {
                   <Card.Text className="tokenFluctuation">+ 10 WT
                   </Card.Text>
                   <Card.Text className="walkTokenCount">
-                    3415
+                      {
+                      isLoading
+                      ? <Spinner animation="border" variant="dark" />
+                      : 
+                      <div>{balance}</div>
+                      }
                   </Card.Text>
                   <Card.Text className="usdConversion">
                   = XYZ USD
@@ -67,45 +139,32 @@ export const WalkTokenDetails = (props) => {
                 </div>
 
                 <div class="col-md">
-                    <Tabs className="justify-content-center" defaultActiveKey="Profile" 
+                    <Tabs className="justify-content-center" defaultActiveKey="Transactions" 
                           id="controlled-tab-example">
-                        <Tab eventKey="Profile" title="Marketplace" className="tabColor">
-                          <div style={{ marginTop: `12px` }}>
-                            <Button>buy things</Button>
-                            <Button>redeem new Badge</Button>
-                          </div>
-                        </Tab>
-                        <Tab eventKey="Home" title="Transactions" className="tabColor">
+                        <Tab eventKey="Transactions" title="Transactions" className="tabColor">
                           <div style={{ marginTop: `12px` }}>
                               <Table striped bordered hover>
                                   <thead>
                                     <tr>
-                                      <th>#</th>
-                                      <th>First Name</th>
-                                      <th>Last Name</th>
-                                      <th>Username</th>
+                                      <th>Date</th>
+                                      <th>Action</th>
+                                      <th>Amount</th>
+                                      <th>Etherscan</th>
                                     </tr>
                                   </thead>
-                                  <tbody >
-                                    <tr>
-                                      <td>1</td>
-                                      <td>Mark</td>
-                                      <td>Otto</td>
-                                      <td>@mdo</td>
-                                    </tr>
-                                    <tr>
-                                      <td>2</td>
-                                      <td>Jacob</td>
-                                      <td>Thornton</td>
-                                      <td>@fat</td>
-                                    </tr>
-                                    <tr>
-                                      <td>3</td>
-                                      <td colSpan="2">Larry the Bird</td>
-                                      <td>@twitter</td>
-                                    </tr>
-                                  </tbody>
+                                  {
+                                  isGraphLoading
+                                  ? <Spinner animation="border" variant="dark" />
+                                  : 
+                                  <tbody>Insert mapping here, see how it is done in RankingDataTable. Check console for log of data structure, should be array of size 3. format the unix as time, and also divide the amount by 10 to the 18th power (10**18). Then return to yesterday's assignment of summing all distance walked by one person (See rankingtable, you will need to fill in createMapping function)</tbody>
+                                  }
                               </Table>
+                          </div>
+                        </Tab>
+                        <Tab eventKey="Marketplace" title="Marketplace" className="tabColor">
+                          <div style={{ marginTop: `12px` }}>
+                            <Button>buy things</Button>
+                            <Button>redeem new Badge</Button>
                           </div>
                         </Tab>
                     </Tabs>                    
