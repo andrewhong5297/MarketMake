@@ -49,8 +49,7 @@ code {
   background-color: #ffffff;
 }
 
-.scrollBadge {
-  display: flex;
-  overflow-x: scroll;
-  width: 100%;
+.rectImg {
+  justify-content: center;
+  width: auto;
 }

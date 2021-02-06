@@ -46,25 +46,6 @@ async function getGraphTransfers(address) {
   return await pet_response;
 }
 
-const reduceTwoDecimalsBI = (BigIntString) => {
-      if(BigIntString.length===1)
-      {
-        return "0"
-      }
-      else
-      {
-      const beforeDecimal = BigIntString.slice(0,-16)
-      const returnValue = beforeDecimal.slice(0,beforeDecimal.length-2) + "." + beforeDecimal.slice(beforeDecimal.length-2,beforeDecimal.length)
-      return returnValue
-      }
-} 
-
-const getDateFromUnix = (unix_timestamp) => {
-      const date = new Date(unix_timestamp * 1000);
-      const formattedTime = (date + " ").slice(0,-33) + " EST" 
-      return formattedTime
-}
-
 export const WalkTokenDetails = (props) => {
     const [errorBadge, setBadgeError] = useState(null);
     const [isBalanceLoading, setBalanceLoading] = useState(true);
@@ -76,6 +57,26 @@ export const WalkTokenDetails = (props) => {
     const [usdAmount, setUSD] = useState("0");
     const [data, setData] = useState([]);
     const [redeemModalShow, setRedeemModalShow] = useState(false);
+
+    const reduceTwoDecimalsBI = (BigIntString) => {
+      if(BigIntString.length===1)
+      {
+        return "0"
+      }
+      else
+      {
+      let returnV = BigIntString.slice(0,-16)
+      const numberLen = returnV.length
+      returnV = returnV.slice(0,numberLen-2) + "." + returnV.slice(numberLen-2,numberLen)
+      return returnV
+      }
+    }
+    
+    const getDateFromUnix = (unix_timestamp) => {
+      const date = new Date(unix_timestamp * 1000);
+      const formattedTime = (date + " ").slice(0,-33) + " EST" 
+      return formattedTime
+    }
 
     const fetchBalance = async () => {
       setBalanceLoading(true);
@@ -90,10 +91,9 @@ export const WalkTokenDetails = (props) => {
 
     const fetchGraphData = async () => {
       setGraphLoading(true);
-      try {        
-        const owner = props.provider.getSigner();
-        const address = await owner.getAddress();
-        const response = await getGraphTransfers(address)
+      try {          
+        const response = await getGraphTransfers("0xa55E01a40557fAB9d87F993d8f5344f1b2408072")
+        console.log(response)
         setData(response);
       } catch (e) {
         }
@@ -118,12 +118,12 @@ export const WalkTokenDetails = (props) => {
 
     //update all data and table when provider loads in
     useEffect(() => {
+    fetchBalance()
+    fetchGraphData()
     if(props.provider===undefined){
       setMapping(null)
     }
     else{
-      fetchBalance()
-      fetchGraphData()
       setMapping(data.map((row, index) => (
       <tr id={index}>
         <td id={index}>{getDateFromUnix(row["createdAt"])}</td>
