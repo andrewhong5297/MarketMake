@@ -15,10 +15,10 @@
     ]
   },
   "dependencies": {
-    "@project/contracts": "^1.0.0",
     "@apollo/react-hooks": "^3.1.5",
     "@ethersproject/contracts": "^5.0.5",
     "@ethersproject/providers": "^5.0.12",
+    "@project/contracts": "^1.0.0",
     "@testing-library/dom": "^6.16.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
@@ -30,6 +30,7 @@
     "eslint-plugin-flowtype": "^4.6.0",
     "graphql": "^14.7.0",
     "ipfs-http-client": "^45.0.0",
+    "json-to-pivot-json": "^1.0.1",
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "react-scripts": "3.4.3",

@@ -65,10 +65,9 @@ export const WalkTokenDetails = (props) => {
       }
       else
       {
-      let returnV = BigIntString.slice(0,-16)
-      const numberLen = returnV.length
-      returnV = returnV.slice(0,numberLen-2) + "." + returnV.slice(numberLen-2,numberLen)
-      return returnV
+      const beforeDecimal = BigIntString.slice(0,-16)
+      const returnValue = beforeDecimal.slice(0,beforeDecimal.length-2) + "." + beforeDecimal.slice(beforeDecimal.length-2,beforeDecimal.length)
+      return returnValue
       }
     }
     
@@ -93,7 +92,6 @@ export const WalkTokenDetails = (props) => {
       setGraphLoading(true);
       try {          
         const response = await getGraphTransfers("0xa55E01a40557fAB9d87F993d8f5344f1b2408072")
-        console.log(response)
         setData(response);
       } catch (e) {
         }
