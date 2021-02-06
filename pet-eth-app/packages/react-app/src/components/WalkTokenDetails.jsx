@@ -66,14 +66,8 @@ export const WalkTokenDetails = (props) => {
         const owner = props.provider.getSigner();
         const balance = await props.walkToken.connect(owner).balanceOf("0xa55E01a40557fAB9d87F993d8f5344f1b2408072");
         // await props.walkBadge.connect(burner).getBadge("0xa55E01a40557fAB9d87F993d8f5344f1b2408072")
-<<<<<<< HEAD
         setBalance(reduceTwoDecimalsBI(balance.toString()));
       } catch (e) {
-=======
-        // console.log(balance.toString())
-        // setBalance(balance.toString());
-      } catch (e) {     
->>>>>>> db5bacef2730ab71b731868cdf0e8eb457f4c2b0
         setError(e)
         }
         setLoading(false)
@@ -101,6 +95,20 @@ export const WalkTokenDetails = (props) => {
       return "-" + reduceTwoDecimalsBI(data[0].value)
     }}
 
+    const getDateFromUnix = (unix_timestamp) => {
+      // Create a new JavaScript Date object based on the timestamp
+      // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+      const date = new Date(unix_timestamp * 1000);
+      // Hours part from the timestamp
+      const hours = date.getHours();
+      // Minutes part from the timestamp
+      const minutes = "0" + date.getMinutes();
+      // Seconds part from the timestamp
+      const seconds = "0" + date.getSeconds();
+      // Will display time in 10:30:23 format
+      const formattedTime = (date + " ").slice(0,-33) + " EST" 
+      return formattedTime
+    }
     //need claim tokens button (request oracle call)
     //need create and upgrade badge buttons (in marketplace)
 
@@ -178,7 +186,7 @@ export const WalkTokenDetails = (props) => {
                                     <tr>
                                       <th>Date</th>
                                       <th>Action</th>
-                                      <th>Amount</th>
+                                      <th>Amount (WT)</th>
                                       <th>Etherscan</th>
                                     </tr>
                                   </thead>
@@ -189,10 +197,10 @@ export const WalkTokenDetails = (props) => {
                                   <tbody>
                                     {data.map((row, index) => (
                                     <tr id={index}>
-                                      <td id={index}>{row["createdAt"]}</td>
+                                      <td id={index}>{getDateFromUnix(row["createdAt"])}</td>
                                       <td id={index}>{row["action"]}</td>
-                                      <td id={index}>{row["value"]}</td>
-                                      <td id={index}>{row["id"]}</td>
+                                      <td id={index}>{reduceTwoDecimalsBI(row["value"])}</td>
+                                      <td id={index}><a href={"https://kovan.etherscan.io/address/0x649c200de35dc9990db3ac49ac8ed2237053aa35?fromaddress=" + row["from"]}>{row["id"]}</a></td>
                                     </tr>
                                 ))}
                                 </tbody>
