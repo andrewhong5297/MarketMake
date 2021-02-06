@@ -11,7 +11,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import useWeb3Modal from "./hooks/useWeb3Modal";
 
 import { ethers } from "ethers";
-import {JsonRpcProvider} from "@ethersproject/providers";
 import * as Realm from "realm-web";
 
 import { WalkTokenDetails } from "./components/WalkTokenDetails";
@@ -20,6 +19,7 @@ import { RankingDataTable } from "./components/RankingDataTable";
 const fetch = require("node-fetch");
 const { abi: abiWTE } = require("./abis/WalkTokenExchange.json");
 const { abi: abiWT } = require("./abis/WalkToken.json");
+const { abi: abiWB } = require("./abis/WalkBadgeOracle.json");
 
 async function getSpecificWalkerData(name) {
   const app = new Realm.App("petproject-sfwui");
@@ -117,13 +117,19 @@ function App() {
   let walkExchange = new ethers.Contract(
     "0x90b709e2bdf140c5D4bFD7A1f046572ce9f2845f",
     abiWTE,
-    provider
+    mainnetProvider
   );
 
   let walkToken = new ethers.Contract(
     "0x649c200De35dc9990dB3ac49aC8Ed2237053aA35",
     abiWT,
-    provider
+    mainnetProvider
+  );
+
+  let walkBadge = new ethers.Contract(
+    "0x1b5B99dEff7D8dc9e57D51F3fCF2CAa127B60d2D",
+    abiWB,
+    mainnetProvider
   );
 
   return (
@@ -152,7 +158,9 @@ function App() {
           provider={provider}
           walkExchange={walkExchange}
           walkToken={walkToken}
+          walkBadge={walkBadge}
         />
+        <br></br>
         <RankingDataTable 
           onFetch={()=>getSpecificWalkerData()}
           onFetchAll={()=>getAllWalkerData()}

@@ -56,8 +56,15 @@ export const WalkTokenDetails = (props) => {
       // start showing spinner
       setLoading(true);
       try {          
-        // const owner = props.mainetProvider
-        // const balance = await props.walkToken.connect(owner).balanceOf(owner.getAddress());
+        
+        // let statusCheck = props.provider
+        // while(statusCheck==undefined){
+        //   console.log("loading provider...")
+        //   statusCheck = props.provider
+        // }
+        // const owner = props.provider.getSigner();
+        // const balance = await props.walkToken.connect(owner).balanceOf("0xa55E01a40557fAB9d87F993d8f5344f1b2408072");
+        // await props.walkBadge.connect(burner).getBadge("0xa55E01a40557fAB9d87F993d8f5344f1b2408072")
         // console.log(balance.toString())
         // setBalance(balance.toString());
       } catch (e) {
@@ -88,11 +95,10 @@ export const WalkTokenDetails = (props) => {
     fetchGraphData()
     }, [])
 
-  //get theGraph query here for first data
-
   return (
     <div>
       <br></br>
+      <Button onClick={fetchData} >transfer WT</Button>
         <Card>
           <Card.Body className="customCard">
             <div class="container">
@@ -173,9 +179,6 @@ export const WalkTokenDetails = (props) => {
             </div>
           </Card.Body>
         </Card>
-
-        <br></br>
-
     </div>
   );
 };
