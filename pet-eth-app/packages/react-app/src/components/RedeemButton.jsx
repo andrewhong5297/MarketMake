@@ -15,8 +15,9 @@ export const RedeemButton = (props) => {
           
         const owner = props.provider.getSigner();
         try {
+            // const address = await owner.getAddress();
+            // console.log(address)
 
-            // console.log((parseInt(formData.value)*(10**20)).toLocaleString('fullwide', {useGrouping:false}))
             //10**20 instead of 10**18 because of conversion rate
             const approve = await props.walkToken.connect(owner).approve(props.walkExchange.address,ethers.BigNumber.from((parseInt(formData.value)*(10**20)).toLocaleString('fullwide', {useGrouping:false})),overrides);
             // await approve.wait(3)
@@ -37,7 +38,7 @@ export const RedeemButton = (props) => {
                     <Alert variant="danger" onClose={() => setError(null)} dismissible>
                         <Alert.Heading>Transaction Error</Alert.Heading>
                         <p>
-                        Looks like that didn't go through - make sure you have already selected a project and have enough funds in your wallet.
+                        Looks like that didn't go through - make sure you have enough Walk Tokens in your wallet.
                         </p>
                     </Alert>
                 ) 

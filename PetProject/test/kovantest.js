@@ -15,7 +15,6 @@ function mnemonic() {
 function mnemonic2() {
     return fs.readFileSync("./test/mnemonic2.txt").toString().trim();
   }
-  
 
 //make sure you've switched defaultnetwork to Kovan and put a mnemonic.txt file in the test folder
 describe("Pet Project Full Test v1 Kovan", function () {
