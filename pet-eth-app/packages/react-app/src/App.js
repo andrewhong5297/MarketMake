@@ -4,7 +4,7 @@ import {
   Navbar,
   Nav,
   Button,
-  Container,
+  Container
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 

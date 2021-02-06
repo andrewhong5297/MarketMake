@@ -100,18 +100,31 @@ export const WalkTokenDetails = (props) => {
         setGraphLoading(false)
     }
 
-    const checkActionType = () => {if(data[data.length-1]["action"]=="Walk Pay") {
-      return (<div className="tokenFluctuationUp">{"+" + reduceTwoDecimalsBI(data[data.length-1].value)}</div>)
+    const checkActionType = () => {
+      if(props.provider==undefined)
+      {
+        return (<div className="tokenFluctuationUp">0</div>)
+      }
+      else
+      {
+        if(data[data.length-1]["action"]=="Walk Pay") {
+        return (<div className="tokenFluctuationUp">{"+" + reduceTwoDecimalsBI(data[data.length-1].value)}</div>)
+        }
+        else {
+          return (<div className="tokenFluctuationDown">{"-" + reduceTwoDecimalsBI(data[data.length-1].value)}</div>)
+        }
+      }
     }
-    else {
-      return (<div className="tokenFluctuationDown">{"-" + reduceTwoDecimalsBI(data[data.length-1].value)}</div>)
-    }}
 
     //update all data and table when provider loads in
     useEffect(() => {
     fetchBalance()
     fetchGraphData()
-    setMapping(data.map((row, index) => (
+    if(props.provider==undefined){
+      setMapping(null)
+    }
+    else{
+      setMapping(data.map((row, index) => (
       <tr id={index}>
         <td id={index}>{getDateFromUnix(row["createdAt"])}</td>
         <td id={index}>{row["action"]}</td>
@@ -119,6 +132,7 @@ export const WalkTokenDetails = (props) => {
         <td id={index}><a href={"https://kovan.etherscan.io/address/"+props.walkBadge.address+"?fromaddress=" + row["from"]}>{row["id"]}</a></td>
       </tr>
       )))
+    }
     }, [props.provider])
 
     //update USD balance
