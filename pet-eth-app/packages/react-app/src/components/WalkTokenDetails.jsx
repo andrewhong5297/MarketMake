@@ -165,10 +165,10 @@ export const WalkTokenDetails = (props) => {
                                   <tbody>
                                     {data.map((row, index) => (
                                     <tr id={index}>
-                                      <td id={index}>{row["Date"]}</td>
-                                      <td id={index}>{row["Action"]}</td>
-                                      <td id={index}>{row["Amount"]}</td>
-                                      <td id={index}>{row["Etherscan"]}</td>
+                                      <td id={index}>{row["createdAt"]}</td>
+                                      <td id={index}>{row["action"]}</td>
+                                      <td id={index}>{row["value"]}</td>
+                                      <td id={index}>{row["id"]}</td>
                                     </tr>
                                 ))}
                                 </tbody>
