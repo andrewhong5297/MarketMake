@@ -42,13 +42,39 @@ export const RankingDataTable = (props) => {
         //this is key for getting to totals for each person. Try to get the distance sum first. 
         console.log(
             arr.reduce((sum,d)=>{
-            return sum + d //d is each element of arr
+            return sum + d.Distance_Walked //d is each element of arr
             }, 0)
         ) // sum = 0
+
+        //https://stackoverflow.com/questions/40668896/format-json-data-in-javascript-like-a-pivot-table
+        const arr = [{"category":"Amazon","month":"Feb","total":9.75},
+        {"category":"Amazon","month":"Mar","total":169.44},
+        {"category":"Amazon","month":"Apr","total":10.69},
+        {"category":"Amazon","month":"May","total":867.0600000000001},
+        {"category":"Amazon","month":"Jun","total":394.43999999999994},
+        {"category":"Amazon","month":"Jul","total":787.2400000000001},
+        {"category":"Amazon","month":"Aug","total":1112.4400000000003},
+        {"category":"Amazon","month":"Sep","total":232.86999999999998},
+        {"category":"Amazon","month":"Oct","total":222.26999999999998},
+        {"category":"Amazon","month":"Nov","total":306.09999999999997},
+        {"category":"Amazon","month":"Dec","total":1096.2599999999998}];
+
+        const o = arr.reduce( (a,b) => {
+            a[b.category] = a[b.category] || [];
+            a[b.category].push({[b.month]:b.total});
+            return a;
+        }, {});
+
+        const a = Object.keys(o).map(function(k) {
+            return {category : k, month : Object.assign.apply({},o[k])};
+        });
+
+        console.log(a);
     }
     
   return (
     <Card>
+        <Button onClick={createMapping}>click to sum</Button>
     <Card.Body className="customCard">
     <Card.Title className="customCardTitle">Walker Rankings Based on Lifetime Totals</Card.Title>
         <div class="container">
