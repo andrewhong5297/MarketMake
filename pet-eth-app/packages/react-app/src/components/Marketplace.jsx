@@ -5,15 +5,31 @@ import {
   Row,
   Col,
   Button,
-  Tab,
+  Spinner
 } from "react-bootstrap";
 import { ethers } from "ethers";
 
 export const Marketplace = (props) => {
+    const [isBadgeLoading, setBadgeLoading] = useState(false);
 
+    const badgeStuff = async () => {
+
+    }
+    //need create and upgrade badge buttons (in marketplace)
+    //need NFT buy button and toy representation.
     return (
             <div style={{ marginTop: `12px` }}>
-                <Button>buy things</Button>
-                <Button>redeem new Badge</Button>
+                <Button onClick={badgeStuff} style = {{fontSize: 14}} disabled={isBadgeLoading ? true : false}>
+                          { isBadgeLoading
+                          ? <Spinner 
+                          as="span"
+                          animation="border"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true" />
+                          : null
+                          } 
+                          &nbsp;&nbsp;Create or Update Badge&nbsp;&nbsp;</Button>
+                <Button style = {{fontSize: 14}}>Buy Dog Toy</Button>
             </div>
     )}

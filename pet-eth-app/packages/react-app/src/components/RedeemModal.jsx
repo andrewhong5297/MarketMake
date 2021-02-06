@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { ethers } from "ethers";
 import { Button, Alert, Modal } from "react-bootstrap"
 
-export const RedeemButton = (props) => {
+export const RedeemModal = (props) => {
 
     const { register, handleSubmit } = useForm();
     const [error, setError] = useState()
@@ -20,11 +20,8 @@ export const RedeemButton = (props) => {
 
             //10**20 instead of 10**18 because of conversion rate
             const approve = await props.walkToken.connect(owner).approve(props.walkExchange.address,ethers.BigNumber.from((parseInt(formData.value)*(10**20)).toLocaleString('fullwide', {useGrouping:false})),overrides);
-            // await approve.wait(3)
-            console.log(approve)
             const redeemed = await props.walkExchange.connect(owner).redeemWTforDai(ethers.BigNumber.from((parseInt(formData.value)*(10**18)).toLocaleString('fullwide', {useGrouping:false})), overrides);
-            // await redeemed.wait(3)
-            console.log(redeemed)
+            await redeemed.wait(3)
 
             setError(
                 <Alert variant="success" onClose={() => setError(null)} dismissible>

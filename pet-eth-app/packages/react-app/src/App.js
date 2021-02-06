@@ -152,7 +152,8 @@ function App() {
           />
         </Navbar.Collapse>
       </Navbar>
-      <Container>
+      <Container>      
+        <br></br>
         <WalkTokenDetails
           infura={mainnetProvider}
           provider={provider}
