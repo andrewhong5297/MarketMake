@@ -116,7 +116,7 @@ export const WalkTokenDetails = (props) => {
         <td id={index}>{getDateFromUnix(row["createdAt"])}</td>
         <td id={index}>{row["action"]}</td>
         <td id={index}>{reduceTwoDecimalsBI(row["value"])}</td>
-        <td id={index}><a href={"https://kovan.etherscan.io/address/0x649c200de35dc9990db3ac49ac8ed2237053aa35?fromaddress=" + row["from"]}>{row["id"]}</a></td>
+        <td id={index}><a href={"https://kovan.etherscan.io/address/"+props.walkBadge.address+"?fromaddress=" + row["from"]}>{row["id"]}</a></td>
       </tr>
       )))
     }, [props.provider])
@@ -211,7 +211,7 @@ export const WalkTokenDetails = (props) => {
                             aria-hidden="true" />
                             : null
                             } 
-                            &nbsp;&nbsp;Claim Tokens&nbsp;&nbsp;</Button> &nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;Claim Walk Tokens&nbsp;&nbsp;</Button> &nbsp;&nbsp;&nbsp;
                         <Button style = {{fontSize: 14}}
                           onClick={() => setRedeemModalShow(true)}
                           variant="secondary"
@@ -260,7 +260,8 @@ export const WalkTokenDetails = (props) => {
                           <Marketplace 
                           provider={props.provider}
                           walkExchange={props.walkExchange}
-                          walkToken={props.walkToken}/>
+                          walkToken={props.walkToken}
+                          walkBadge={props.walkBadge}/>
                       </Tab>
                   </Tabs>                    
               </div>

@@ -136,7 +136,7 @@ function App() {
     <div style={{ 
       backgroundImage: `url("https://i.pinimg.com/564x/77/ad/6c/77ad6c7c8b25b1929ee48420665db07b.jpg")`}}>
       <Navbar bg="light" expand="lg">
-        <Navbar.Brand href="#home">FidoByte</Navbar.Brand>
+        <Navbar.Brand href="#home"><span role="img" aria-label="doge">🐕</span>FidoByte</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">

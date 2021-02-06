@@ -11,6 +11,7 @@ import { ethers } from "ethers";
 
 export const Marketplace = (props) => {
     const [isBadgeLoading, setBadgeLoading] = useState(false);
+    const [isToyLoading, setToyLoading] = useState(false);
 
     const badgeStuff = async () => {
 
@@ -30,6 +31,16 @@ export const Marketplace = (props) => {
                           : null
                           } 
                           &nbsp;&nbsp;Create or Update Badge&nbsp;&nbsp;</Button>
-                <Button style = {{fontSize: 14}}>Buy Dog Toy</Button>
+                <Button onClick={badgeStuff} style = {{fontSize: 14}} disabled={isToyLoading ? true : false}>
+                          { isToyLoading
+                          ? <Spinner 
+                          as="span"
+                          animation="border"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true" />
+                          : null
+                          } 
+                          &nbsp;&nbsp;Buy Dog Toy&nbsp;&nbsp;</Button>
             </div>
     )}
