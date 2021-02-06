@@ -60,10 +60,10 @@ export const RankingDataTable = (props) => {
                         <Table striped bordered hover>
                             <thead>
                             <tr>
-                                <th>Dog_Name</th>
-                                <th>Distance_Walked</th>
+                                <th>Dog Name</th>
+                                <th>Distance Walked</th>
                                 <th>Walker Eth Address</th>
-                                <th>Walker_Name</th>
+                                <th>Walker Name</th>
                             </tr>
                             </thead>
                             {

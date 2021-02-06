@@ -88,8 +88,6 @@ export const WalkTokenDetails = (props) => {
     fetchGraphData()
     }, [])
 
-  //get theGraph query here for first data
-
   return (
     <div>
       <br></br>
@@ -156,7 +154,16 @@ export const WalkTokenDetails = (props) => {
                                   isGraphLoading
                                   ? <Spinner animation="border" variant="dark" />
                                   : 
-                                  <tbody>Insert mapping here, see how it is done in RankingDataTable. Check console for log of data structure, should be array of size 3. format the unix as time, and also divide the amount by 10 to the 18th power (10**18). Then return to yesterday's assignment of summing all distance walked by one person (See rankingtable, you will need to fill in createMapping function)</tbody>
+                                  <tbody>
+                                    {data.map((row, index) => (
+                                    <tr id={index}>
+                                      <td id={index}>{row["Date"]}</td>
+                                      <td id={index}>{row["Action"]}</td>
+                                      <td id={index}>{row["Amount"]}</td>
+                                      <td id={index}>{row["Etherscan"]}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
                                   }
                               </Table>
                           </div>
