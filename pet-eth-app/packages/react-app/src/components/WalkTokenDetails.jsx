@@ -25,7 +25,7 @@ async function getGraphTransfers(address) {
   const query = JSON.stringify({
     query: `
       query {
-          transfers(where: {from: "${address.toLowerCase()}"}) {
+          transfers(orderBy: createdAt, orderDirection: desc, where: {from: "${address.toLowerCase()}"}) {
             id
             from
             action
@@ -59,7 +59,7 @@ export const WalkTokenDetails = (props) => {
     const [redeemModalShow, setRedeemModalShow] = useState(false);
 
     const reduceTwoDecimalsBI = (BigIntString) => {
-      if(BigIntString.length==1)
+      if(BigIntString.length===1)
       {
         return "0"
       }
@@ -101,17 +101,17 @@ export const WalkTokenDetails = (props) => {
     }
 
     const checkActionType = () => {
-      if(props.provider==undefined)
+      if(props.provider===undefined)
       {
         return (<div className="tokenFluctuationUp">0</div>)
       }
       else
       {
-        if(data[data.length-1]["action"]=="Walk Pay") {
-        return (<div className="tokenFluctuationUp">{"+" + reduceTwoDecimalsBI(data[data.length-1].value)}</div>)
+        if(data[0]["action"]==="Walk Pay") {
+        return (<div className="tokenFluctuationUp">{"+" + reduceTwoDecimalsBI(data[0].value)}</div>)
         }
         else {
-          return (<div className="tokenFluctuationDown">{"-" + reduceTwoDecimalsBI(data[data.length-1].value)}</div>)
+          return (<div className="tokenFluctuationDown">{"-" + reduceTwoDecimalsBI(data[0].value)}</div>)
         }
       }
     }
@@ -120,7 +120,7 @@ export const WalkTokenDetails = (props) => {
     useEffect(() => {
     fetchBalance()
     fetchGraphData()
-    if(props.provider==undefined){
+    if(props.provider===undefined){
       setMapping(null)
     }
     else{
@@ -134,6 +134,22 @@ export const WalkTokenDetails = (props) => {
       )))
     }
     }, [props.provider])
+
+    useEffect(()=>{
+      if(props.provider===undefined){
+        setMapping(null)
+      }
+      else{
+        setMapping(data.map((row, index) => (
+        <tr id={index}>
+          <td id={index}>{getDateFromUnix(row["createdAt"])}</td>
+          <td id={index}>{row["action"]}</td>
+          <td id={index}>{reduceTwoDecimalsBI(row["value"])}</td>
+          <td id={index}><a href={"https://kovan.etherscan.io/address/"+props.walkBadge.address+"?fromaddress=" + row["from"]}>{row["id"]}</a></td>
+        </tr>
+        )))
+      }
+    }, [data])
 
     //update USD balance
     useEffect(() => {
@@ -149,7 +165,7 @@ export const WalkTokenDetails = (props) => {
       const owner = props.provider.getSigner();
       try {
           const badge = await props.walkBadge.connect(owner).getBadge(owner.getAddress())
-          if (badge[1]=="0")
+          if (badge[1]==="0")
           {
             setBadgeError(
               <Alert variant="danger" onClose={() => setBadgeError(null)} dismissible>

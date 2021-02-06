@@ -20,7 +20,7 @@ export const RedeemModal = (props) => {
             // console.log(address)
 
             //10**20 instead of 10**18 because of conversion rate
-            const approve = await props.walkToken.connect(owner).approve(props.walkExchange.address,ethers.BigNumber.from((parseInt(formData.value)*(10**20)).toLocaleString('fullwide', {useGrouping:false})),overrides);
+            await props.walkToken.connect(owner).approve(props.walkExchange.address,ethers.BigNumber.from((parseInt(formData.value)*(10**20)).toLocaleString('fullwide', {useGrouping:false})),overrides);
             const redeemed = await props.walkExchange.connect(owner).redeemWTforDai(ethers.BigNumber.from((parseInt(formData.value)*(10**18)).toLocaleString('fullwide', {useGrouping:false})), overrides);
             setRedeeming(true)
             await redeemed.wait(3)
