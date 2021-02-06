@@ -66,8 +66,14 @@ export const WalkTokenDetails = (props) => {
         const owner = props.provider.getSigner();
         const balance = await props.walkToken.connect(owner).balanceOf("0xa55E01a40557fAB9d87F993d8f5344f1b2408072");
         // await props.walkBadge.connect(burner).getBadge("0xa55E01a40557fAB9d87F993d8f5344f1b2408072")
+<<<<<<< HEAD
         setBalance(reduceTwoDecimalsBI(balance.toString()));
       } catch (e) {
+=======
+        // console.log(balance.toString())
+        // setBalance(balance.toString());
+      } catch (e) {     
+>>>>>>> db5bacef2730ab71b731868cdf0e8eb457f4c2b0
         setError(e)
         }
         setLoading(false)
@@ -183,10 +189,10 @@ export const WalkTokenDetails = (props) => {
                                   <tbody>
                                     {data.map((row, index) => (
                                     <tr id={index}>
-                                      <td id={index}>{row["Date"]}</td>
-                                      <td id={index}>{row["Action"]}</td>
-                                      <td id={index}>{row["Amount"]}</td>
-                                      <td id={index}>{row["Etherscan"]}</td>
+                                      <td id={index}>{row["createdAt"]}</td>
+                                      <td id={index}>{row["action"]}</td>
+                                      <td id={index}>{row["value"]}</td>
+                                      <td id={index}>{row["id"]}</td>
                                     </tr>
                                 ))}
                                 </tbody>
