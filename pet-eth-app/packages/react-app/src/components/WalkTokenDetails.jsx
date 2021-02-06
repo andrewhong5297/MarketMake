@@ -87,7 +87,7 @@ export const WalkTokenDetails = (props) => {
         setError(null)
     }
 
-    //this affects sign of transaction shown
+    //this affects sign of transaction shown. probably a cleaner way of doing this.
     const checkActionType = () => {if(data[0]["action"]=="Walk Pay") {
       return "+" + reduceTwoDecimalsBI(data[0].value)
     }
@@ -130,11 +130,11 @@ export const WalkTokenDetails = (props) => {
                     </Col>
                   </Row>
                   <Card.Text className="tokenFluctuation">
-                                {
-                                  isGraphLoading
-                                  ? <Spinner animation="border" variant="dark" />
-                                  : checkActionType()
-                                }
+                      {
+                        isGraphLoading
+                        ? <Spinner animation="border" variant="dark" />
+                        : checkActionType()
+                      }
                   </Card.Text>
                   <Card.Text className="walkTokenCount">
                       {
@@ -201,6 +201,7 @@ export const WalkTokenDetails = (props) => {
                               </Table>
                           </div>
                         </Tab>
+                        {/* //this should be its own component!!! */}
                         <Tab eventKey="Marketplace" title="Marketplace" className="tabColor">
                           <div style={{ marginTop: `12px` }}>
                             <Button>buy things</Button>
