@@ -52,6 +52,7 @@ export const WalkTokenDetails = (props) => {
     const [isGraphLoading, setGraphLoading] = useState(true);
     const [isPayLoading, setPayLoading] = useState(false);
 
+    const [datamapped, setMapping] = useState(null)
     const [balance, setBalance] = useState("0");
     const [usdAmount, setUSD] = useState("0");
     const [data, setData] = useState([]);
@@ -106,10 +107,18 @@ export const WalkTokenDetails = (props) => {
       return (<div className="tokenFluctuationDown">{"-" + reduceTwoDecimalsBI(data[data.length-1].value)}</div>)
     }}
 
-    //update all data when provider loads in
+    //update all data and table when provider loads in
     useEffect(() => {
     fetchBalance()
     fetchGraphData()
+    setMapping(data.map((row, index) => (
+      <tr id={index}>
+        <td id={index}>{getDateFromUnix(row["createdAt"])}</td>
+        <td id={index}>{row["action"]}</td>
+        <td id={index}>{reduceTwoDecimalsBI(row["value"])}</td>
+        <td id={index}><a href={"https://kovan.etherscan.io/address/0x649c200de35dc9990db3ac49ac8ed2237053aa35?fromaddress=" + row["from"]}>{row["id"]}</a></td>
+      </tr>
+      )))
     }, [props.provider])
 
     //update USD balance
@@ -241,15 +250,8 @@ export const WalkTokenDetails = (props) => {
                                 ? <Spinner animation="border" variant="dark" />
                                 : 
                                 <tbody>
-                                  {data.map((row, index) => (
-                                  <tr id={index}>
-                                    <td id={index}>{getDateFromUnix(row["createdAt"])}</td>
-                                    <td id={index}>{row["action"]}</td>
-                                    <td id={index}>{reduceTwoDecimalsBI(row["value"])}</td>
-                                    <td id={index}><a href={"https://kovan.etherscan.io/address/0x649c200de35dc9990db3ac49ac8ed2237053aa35?fromaddress=" + row["from"]}>{row["id"]}</a></td>
-                                  </tr>
-                              ))}
-                              </tbody>
+                                  {datamapped}  
+                                </tbody>
                                 }
                             </Table>
                         </div>
