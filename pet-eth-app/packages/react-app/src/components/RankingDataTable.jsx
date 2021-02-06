@@ -15,6 +15,10 @@ export const RankingDataTable = (props) => {
     const [error, setError] = useState(null)
     const [isLoading, setLoading] = useState(true)
     const [data, setData] = useState();
+
+    const[distanceData,setDisData] = useState([]);
+    const[timeData,setTimeData] = useState([]);
+    const[dogsData,setDogsData] = useState([]);
     // table header and data here with useState (if columns are static then just define a constant
 
     const fetchData = async () => {
@@ -23,7 +27,7 @@ export const RankingDataTable = (props) => {
         try {
         // remote fetch to api even graphql
         const response = await props.onFetchAll()
-        console.log(response)
+        // console.log(response)
         setData(response);
         } catch (e) {
         setError(e)
@@ -34,99 +38,144 @@ export const RankingDataTable = (props) => {
     }
 
     useEffect(() => {
-    // fetch data
     fetchData()
     }, [])
 
-    const createMapping = () => {
-        // const arr = [1,1,2,3,4,5,6]
-        // //this is key for getting to totals for each person. Try to get the distance sum first. 
-        // console.log(
-        //     arr.reduce((sum,d)=>{
-        //     return sum + d.Distance_Walked //d is each element of arr
-        //     }, 0)
-        // ) // sum = 0
+    useEffect(() => {
+        if(data!=undefined){
+            setDisData(createMapping("Distance_Walked"))
+            setTimeData(createMapping("Time_Walked"))
+            setDogsData(createMapping("Dog_Name"))
+        }
+    },[isLoading])
 
-        //https://stackoverflow.com/questions/40668896/format-json-data-in-javascript-like-a-pivot-table
-        const arr = [{"category":"Amazon","month":"Feb","total":9.75},
-        {"category":"Amazon","month":"Mar","total":169.44},
-        {"category":"Amazon","month":"Apr","total":10.69},
-        {"category":"Amazon","month":"May","total":867.0600000000001},
-        {"category":"Amazon","month":"Jun","total":394.43999999999994},
-        {"category":"Amazon","month":"Jul","total":787.2400000000001},
-        {"category":"Amazon","month":"Aug","total":1112.4400000000003},
-        {"category":"Amazon","month":"Sep","total":232.86999999999998},
-        {"category":"Amazon","month":"Oct","total":222.26999999999998},
-        {"category":"Amazon","month":"Nov","total":306.09999999999997},
-        {"category":"Amazon","month":"Dec","total":1096.2599999999998}];
+    const createMapping = (field) => {
+        //dog name is special since it is count instead of sum
+        if(field==="Dog_Name")
+        {
+            const result = data.reduce((res, obj) => {
+                if (!(obj.Walker_Address in res))
+                {
+                     res.__array.push(res[obj.Walker_Address] = obj);
+                     res[obj.Walker_Address]["Dog_Name"]=1;
+                }
+                else {
+                    res[obj.Walker_Address]["Dog_Name"] += 1;
+                }
+                return res;
+            }, {__array:[]}).__array
+                            .sort((a,b) => { return b["Dog_Name"] - a["Dog_Name"]; });
+            return result
+        }
 
-        const o = arr.reduce( (a,b) => {
-            a[b.category] = a[b.category] || [];
-            a[b.category].push({[b.month]:b.total});
-            return a;
-        }, {});
-
-        const a = Object.keys(o).map(function(k) {
-            return {category : k, month : Object.assign.apply({},o[k])};
-        });
-
-        console.log(a);
+        //https://stackoverflow.com/questions/11199653/javascript-sum-and-group-by-of-json-data
+        const result = data.reduce((res, obj) => {
+            if (!(obj.Walker_Address in res))
+                res.__array.push(res[obj.Walker_Address] = obj);
+            else {
+                res[obj.Walker_Address][field] += obj[field];
+            }
+            return res;
+        }, {__array:[]}).__array
+                        .sort((a,b) => { return b[field] - a[field]; });
+        return result
     }
     
   return (
     <Card>
-        <Button onClick={createMapping}>click to sum</Button>
-    <Card.Body className="customCard">
-    <Card.Title className="customCardTitle">Walker Rankings Based on Lifetime Totals</Card.Title>
-        <div class="container">
-            <div class="row">
-            <div class="col-md">
-                <Tabs className="justify-content-center" defaultActiveKey="distances" 
-                        id="controlled-tab-example">
-                    <Tab eventKey="distances" title="Distance Walked" className="tabColor">
+        <Card.Body className="customCard">
+        <Card.Title className="customCardTitle">Walker Rankings Based on Lifetime Totals</Card.Title>
+            <div class="container">
+                <div class="row">
+                <div class="col-md">
+                    <Tabs className="justify-content-center" defaultActiveKey="distances" 
+                            id="controlled-tab-example">
+                        <Tab eventKey="distances" title="Distance Walked">
+                            <div style={{ marginTop: `12px`, overflow: "auto", height: "600px"}}>
+                            <Table striped bordered hover>
+                                <thead>
+                                <tr>
+                                    <th>Walker Name</th>
+                                    <th>Walker Eth Address</th>
+                                    <th>Distance Walked (Miles)</th>
+                                </tr>
+                                </thead>
+                                {
+                                isLoading
+                                ? <Spinner animation="border" variant="dark" />
+                                : 
+                                <tbody>
+                                    {distanceData.map((row, index) => (
+                                        <tr id={index}>
+                                            <td id={index}>{row["Walker_Name"]}</td>
+                                            <td id={index}><a href={"https://kovan.etherscan.io/address/" + row['Walker_Address']}>{row["Walker_Address"]}</a></td>
+                                            <td id={index}>{parseFloat(row["Distance_Walked"]).toFixed(2)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                                }
+                            </Table>
+                            </div>
+                        </Tab>
+                        <Tab eventKey="times" title="Time Walked">
                         <div style={{ marginTop: `12px`, overflow: "auto", height: "600px"}}>
-                        <Table striped bordered hover>
-                            <thead>
-                            <tr>
-                                <th>Dog Name</th>
-                                <th>Distance Walked</th>
-                                <th>Walker Eth Address</th>
-                                <th>Walker Name</th>
-                            </tr>
-                            </thead>
-                            {
-                            isLoading
-                            ? <Spinner animation="border" variant="dark" />
-                            : 
-                            <tbody>
-                                {data.map((row, index) => (
-                                    <tr id={index}>
-                                        <td id={index}>{row["Dog_Name"]}</td>
-                                        <td id={index}>{row["Distance_Walked"]}</td>
-                                        <td id={index}><a href={"https://kovan.etherscan.io/address/" + row['Walker_Address']}>{row["Walker_Address"]}</a></td>
-                                        <td id={index}>{row["Walker_Name"]}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                            }
-                        </Table>
-                        </div>
-                    </Tab>
-                    <Tab eventKey="times" title="Time Walked" className="tabColor">
-                    <div style={{ marginTop: `12px`, overflow: "auto", height: "600px"}} />
-                    </Tab>
-                    <Tab eventKey="dogs" title="Dogs Walked" className="tabColor">
-                    <div style={{ marginTop: `12px`, overflow: "auto", height: "600px"}} />
-                    </Tab>
-                    <Tab eventKey="contact" title="Badges" className="tabColor">
-                    <div style={{ marginTop: `12px`, overflow: "auto", height: "600px"}} />
-                        {/* should query all badges and show top levels */}
-                    </Tab>
-                </Tabs>                    
+                            <Table striped bordered hover>
+                                <thead>
+                                <tr>
+                                    <th>Walker Name</th>
+                                    <th>Walker Eth Address</th>
+                                    <th>Time Walked (Minutes)</th>
+                                </tr>
+                                </thead>
+                                {
+                                isLoading
+                                ? <Spinner animation="border" variant="dark" />
+                                : 
+                                <tbody>
+                                    {timeData.map((row, index) => (
+                                        <tr id={index}>
+                                            <td id={index}>{row["Walker_Name"]}</td>
+                                            <td id={index}><a href={"https://kovan.etherscan.io/address/" + row['Walker_Address']}>{row["Walker_Address"]}</a></td>
+                                            <td id={index}>{parseInt(row["Time_Walked"])}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                                }
+                            </Table>
+                            </div>
+                        </Tab>
+                        <Tab eventKey="dogs" title="Dogs Walked">
+                        <div style={{ marginTop: `12px`, overflow: "auto", height: "600px"}}>
+                            <Table striped bordered hover>
+                                <thead>
+                                <tr>
+                                    <th>Walker Name</th>
+                                    <th>Walker Eth Address</th>
+                                    <th># Dogs Walked</th>
+                                </tr>
+                                </thead>
+                                {
+                                isLoading
+                                ? <Spinner animation="border" variant="dark" />
+                                : 
+                                <tbody>
+                                    {dogsData.map((row, index) => (
+                                        <tr id={index}>
+                                            <td id={index}>{row["Walker_Name"]}</td>
+                                            <td id={index}><a href={"https://kovan.etherscan.io/address/" + row['Walker_Address']}>{row["Walker_Address"]}</a></td>
+                                            <td id={index}>{row["Dog_Name"]}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                                }
+                            </Table>
+                            </div>
+                        </Tab>
+                    </Tabs>                    
+                </div>
+                </div>
             </div>
-            </div>
-        </div>
-    </Card.Body>
+        </Card.Body>
     </Card>
   )
 }
