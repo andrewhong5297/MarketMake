@@ -52,8 +52,8 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         IERC20WT = WalkToken(_WT);
         IERC20Link = IERC20(_link);
         setPublicChainlinkToken(); //this HAS TO BE HERE
-        oracle = address(0xf5A4036CA35B9C017eFA49932DcA4bc8cc781Aa4); //0xAA1DC356dc4B18f30C347798FD5379F3D77ABC5b patrick's oracle
-        jobId = "38b8c67ffa3e4e3cb9487b616b8d4321"; //"27401bbd3c804b3a9a532e439bb10b8f"
+        oracle = address(0xAA1DC356dc4B18f30C347798FD5379F3D77ABC5b); //0xf5A4036CA35B9C017eFA49932DcA4bc8cc781Aa4); patrick's oracle
+        jobId = "27401bbd3c804b3a9a532e439bb10b8f"; //"38b8c67ffa3e4e3cb9487b616b8d4321";
         fee = 1 * 10**18; // 1 LINK
     }
 
@@ -133,16 +133,6 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
                 address(this),
                 this.fulfillStats.selector
             );
-        // string memory params =
-        //     string(
-        //         abi.encodePacked(
-        //             "address=",
-        //             typesLibrary.addressToString(_walker)
-        //         )
-        //     );
-        // encoded = params;
-        // req.add("queryParams", params);
-        // req.add("address", typesLibrary.addressToString(_walker));
         req.add("dog", typesLibrary.addressToString(_walker)); //"31803877693398533056304374249487059501607363464");
         bytes32 reqId = sendChainlinkRequestTo(oracle, req, fee);
         reqIDtest = reqId;

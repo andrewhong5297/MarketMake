@@ -22,25 +22,25 @@ module.exports = {
       url: "http://localhost:8545",
     },
     rinkeby: {
-      url: "https://rinkeby.infura.io/v3/d635ea6eddda4720824cc8b24380e4a9",
+      url: "https://rinkeby.infura.io/v3/faefe1dcd6094fb388019173d2328d8f",
       accounts: {
         mnemonic: mnemonic(),
       },
     },
     mainnet: {
-      url: "https://mainnet.infura.io/v3/d635ea6eddda4720824cc8b24380e4a9",
+      url: "https://mainnet.infura.io/v3/faefe1dcd6094fb388019173d2328d8f",
       accounts: {
         mnemonic: mnemonic(),
       },
     },
     ropsten: {
-      url: "https://ropsten.infura.io/v3/d635ea6eddda4720824cc8b24380e4a9",
+      url: "https://ropsten.infura.io/v3/faefe1dcd6094fb388019173d2328d8f",
       accounts: {
         mnemonic: mnemonic(),
       },
     },
     kovan: {
-      url: "https://kovan.infura.io/v3/d635ea6eddda4720824cc8b24380e4a9",
+      url: "https://kovan.infura.io/v3/faefe1dcd6094fb388019173d2328d8f",
       accounts: {
         mnemonic: mnemonic(),
       },

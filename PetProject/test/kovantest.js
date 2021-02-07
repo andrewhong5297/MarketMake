@@ -4,7 +4,7 @@ const { abi: abiDai } = require("../artifacts/contracts/Dai.sol/Dai.json");
 const { abi: abiLPAP } = require("../artifacts/contracts/AAVE/ILendingPoolAddressesProvider.sol/ILendingPoolAddressesProvider.json");
 const { abi: abiLP } = require("../artifacts/contracts/AAVE/ILendingPool.sol/ILendingPool.json");
 const { abi: abiWT } = require("../artifacts/contracts/WalkToken.sol/WalkToken.json");
-const { abi: abiDT } = require("../artifacts/contracts/ERC721ToyNFT.sol/ERC721ToyNFT.json");
+// const { abi: abiDT } = require("../artifacts/contracts/ERC721ToyNFT.sol/ERC721ToyNFT.json");
 const { abi: abiWB } = require("../artifacts/contracts/WalkBadgeOracle.sol/WalkBadgeOracle.json");
 const { abi: abiWTE } = require("../artifacts/contracts/Exchange.sol/WalkTokenExchange.json");
 const fs = require("fs"); 
@@ -31,8 +31,8 @@ describe("Pet Project Full Test v1 Kovan", function () {
           };
 
         provider = new ethers.providers.InfuraProvider("kovan", {
-            projectId: "d635ea6eddda4720824cc8b24380e4a9",
-            projectSecret: "b4ea2b15f0614105a64f0e8ba1f2bffa"
+            projectId: "faefe1dcd6094fb388019173d2328d8f",
+            projectSecret: "dffad28934914b97a5365fa0c2eb9de6"
           });
     
         shelter = ethers.Wallet.fromMnemonic(mnemonic2()); //shelter mnem
@@ -63,13 +63,13 @@ describe("Pet Project Full Test v1 Kovan", function () {
             abiLP,
             shelter)     
         
-        walkTokenAddress="0x649c200De35dc9990dB3ac49aC8Ed2237053aA35"
-        exchangeAddress="0x90b709e2bdf140c5D4bFD7A1f046572ce9f2845f"
-        walkBadgeAddress="0x1b5B99dEff7D8dc9e57D51F3fCF2CAa127B60d2D"
-        dogToyAddress=""
+        walkTokenAddress="0x4bc20d3da2a0e56a75225FDF2878f130854D31d1"
+        exchangeAddress="0x536fe3510Ab895c93f02D1803a7cd0602Dcd8E43"
+        walkBadgeAddress="0xd3A5F01d67555921aecb9544fc963ab435859690"
+        dogToyAddress="0x1b5B99dEff7D8dc9e57D51F3fCF2CAa127B60d2D"
     });
 
-    it("deploy walkToken", async () => {
+    xit("deploy walkToken", async () => {
          const WalkToken = await ethers.getContractFactory(
             "WalkToken"
           );
@@ -83,7 +83,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         //   await startingPay.wait(1)
     });
 
-    it("deploy dogToy", async () => {
+    xit("deploy dogToy", async () => {
         const DogToy = await ethers.getContractFactory(
             "ERC721ToyNFT"
           );
@@ -92,7 +92,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         dogToyAddress=dogToy.address
     })
 
-    it("deploy walkExchange", async () => {
+    xit("deploy walkExchange", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,
@@ -102,13 +102,13 @@ describe("Pet Project Full Test v1 Kovan", function () {
             "WalkTokenExchange"
           );
 
-        walkExchange = await WalkExchange.connect(shelter).deploy(walkToken.address, dai.address, LP.address, dogToyAddress);
+        walkExchange = await WalkExchange.connect(shelter).deploy(walkToken.address, dai.address, LP.address);//dogToyAddress);
         await walkExchange.deployed()
         console.log("Exchange Address: ", walkExchange.address)
         exchangeAddress=walkExchange.address
     })
 
-    it("deploy walkBadge", async () => {
+    xit("deploy walkBadge", async () => {
         const TypesLibrary = await ethers.getContractFactory(
             "typesLibrary"
           );
@@ -154,7 +154,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
             abiWB,
             shelter)  
 
-        const walker_address_to_use = "0xCA765911b4588508db72E999263115964c1A31D6" //"0x0592229c68368C7Bd96AeF217bBCb66F7fCd2388";
+        const walker_address_to_use = await walker.getAddress(); //Joe "0xCA765911b4588508db72E999263115964c1A31D6" //Emily "0x0592229c68368C7Bd96AeF217bBCb66F7fCd2388";
         
         //create badge
         const createB = await walkBadge.connect(walker).createBadge(walker_address_to_use, overrides);
