@@ -11,7 +11,9 @@ import {
   Card,
   Table,
   Spinner,
-  Alert
+  Alert,
+  OverlayTrigger,
+  Tooltip
 } from "react-bootstrap";
 import { RedeemModal } from "./RedeemModal";
 import { Marketplace } from "./Marketplace";
@@ -83,9 +85,51 @@ export const WalkTokenDetails = (props) => {
     const [balance, setBalance] = useState("0");
     const [usdAmount, setUSD] = useState("0");
     const [badgeLevel, setBadgeLevel] = useState("0");
+    const [badgeData, setBadgeData] = useState([]);
     const [data, setData] = useState([]);
     const [redeemModalShow, setRedeemModalShow] = useState(false);
 
+    //update all data and table when provider loads in
+    useEffect(() => {
+      fetchBalance()
+      fetchGraphData()
+      if(props.provider===undefined){
+        setMapping(null)
+      }
+      else{
+        getBadgeLevel();
+        setMapping(data.map((row, index) => (
+        <tr id={index}>
+          <td id={index}>{getDateFromUnix(row["createdAt"])}</td>
+          <td id={index}>{row["action"]}</td>
+          <td id={index}>{reduceTwoDecimalsBI(row["value"])}</td>
+          <td id={index}><a href={"https://kovan.etherscan.io/address/"+props.walkBadge.address+"?fromaddress=" + row["from"]}>{row["id"]}</a></td>
+        </tr>
+        )))
+      }
+    }, [props.provider])
+    //second useeffect to empty the table
+    useEffect(()=>{
+      if(props.provider===undefined){
+        setMapping(null)
+      }
+      else{
+        setMapping(data.map((row, index) => (
+        <tr id={index}>
+          <td id={index}>{getDateFromUnix(row["createdAt"])}</td>
+          <td id={index}>{row["action"]}</td>
+          <td id={index}>{reduceTwoDecimalsBI(row["value"])}</td>
+          <td id={index}><a href={"https://kovan.etherscan.io/address/"+props.walkBadge.address+"?fromaddress=" + row["from"]}>{row["id"]}</a></td>
+        </tr>
+        )))
+      }
+    }, [data])
+    //update USD balance
+    useEffect(() => {
+      setUSD((parseInt(balance)/100).toString())
+    }, [balance])
+    
+    /*fetching functions*/
     const fetchBalance = async () => {
       setBalanceLoading(true);
       try {          
@@ -127,6 +171,7 @@ export const WalkTokenDetails = (props) => {
       }
     }
 
+    /*rendering functions*/
     const getLevelImg = () => {
       switch(badgeLevel) {
         case "0":
@@ -142,55 +187,25 @@ export const WalkTokenDetails = (props) => {
           return (<img style={{height: "65px", width: "65px", justifyContent: "end"}} src={purplebadge} />)
           break;        
             }}
+    
+    const renderTooltip = (props) => (
+      <Tooltip id="button-tooltip" {...props}>
+        <div>{"Walker Level: "+ badgeData[1]}</div>
+        <div>{"Walk Time (min): "+ badgeData[2]/100}</div>
+        <div>{"Distance (mi): "+ badgeData[3]/100}</div>
+        <div>{"Dogs Walked: "+ badgeData[4]/100}</div>
+      </Tooltip>
+    );
 
     const getBadgeLevel= async () => {
       const owner = props.provider.getSigner()
       const address = await owner.getAddress()
       const badgeData = await props.walkBadge.connect(owner).getBadge(address)
       setBadgeLevel(badgeData["level"].toString())
+      setBadgeData(badgeData)
     }
 
-    //update all data and table when provider loads in
-    useEffect(() => {
-      fetchBalance()
-      fetchGraphData()
-      if(props.provider===undefined){
-        setMapping(null)
-      }
-      else{
-        getBadgeLevel();
-        setMapping(data.map((row, index) => (
-        <tr id={index}>
-          <td id={index}>{getDateFromUnix(row["createdAt"])}</td>
-          <td id={index}>{row["action"]}</td>
-          <td id={index}>{reduceTwoDecimalsBI(row["value"])}</td>
-          <td id={index}><a href={"https://kovan.etherscan.io/address/"+props.walkBadge.address+"?fromaddress=" + row["from"]}>{row["id"]}</a></td>
-        </tr>
-        )))
-      }
-    }, [props.provider])
-    //second useeffect to empty the table
-    useEffect(()=>{
-      if(props.provider===undefined){
-        setMapping(null)
-      }
-      else{
-        setMapping(data.map((row, index) => (
-        <tr id={index}>
-          <td id={index}>{getDateFromUnix(row["createdAt"])}</td>
-          <td id={index}>{row["action"]}</td>
-          <td id={index}>{reduceTwoDecimalsBI(row["value"])}</td>
-          <td id={index}><a href={"https://kovan.etherscan.io/address/"+props.walkBadge.address+"?fromaddress=" + row["from"]}>{row["id"]}</a></td>
-        </tr>
-        )))
-      }
-    }, [data])
-
-    //update USD balance
-    useEffect(() => {
-      setUSD((parseInt(balance)/100).toString())
-    }, [balance])
-
+    /*transactional functions*/
     const claimPay = async () => {
       const overrides = {
           gasLimit: ethers.BigNumber.from("1000000"),
@@ -239,7 +254,7 @@ export const WalkTokenDetails = (props) => {
       const owner = props.provider.getSigner();
       const address = await owner.getAddress();
         try {
-          if(badgeLevel=="0") {
+          if(badgeLevel["level"].toString()=="0") {
           const createBadge = await props.walkBadge.connect(owner).createBadge(address, overrides);
           setBadgeLoading(true)
           await createBadge.wait(2)
@@ -283,7 +298,13 @@ export const WalkTokenDetails = (props) => {
                 
                 <div>
                   <Container style={{textAlign: "right"}}>
-                  {getLevelImg()}
+                    <OverlayTrigger
+                      placement="bottom"
+                      delay={{ show: 250, hide: 250 }}
+                      overlay={renderTooltip}
+                    >
+                      {getLevelImg()}
+                    </OverlayTrigger>,
                   </Container>
                    </div>
                   <Card.Text>
@@ -298,7 +319,7 @@ export const WalkTokenDetails = (props) => {
                         isBalanceLoading
                         ? <Spinner animation="border" variant="dark" />
                         : 
-                        <div>{balance} <span style={{fontSize: 30}}>WT</span></div>
+                        <div>{balance} <span style={{fontSize: 26}}>WT</span></div>
                       }
                   </Card.Text>
                   <Card.Text className="usdConversion">
