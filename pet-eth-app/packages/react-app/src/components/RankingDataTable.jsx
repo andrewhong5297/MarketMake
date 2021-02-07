@@ -95,6 +95,7 @@ export const RankingDataTable = (props) => {
                             <Table striped bordered hover>
                                 <thead>
                                 <tr>
+                                    <th>Rank</th>
                                     <th>Walker Name</th>
                                     <th>Walker Eth Address</th>
                                     <th>Distance Walked (Miles)</th>
@@ -107,6 +108,7 @@ export const RankingDataTable = (props) => {
                                 <tbody>
                                     {distanceData.map((row, index) => (
                                         <tr id={index}>
+                                            <td id={index}>{index+1}</td>
                                             <td id={index}>{row["Walker_Name"]}</td>
                                             <td id={index}><a href={"https://kovan.etherscan.io/address/" + row['Walker_Address']}>{row["Walker_Address"]}</a></td>
                                             <td id={index}>{parseFloat(row["Distance_Walked"]).toFixed(2)}</td>
@@ -122,6 +124,7 @@ export const RankingDataTable = (props) => {
                             <Table striped bordered hover>
                                 <thead>
                                 <tr>
+                                    <th>Rank</th>
                                     <th>Walker Name</th>
                                     <th>Walker Eth Address</th>
                                     <th>Time Walked (Minutes)</th>
@@ -134,6 +137,7 @@ export const RankingDataTable = (props) => {
                                 <tbody>
                                     {timeData.map((row, index) => (
                                         <tr id={index}>
+                                            <td id={index}>{index+1}</td>
                                             <td id={index}>{row["Walker_Name"]}</td>
                                             <td id={index}><a href={"https://kovan.etherscan.io/address/" + row['Walker_Address']}>{row["Walker_Address"]}</a></td>
                                             <td id={index}>{parseInt(row["Time_Walked"])}</td>
@@ -149,6 +153,7 @@ export const RankingDataTable = (props) => {
                             <Table striped bordered hover>
                                 <thead>
                                 <tr>
+                                    <th>Rank</th>
                                     <th>Walker Name</th>
                                     <th>Walker Eth Address</th>
                                     <th># Dogs Walked</th>
@@ -161,6 +166,7 @@ export const RankingDataTable = (props) => {
                                 <tbody>
                                     {dogsData.map((row, index) => (
                                         <tr id={index}>
+                                            <td id={index}>{index+1}</td>
                                             <td id={index}>{row["Walker_Name"]}</td>
                                             <td id={index}><a href={"https://kovan.etherscan.io/address/" + row['Walker_Address']}>{row["Walker_Address"]}</a></td>
                                             <td id={index}>{row["Dog_Name"]}</td>
