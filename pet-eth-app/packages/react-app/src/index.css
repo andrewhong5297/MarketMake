@@ -14,6 +14,12 @@ code {
 
 .customCard {
   background: #eff4f8 !important;
+  height: 415px;
+}
+
+.secondCustomCard {
+  background: #eff4f8 !important;
+  height: 735px;
 }
 
 .customCardTitle {

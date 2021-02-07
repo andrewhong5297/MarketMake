@@ -83,7 +83,7 @@ export const RankingDataTable = (props) => {
     
   return (
     <Card>
-        <Card.Body className="customCard">
+        <Card.Body className="secondCustomCard">
         <Card.Title className="customCardTitle">Walker Rankings Based on Lifetime Totals</Card.Title>
             <div class="container">
                 <div class="row">
