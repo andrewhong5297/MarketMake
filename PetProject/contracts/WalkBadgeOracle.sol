@@ -107,9 +107,11 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
                 _dogsWalked.mul(10)
             );
 
-        if (sum > 80) {
+        if (sum > 112000) {
+            return 3;
+        } else if (sum > 30000 && sum < 112000) {
             return 2;
-        } else if (sum > 30 && sum < 80) {
+        } else if (sum > 3000 && sum < 30000) {
             return 1;
         } else {
             return 0;

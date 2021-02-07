@@ -40,9 +40,8 @@ contract WalkTokenExchange is ReentrancyGuard {
     constructor(
         address _WT,
         address _Dai,
-        address _ILP
-    ) public // address _ToyNFT
-    {
+        address _ILP // address _ToyNFT
+    ) public {
         shelter = msg.sender;
         IERC20Dai = IERC20(_Dai);
         IERC20WT = IERC20(_WT);

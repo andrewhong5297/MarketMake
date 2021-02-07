@@ -62,7 +62,7 @@ async function getAllWalkerData() {
   const query = JSON.stringify({
     query: `
       query {
-          walks (sortBy: UNIX_TIMESTAMP_DESC) {
+          walks (sortBy: UNIX_TIMESTAMP_DESC, limit: 1000) {
               Distance_Walked
               Dog_Name
               Time_Walked
