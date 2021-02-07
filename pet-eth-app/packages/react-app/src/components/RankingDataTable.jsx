@@ -6,8 +6,7 @@ import {
   Tabs,
   Card,
   Table,
-  Spinner,
-  Button
+  Spinner
 } from "react-bootstrap";
 
 //should we keep a most recent walks tab? then a seperate leaderboard tab?
@@ -27,7 +26,7 @@ export const RankingDataTable = (props) => {
         try {
         // remote fetch to api even graphql
         const response = await props.onFetchAll()
-        // console.log(response)
+        console.log(response)
         setData(response);
         } catch (e) {
         setError(e)

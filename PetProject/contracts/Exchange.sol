@@ -10,7 +10,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./AAVE/ILendingPool.sol";
-import "./DogToy.sol";
+
+// import "./DogToy.sol";
 
 contract WalkTokenExchange is ReentrancyGuard {
     using SafeMath for uint256;
@@ -19,7 +20,7 @@ contract WalkTokenExchange is ReentrancyGuard {
     IERC20 private IERC20Dai;
     IERC20 private IERC20WT;
     ILendingPool private ILP;
-    ERC721ToyNFT private ToyNFT;
+    // ERC721ToyNFT private ToyNFT;
 
     uint256 newToyCost = 1000 * (10**18); // walk tokens
 
@@ -39,14 +40,13 @@ contract WalkTokenExchange is ReentrancyGuard {
     constructor(
         address _WT,
         address _Dai,
-        address _ILP,
-        address _ToyNFT
+        address _ILP // address _ToyNFT
     ) public {
         shelter = msg.sender;
         IERC20Dai = IERC20(_Dai);
         IERC20WT = IERC20(_WT);
         ILP = ILendingPool(_ILP);
-        ToyNFT = ERC721ToyNFT(_ToyNFT);
+        // ToyNFT = ERC721ToyNFT(_ToyNFT);
     }
 
     function recieveWT(uint256 _value) public {

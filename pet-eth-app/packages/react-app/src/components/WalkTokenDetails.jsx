@@ -74,20 +74,22 @@ const getDateFromUnix = (unix_timestamp) => {
 }
 
 export const WalkTokenDetails = (props) => {
+    //render states
     const [errorPay, setPayError] = useState(null);
+    const [redeemModalShow, setRedeemModalShow] = useState(false);
     const [errorBadge, setBadgeError] = useState(null);
     const [isBadgeLoading, setBadgeLoading] = useState(false);
     const [isBalanceLoading, setBalanceLoading] = useState(true);
     const [isGraphLoading, setGraphLoading] = useState(true);
     const [isPayLoading, setPayLoading] = useState(false);
 
+    //data states
     const [datamapped, setMapping] = useState(null)
     const [balance, setBalance] = useState("0");
     const [usdAmount, setUSD] = useState("0");
     const [badgeLevel, setBadgeLevel] = useState("0");
     const [badgeData, setBadgeData] = useState([]);
     const [data, setData] = useState([]);
-    const [redeemModalShow, setRedeemModalShow] = useState(false);
 
     //update all data and table when provider loads in
     useEffect(() => {
@@ -154,23 +156,6 @@ export const WalkTokenDetails = (props) => {
         setGraphLoading(false)
     }
 
-    const checkActionType = () => {
-      if(props.provider===undefined || data.length == 0)
-      {
-        return (<div className="tokenFluctuationUp">0</div>)
-      }
-      else
-      {
-        console.log(data)
-        if(data[0]["action"]==="Walk Pay") {
-        return (<div className="tokenFluctuationUp">{"+" + reduceTwoDecimalsBI(data[0].value)}</div>)
-        }
-        else {
-          return (<div className="tokenFluctuationDown">{"-" + reduceTwoDecimalsBI(data[0].value)}</div>)
-        }
-      }
-    }
-
     /*rendering functions*/
     const getLevelImg = () => {
       switch(badgeLevel) {
@@ -188,7 +173,24 @@ export const WalkTokenDetails = (props) => {
           break;        
             }}
     
-    const renderTooltip = (props) => (
+    const checkActionType = () => {
+      if(props.provider===undefined || data.length == 0)
+      {
+        return (<div className="tokenFluctuationUp">0</div>)
+      }
+      else
+      {
+        console.log(data)
+        if(data[0]["action"]==="Walk Pay") {
+        return (<div className="tokenFluctuationUp">{"+" + reduceTwoDecimalsBI(data[0].value)}</div>)
+        }
+        else {
+          return (<div className="tokenFluctuationDown">{"-" + reduceTwoDecimalsBI(data[0].value)}</div>)
+        }
+      }
+    }
+        
+    const badgeTooltip = (props) => (
       <Tooltip id="button-tooltip" {...props}>
         <div>{"Walker Level: "+ badgeData[1]}</div>
         <div>{"Walk Time (min): "+ badgeData[2]/100}</div>
@@ -301,10 +303,10 @@ export const WalkTokenDetails = (props) => {
                     <OverlayTrigger
                       placement="bottom"
                       delay={{ show: 250, hide: 250 }}
-                      overlay={renderTooltip}
+                      overlay={badgeTooltip}
                     >
                       {getLevelImg()}
-                    </OverlayTrigger>,
+                    </OverlayTrigger>
                   </Container>
                    </div>
                   <Card.Text>

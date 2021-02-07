@@ -62,7 +62,7 @@ async function getAllWalkerData() {
   const query = JSON.stringify({
     query: `
       query {
-          walks (sortBy: UNIX_TIMESTAMP_DESC) {
+          walks (sortBy: UNIX_TIMESTAMP_DESC, limit: 1000) {
               Distance_Walked
               Dog_Name
               Time_Walked
@@ -112,25 +112,25 @@ function WalletButton({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
 function App() {
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal();
   const mainnetProvider = new ethers.providers.InfuraProvider("kovan", {
-    projectId: "d635ea6eddda4720824cc8b24380e4a9",
-    projectSecret: "b4ea2b15f0614105a64f0e8ba1f2bffa",
+    projectId: "faefe1dcd6094fb388019173d2328d8f",
+    projectSecret: "dffad28934914b97a5365fa0c2eb9de6"
   });
 
   //contracts
   let walkExchange = new ethers.Contract(
-    "0x90b709e2bdf140c5D4bFD7A1f046572ce9f2845f",
+    "0x536fe3510Ab895c93f02D1803a7cd0602Dcd8E43",
     abiWTE,
     mainnetProvider
   );
 
   let walkToken = new ethers.Contract(
-    "0x649c200De35dc9990dB3ac49aC8Ed2237053aA35",
+    "0x4bc20d3da2a0e56a75225FDF2878f130854D31d1",
     abiWT,
     mainnetProvider
   );
 
   let walkBadge = new ethers.Contract(
-    "0x1b5B99dEff7D8dc9e57D51F3fCF2CAa127B60d2D",
+    "0xd3A5F01d67555921aecb9544fc963ab435859690",
     abiWB,
     mainnetProvider
   );
