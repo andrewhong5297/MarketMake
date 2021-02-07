@@ -10,6 +10,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./AAVE/ILendingPool.sol";
+import "./DogToy.sol";
 
 contract WalkTokenExchange is ReentrancyGuard {
     using SafeMath for uint256;
@@ -18,6 +19,9 @@ contract WalkTokenExchange is ReentrancyGuard {
     IERC20 private IERC20Dai;
     IERC20 private IERC20WT;
     ILendingPool private ILP;
+    ERC721ToyNFT private ToyNFT;
+
+    uint256 newToyCost = 0.001 ether;
 
     event redeemedDai(
         address spender,
@@ -35,12 +39,14 @@ contract WalkTokenExchange is ReentrancyGuard {
     constructor(
         address _WT,
         address _Dai,
-        address _ILP
+        address _ILP,
+        address _ToyNFT
     ) public {
         shelter = msg.sender;
         IERC20Dai = IERC20(_Dai);
         IERC20WT = IERC20(_WT);
         ILP = ILendingPool(_ILP);
+        ToyNFT = ERC721ToyNFT(_ToyNFT);
     }
 
     function recieveWT(uint256 _value) public {
@@ -110,7 +116,17 @@ contract WalkTokenExchange is ReentrancyGuard {
         emit redeemedDai(msg.sender, WTneeded, "Redeemed Dai", block.timestamp);
     }
 
-    //Joe to write this function, interface with NFT contract to mint. similar to how Walk Token has a payTo function for another contract to call.
-    //function buyNFT()
-    //emit boughtToy()
+    //for when a new batch of toys is made to mint
+    function newToy(address _ToyNFT) external {
+        require(msg.sender = shelter);
+        ToyNFT = ERC721ToyNFT(_ToyNFT);
+    }
+
+    function buyDogToyNFT(string calldata name) external {
+        require(msg.value == newToyCost, "need more tokens to buy this toy");
+        string calldata action = "Buy new doggy toy";
+        bool toyBought = ToyNFT.buyToy(name);
+        require(toyBought, "toy is out of stock");
+        emit boughtToy(msg.sender, msg.value, action, now);
+    }
 }

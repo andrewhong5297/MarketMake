@@ -254,7 +254,7 @@ export const WalkTokenDetails = (props) => {
       const owner = props.provider.getSigner();
       const address = await owner.getAddress();
         try {
-          if(badgeLevel["level"].toString()=="0") {
+          if(badgeLevel=="0") {
           const createBadge = await props.walkBadge.connect(owner).createBadge(address, overrides);
           setBadgeLoading(true)
           await createBadge.wait(2)

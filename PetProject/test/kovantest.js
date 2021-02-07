@@ -4,6 +4,7 @@ const { abi: abiDai } = require("../artifacts/contracts/Dai.sol/Dai.json");
 const { abi: abiLPAP } = require("../artifacts/contracts/AAVE/ILendingPoolAddressesProvider.sol/ILendingPoolAddressesProvider.json");
 const { abi: abiLP } = require("../artifacts/contracts/AAVE/ILendingPool.sol/ILendingPool.json");
 const { abi: abiWT } = require("../artifacts/contracts/WalkToken.sol/WalkToken.json");
+const { abi: abiDT } = require("../artifacts/contracts/ERC721ToyNFT.sol/ERC721ToyNFT.json");
 const { abi: abiWB } = require("../artifacts/contracts/WalkBadgeOracle.sol/WalkBadgeOracle.json");
 const { abi: abiWTE } = require("../artifacts/contracts/Exchange.sol/WalkTokenExchange.json");
 const fs = require("fs"); 
@@ -18,9 +19,9 @@ function mnemonic2() {
 
 //make sure you've switched defaultnetwork to Kovan and put a mnemonic.txt file in the test folder
 describe("Pet Project Full Test v1 Kovan", function () {
-    let walkToken, walkBadge, walkExchange, typesLibrary; //our contracts
+    let walkToken, walkBadge, walkExchange, dogToy, typesLibrary; //our contracts
     let dai, link, LP, LPAP; //already deployed contracts
-    let shelter,  walker, walker_two; //users
+    let shelter,  walker; //users
     let overrides;
     let exchangeAddress, walkTokenAddress, walkBadgeAddress
 
@@ -65,11 +66,10 @@ describe("Pet Project Full Test v1 Kovan", function () {
         walkTokenAddress="0x649c200De35dc9990dB3ac49aC8Ed2237053aA35"
         exchangeAddress="0x90b709e2bdf140c5D4bFD7A1f046572ce9f2845f"
         walkBadgeAddress="0x1b5B99dEff7D8dc9e57D51F3fCF2CAa127B60d2D"
-        // await LP.connect(shelter).deposit(dai.address, ethers.BigNumber.from("100000000000000000000"), shelter.getAddress(),ethers.BigNumber.from("0")) //100 dai, 10**20
-        // await LP.connect(walker).withdraw(dai.address, ethers.BigNumber.from("100000000000000000000"), walker.getAddress())
+        dogToyAddress=""
     });
 
-    xit("deploy walkToken", async () => {
+    it("deploy walkToken", async () => {
          const WalkToken = await ethers.getContractFactory(
             "WalkToken"
           );
@@ -78,12 +78,21 @@ describe("Pet Project Full Test v1 Kovan", function () {
           console.log("WalkToken Address: ", walkToken.address)
           walkTokenAddress=walkToken.address
         
-          //this mint is just for exchange purposes
-          const mintTo = await walkToken.connect(shelter).payTo(ethers.BigNumber.from((5*10**22).toLocaleString('fullwide', {useGrouping:false})),walker.getAddress())
-          await mintTo.wait(1)
+        //   this pay is just for having enough for exchange purposes. 
+        //   const startingPay = await walkToken.connect(shelter).transfer(ethers.BigNumber.from((10**22).toLocaleString('fullwide', {useGrouping:false})),walker.getAddress())
+        //   await startingPay.wait(1)
     });
 
-    xit("deploy walkExchange", async () => {
+    it("deploy dogToy", async () => {
+        const DogToy = await ethers.getContractFactory(
+            "ERC721ToyNFT"
+          );
+        dogToy = await DogToy.connect(shelter).deploy();  
+        await walkToken.deployed()
+        dogToyAddress=dogToy.address
+    })
+
+    it("deploy walkExchange", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,
@@ -93,13 +102,13 @@ describe("Pet Project Full Test v1 Kovan", function () {
             "WalkTokenExchange"
           );
 
-        walkExchange = await WalkExchange.connect(shelter).deploy(walkToken.address, dai.address, LP.address);
+        walkExchange = await WalkExchange.connect(shelter).deploy(walkToken.address, dai.address, LP.address, dogToyAddress);
         await walkExchange.deployed()
         console.log("Exchange Address: ", walkExchange.address)
         exchangeAddress=walkExchange.address
     })
 
-    xit("deploy walkBadge", async () => {
+    it("deploy walkBadge", async () => {
         const TypesLibrary = await ethers.getContractFactory(
             "typesLibrary"
           );
@@ -121,17 +130,20 @@ describe("Pet Project Full Test v1 Kovan", function () {
         console.log("WalkBadge address: ", walkBadge.address)
 
         //send badge contract link token
-        const approve = await link.connect(shelter).approve(walkBadgeAddress, ethers.BigNumber.from((10*10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
+        const approve = await link.connect(shelter).approve(walkBadgeAddress, ethers.BigNumber.from((20*10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
         await approve.wait(1)
         
-        const recieve = await walkBadge.connect(shelter).recieveLink(ethers.BigNumber.from((10*10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
+        const recieve = await walkBadge.connect(shelter).recieveLink(ethers.BigNumber.from((20*10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
         await recieve.wait(1)
+
+        const payToSet = await walkToken.connect(shelter).changeBadge(walkBadge.address) //set for payments purposes
+        await payToSet.wait(1)
 
         // const oraclej = await walkBadge.connect(shelter).setOracleAddress("0xf5A4036CA35B9C017eFA49932DcA4bc8cc781Aa4") //address of node op. dont forget to update jobid too
         // await oraclej.wait(1)
     })
 
-    it("walker create badge, call oracle, and update badge. Walker should see a payment too", async () => {
+    xit("walker create badge, call oracle, and update badge. Walker should see a payment too", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,
@@ -189,10 +201,10 @@ describe("Pet Project Full Test v1 Kovan", function () {
             shelter)  
         
         //deposit Dai into contract
-        const approve = await dai.connect(shelter).approve(walkExchange.address, ethers.BigNumber.from((10**20).toLocaleString('fullwide', {useGrouping:false})), overrides); //100 dai
+        const approve = await dai.connect(shelter).approve(walkExchange.address, ethers.BigNumber.from((10**21).toLocaleString('fullwide', {useGrouping:false})), overrides); //1000 dai
         await approve.wait(1)
         
-        const recieve = await walkExchange.connect(shelter).recieveDai(ethers.BigNumber.from((10**20).toLocaleString('fullwide', {useGrouping:false})), overrides); //100 dai
+        const recieve = await walkExchange.connect(shelter).recieveDai(ethers.BigNumber.from((10**21).toLocaleString('fullwide', {useGrouping:false})), overrides); //1000 dai
         await recieve.wait(1)
         
         // //transfer ETH to the contract for gas fees (Implement GSN later)
@@ -210,11 +222,11 @@ describe("Pet Project Full Test v1 Kovan", function () {
             shelter)  
 
         //deposit 100 dai into AAVE from exchange contract
-        const attemptDeposit = await walkExchange.connect(shelter).depositAAVE(ethers.BigNumber.from((10**20).toLocaleString('fullwide', {useGrouping:false})), overrides); //100 dai
+        const attemptDeposit = await walkExchange.connect(shelter).depositAAVE(ethers.BigNumber.from((10**21).toLocaleString('fullwide', {useGrouping:false})), overrides); //1000 dai
         await attemptDeposit.wait(1)
     })
 
-    it("test walker redeem WT for Dai at 1/100 ratio, with withdrawal call from AAVE if balance not enough", async () => {
+    xit("test walker redeem WT for Dai at 1/100 ratio, with withdrawal call from AAVE if balance not enough", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,
@@ -240,7 +252,18 @@ describe("Pet Project Full Test v1 Kovan", function () {
     })
 
     xit("test walker buying an NFT from exchange contract", async () => {
-        //still have to write this contract
+        walkExchange = new ethers.Contract(
+            exchangeAddress, 
+            abiWTE,
+            shelter)  
+        
+        //buy one toy for 1000 WT. 
+        const approve = await walkToken.connect(walker).approve(walkExchange.address,ethers.BigNumber.from((1*10**21).toLocaleString('fullwide', {useGrouping:false})),overrides);
+        await approve.wait(1)
+        
+        //buy a Toy
+        const buyToy = await walkExchange.connect(shelter).buyDogToyNFT("Brooklyn Squirrel"); 
+        await buyToy.wait(1)
     })
 
 })

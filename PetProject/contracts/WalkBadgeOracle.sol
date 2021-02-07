@@ -159,17 +159,17 @@ contract WalkBadgeOracle is ReentrancyGuard, ChainlinkClient {
         results[3]=totalpayments
         */
         uint256 oldPay = AddresstoBadge[_walker].totalPaid;
-        uint256 newPay = typesLibrary.sliceInt(results, 16, 20).div(10**2); //since the result is mul 100 since decimals aren't handled well.
+        uint256 newPay = typesLibrary.sliceInt(results, 19, 24).div(10**2); //since the result is mul 100 since decimals aren't handled well.
         uint256 payOut = newPay.sub(oldPay);
         IERC20WT.payTo(payOut, _walker); //pay is reported in two decimals, so 10**16 instead of 10**18
         AddresstoBadge[_walker].timeWalked = typesLibrary
-            .sliceInt(results, 1, 5)
+            .sliceInt(results, 1, 6)
             .div(10**18);
         AddresstoBadge[_walker].distanceWalked = typesLibrary
-            .sliceInt(results, 6, 10)
+            .sliceInt(results, 7, 12)
             .div(10**18);
         AddresstoBadge[_walker].dogsWalked = typesLibrary
-            .sliceInt(results, 11, 15)
+            .sliceInt(results, 13, 18)
             .div(10**18);
         AddresstoBadge[_walker].totalPaid = newPay;
         emit paidTo(_walker, payOut, "Walk Pay", block.timestamp);
