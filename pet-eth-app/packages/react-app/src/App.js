@@ -1,11 +1,6 @@
 import React from "react";
 
-import {
-  Navbar,
-  Nav,
-  Button,
-  Container
-} from "react-bootstrap";
+import { Navbar, Nav, Button, Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import useWeb3Modal from "./hooks/useWeb3Modal";
@@ -49,9 +44,13 @@ async function getSpecificWalkerData(name) {
     method: "POST",
   };
 
-  const pet_response = await fetch(url, otherParam).then((data) => {
-    return data.json();
-  }).then(res=>{return res.data.walks});
+  const pet_response = await fetch(url, otherParam)
+    .then((data) => {
+      return data.json();
+    })
+    .then((res) => {
+      return res.data.walks;
+    });
   return await pet_response;
 }
 
@@ -83,9 +82,13 @@ async function getAllWalkerData() {
     method: "POST",
   };
 
-  const pet_response = await fetch(url, otherParam).then((data) => {
-    return data.json();
-  }).then(res=>{return res.data.walks});
+  const pet_response = await fetch(url, otherParam)
+    .then((data) => {
+      return data.json();
+    })
+    .then((res) => {
+      return res.data.walks;
+    });
   return await pet_response;
 }
 
@@ -110,7 +113,7 @@ function App() {
   const [provider, loadWeb3Modal, logoutOfWeb3Modal] = useWeb3Modal();
   const mainnetProvider = new ethers.providers.InfuraProvider("kovan", {
     projectId: "d635ea6eddda4720824cc8b24380e4a9",
-    projectSecret: "b4ea2b15f0614105a64f0e8ba1f2bffa"
+    projectSecret: "b4ea2b15f0614105a64f0e8ba1f2bffa",
   });
 
   //contracts
@@ -133,10 +136,18 @@ function App() {
   );
 
   return (
-    <div style={{ 
-      backgroundImage: `url("https://i.pinimg.com/564x/77/ad/6c/77ad6c7c8b25b1929ee48420665db07b.jpg")`}}>
+    <div
+      style={{
+        backgroundImage: `url("https://i.pinimg.com/564x/77/ad/6c/77ad6c7c8b25b1929ee48420665db07b.jpg")`,
+      }}
+    >
       <Navbar bg="light" expand="lg">
-        <Navbar.Brand href="#home"><span role="img" aria-label="doge">🐕</span>FidoByte</Navbar.Brand>
+        <Navbar.Brand href="#home">
+          <span role="img" aria-label="doge">
+            🐕
+          </span>{" "}
+          FidoByte
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
@@ -152,7 +163,7 @@ function App() {
           />
         </Navbar.Collapse>
       </Navbar>
-      <Container>      
+      <Container>
         <br></br>
         <WalkTokenDetails
           infura={mainnetProvider}
@@ -162,9 +173,9 @@ function App() {
           walkBadge={walkBadge}
         />
         <br></br>
-        <RankingDataTable 
-          onFetch={()=>getSpecificWalkerData()}
-          onFetchAll={()=>getAllWalkerData()}
+        <RankingDataTable
+          onFetch={() => getSpecificWalkerData()}
+          onFetchAll={() => getAllWalkerData()}
         />
       </Container>
     </div>

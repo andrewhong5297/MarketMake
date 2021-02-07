@@ -6,6 +6,7 @@ import greenbadge from "../images/greenbadge.png";
 import bluebadge from "../images/bluebadge.png";
 import purplebadge from "../images/purplebadge.png";
 import dogtoy from "../images/dog toy.png";
+import toy from "../images/toy.png";
 import {
   Row, 
   Col,
@@ -44,51 +45,28 @@ export const Marketplace = (props) => {
   //need create and upgrade badge buttons (in marketplace)
   //need NFT buy button and toy representation.
 
-  const getLevelImg = () => {
-    switch(badgeLevel) {
-      case "0":
-        return (<img style={{height: "190px", width: "200px"}} src={graybadge} />)
-        break;
-      case "1":
-        return (<img style={{height: "190px", width: "200px"}} src={greenbadge} />)
-        break;
-      case "2":
-        return (<img style={{height: "190px", width: "200px"}} src={bluebadge} />)
-        break;
-      case "3":
-        return (<img style={{height: "190px", width: "200px"}} src={purplebadge} />)
-        break;        
-          }}
-    
-
   return (
-          <div style={{ marginTop: `12px`}}> 
+          <div style={{ marginTop: `20px`}}> 
             <Container>
-              <Row> 
-                <Col sm={6}>
-                  <Container style={{ justifyContent: "center", alignItems: "center" }} React Center>
-                  {getLevelImg()}
-                   <div>
-                   <Button className="center" onClick={badgeStuff} style = {{fontSize: 14, justifyContent: "center", alignItems: "center"}} disabled={isBadgeLoading ? true : false}>
-                        { isBadgeLoading
-                        ? <Spinner 
-                        as="span"
-                        animation="border"
-                        size="sm"
-                        role="status"
-                        aria-hidden="true" />
-                        : null
-                        } 
-                        &nbsp;Create or Update Badge&nbsp;</Button>
-                  </div>
-                  </Container> 
-                </Col> 
+              <Row>
 
-                 <Col sm={6}>
-                    <Container>
-                      <img src={dogtoy} style={{height: "190px", width: "200px"}}/>
-                      <div>
-                      <Button onClick={badgeStuff} style = {{fontSize: 14}} variant = "secondary" disabled={isToyLoading ? true : false}>
+                 <Col>
+                    <Container sm={6}>
+                      <img src={toy} style={{height: "220px", width: "218px"}}/>
+                    </Container>
+                  </Col>
+
+                  <Col>
+                  <div>
+                  <span style={{fontSize: 17}}><b>Brooklyn Squirrel Plush</b></span>
+                  </div>
+                  <div>
+                  <span style={{fontSize: 14}}>Durable and soft squirrel plushie crafted with natural and organic materials handpicked from nature. Claim your limited edition now!</span>
+                  </div>
+                  <div>
+                  <span style={{fontSize: 14, color: "red"}}>5 Out of 20 Sold</span>
+                  </div>
+                  <Button onClick={badgeStuff} style = {{fontSize: 13}} variant = "primary" disabled={isToyLoading ? true : false}>
                         { isToyLoading
                         ? <Spinner 
                         as="span"
@@ -99,11 +77,8 @@ export const Marketplace = (props) => {
                         : null
                         } 
                         &nbsp;&nbsp;Buy Dog Toy&nbsp;&nbsp;</Button>
-                      </div>
-                    </Container>
                   </Col>
-</Row>
-
+                </Row>
             </Container>
           </div>
   )}

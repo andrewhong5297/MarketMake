@@ -128,16 +128,16 @@ export const WalkTokenDetails = (props) => {
     const getLevelImg = () => {
       switch(badgeLevel) {
         case "0":
-          return (<img style={{height: "50px", width: "50px", justifyContent: "end"}} src={graybadge} />)
+          return (<img style={{height: "65px", width: "65px", justifyContent: "end"}} src={graybadge} />)
           break;
         case "1":
-          return (<img style={{height: "50px", width: "50px", justifyContent: "end"}} src={greenbadge} />)
+          return (<img style={{height: "65px", width: "65px", justifyContent: "end"}} src={greenbadge} />)
           break;
         case "2":
-          return (<img style={{height: "50px", width: "50px", justifyContent: "end"}} src={bluebadge} />)
+          return (<img style={{height: "65px", width: "65px", justifyContent: "end"}} src={bluebadge} />)
           break;
         case "3":
-          return (<img style={{height: "50px", width: "50px", justifyContent: "end"}} src={purplebadge} />)
+          return (<img style={{height: "65px", width: "65px", justifyContent: "end"}} src={purplebadge} />)
           break;        
             }}
 
@@ -340,7 +340,7 @@ export const WalkTokenDetails = (props) => {
                         </div>
                       </Tab>
                       <Tab eventKey="Marketplace" title="Marketplace" className="tabColor">
-                        <div style={{ marginTop: `12px`, overflow: "auto", height: "250px"}}>
+                        <div style={{ marginTop: `12px`, overflow: "auto", height: "260px"}}>
                         <Marketplace 
                           provider={props.provider}
                           walkExchange={props.walkExchange}
