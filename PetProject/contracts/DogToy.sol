@@ -15,14 +15,18 @@ contract ERC721ToyNFT is ERC721 {
 
   Toy[] public toys;
 
-  function buyToy(string _name) public {
+  function buyToy(string _name) public returns (bool) {
     /*
     This function creates a new toy object, associates it with an ID
     mints it as a token, and emits a NewToy event
     */
-    uint toyId = toys.push(Toy(_name)) - 1;
-    _safeMint(msg.sender, toyId);
-    emit NewToy(toyId, _name, msg.value);
+   if toys.length <= 20 {
+     uint toyId = toys.push(Toy(_name)) - 1;
+     _safeMint(msg.sender, toyId);
+     emit NewToy(toyId, _name, msg.value);
+     return true;
+   } else {
+     return false;
   }
 
   modifier isOwnerOf(uint _toyId) {
