@@ -16,10 +16,11 @@ import {
 import { RedeemModal } from "./RedeemModal";
 import { Marketplace } from "./Marketplace";
 import { ethers } from "ethers";
-import graybadge from "./graybadge.png";
-import greenbadge from "./greenbadge.png";
-import bluebadge from "./bluebadge.png";
-import purplebadge from "./purplebadge.png";
+
+import graybadge from "../images/graybadge.png";
+import greenbadge from "../images/greenbadge.png";
+import bluebadge from "../images/bluebadge.png";
+import purplebadge from "../images/purplebadge.png";
 const fetch = require("node-fetch");
 
 //https://api.thegraph.com/subgraphs/name/andrewhong5297/walktokentransfers get actions by address
@@ -127,18 +128,19 @@ export const WalkTokenDetails = (props) => {
     const getLevelImg = () => {
       switch(badgeLevel) {
         case "0":
-          return (<img src={graybadge} />)
+          return (<img style={{height: "50px", width: "50px", justifyContent: "end"}} src={graybadge} />)
           break;
         case "1":
-          return (<img src={greenbadge} />)
+          return (<img style={{height: "50px", width: "50px", justifyContent: "end"}} src={greenbadge} />)
           break;
         case "2":
-          return (<img src={bluebadge} />)
+          return (<img style={{height: "50px", width: "50px", justifyContent: "end"}} src={bluebadge} />)
           break;
         case "3":
-          return (<img src={purplebadge} />)
+          return (<img style={{height: "50px", width: "50px", justifyContent: "end"}} src={purplebadge} />)
           break;        
             }}
+
     const [badgeLevel, setBadgeLevel] = useState(1);
 
     const badgeStuff = async () => {
@@ -249,7 +251,9 @@ export const WalkTokenDetails = (props) => {
                         ? <Spinner animation="border" variant="dark" />
                         : checkActionType()
                       }
-                      {getLevelImg()}
+                      <div>
+                          {getLevelImg()}
+                      </div>
                   </Card.Text>
                   <Card.Text className="walkTokenCount">
                       {
