@@ -16,6 +16,7 @@ import {
   Alert
 } from "react-bootstrap";
 import { ethers } from "ethers";
+const { abi: abiDT } = require("../abi/ERC721ToyNFT.json");
 
 export const Marketplace = (props) => {
   const [toyError, setToyError] = useState(false);
@@ -28,17 +29,32 @@ export const Marketplace = (props) => {
 
     const owner = props.provider.getSigner();
     const address = await owner.getAddress();
+    
+    dogToy = new ethers.Contract(
+      "", 
+      abiDT,
+      owner)  
       try {
-        
+        const toyBalance = await dogToy.connect(owner).balanceOf(address)
+        if(toyBalance.toString()!="0")
+        {
+          setToyError(
+            <Alert variant="danger" onClose={() => setToyError(null)} dismissible>
+                <Alert.Heading>You already have this toy 🐕</Alert.Heading>
+            </Alert>
+          )  
+        }
+      else {
         const buyToy = await props.walkExchange.connect(owner).buyToy(overrides);
         setToyLoading(true)
         await buyToy.wait(2) //next project we should attach the etherscan tx too
         setToyLoading(false)
         setToyError(
         <Alert variant="success" onClose={() => setToyError(null)} dismissible>
-            <Alert.Heading>Your badge is updated!</Alert.Heading>
+            <Alert.Heading>The toy is now yours!</Alert.Heading>
         </Alert>
-      )  
+        )  
+      }
     }
     catch(e) {
       console.error(e)
