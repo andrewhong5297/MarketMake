@@ -318,7 +318,7 @@ export const WalkTokenDetails = (props) => {
                   <Tabs className="justify-content-center" defaultActiveKey="Transactions" 
                         id="controlled-tab-example">
                       <Tab eventKey="Transactions" title="Transactions" className="tabColor">
-                        <div style={{ marginTop: `12px`, overflow: "auto", height: "250px"}}>
+                        <div style={{ marginTop: `12px`, overflow: "auto", height: "280px"}}>
                             <Table striped bordered hover>
                                 <thead>
                                   <tr>
@@ -340,7 +340,7 @@ export const WalkTokenDetails = (props) => {
                         </div>
                       </Tab>
                       <Tab eventKey="Marketplace" title="Marketplace" className="tabColor">
-                        <div style={{ marginTop: `12px`, overflow: "auto", height: "260px"}}>
+                        <div style={{ marginTop: `12px`, overflow: "auto", height: "280px"}}>
                         <Marketplace 
                           provider={props.provider}
                           walkExchange={props.walkExchange}
