@@ -63,10 +63,10 @@ describe("Pet Project Full Test v1 Kovan", function () {
             abiLP,
             shelter)     
         
-        walkTokenAddress="0xB18CF80d28E801DC6f3FFC770fF04Baa6E4C7494"
-        exchangeAddress="0x256483af1cbc24E45A2E26784144Dc1C983d7fb7"
-        walkBadgeAddress="0x9F404fBD3cEa961FbacDffC3cE5f47AC59588e37"
-        dogToyAddress="0x6d091fE6a81a3B5b65D950458Af21A73F9f6cb00"
+        walkTokenAddress="0x6c83E8704680625b5Fb99913fDef6FD100B3C648"
+        exchangeAddress="0x833ca4df99eB899cD2D9A4C15a29797C96239311"
+        walkBadgeAddress="0xB4BB400F94db502616E83CAAfD0467eF8553Fb3D"
+        dogToyAddress="0x02D8Dd000dafFCA37D2176670d6b9E05B207ffe8"
     });
 
     it("deploy walkToken", async () => {
@@ -147,7 +147,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         // await oraclej.wait(1)
     })
 
-    it("walker create badge, call oracle, and update badge. Walker should see a payment too", async () => {
+    xit("walker create badge, call oracle, and update badge. Walker should see a payment too", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,
@@ -230,7 +230,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         await attemptDeposit.wait(1)
     })
 
-    it("test walker redeem WT for Dai at 1/100 ratio, with withdrawal call from AAVE if balance not enough", async () => {
+    xit("test walker redeem WT for Dai at 1/100 ratio, with withdrawal call from AAVE if balance not enough", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,
@@ -255,7 +255,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         console.log("Balance of Walker Dai after redeem: ", balance.toString());
     })
 
-    it("test walker buying an NFT from exchange contract", async () => {
+    xit("test walker buying an NFT from exchange contract", async () => {
         walkExchange = new ethers.Contract(
             exchangeAddress, 
             abiWTE,

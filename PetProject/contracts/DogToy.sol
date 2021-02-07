@@ -47,4 +47,8 @@ contract DogToy is ERC721 {
         emit NewToy(toyId, _name);
         return true;
     }
+
+    function getToysMinted() external returns (uint256) {
+        return toys.length;
+    }
 }

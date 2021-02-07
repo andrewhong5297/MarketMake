@@ -112,7 +112,6 @@ contract WalkTokenExchange is ReentrancyGuard {
         if (contractBalanceDai < _DaitoRedeem) {
             withdrawAAVE(_DaitoRedeem, msg.sender); //withdraw only required amount. later this should be always like 30% of dai is redeemable, or some fraction of all walktokens not owned by shelter.
         }
-
         emit redeemedDai(msg.sender, WTneeded, "Redeemed Dai", block.timestamp);
     }
 
