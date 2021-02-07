@@ -4,6 +4,7 @@ const { abi: abiDai } = require("../artifacts/contracts/Dai.sol/Dai.json");
 const { abi: abiLPAP } = require("../artifacts/contracts/AAVE/ILendingPoolAddressesProvider.sol/ILendingPoolAddressesProvider.json");
 const { abi: abiLP } = require("../artifacts/contracts/AAVE/ILendingPool.sol/ILendingPool.json");
 const { abi: abiWT } = require("../artifacts/contracts/WalkToken.sol/WalkToken.json");
+const { abi: abiDT } = require("../artifacts/contracts/ERC721ToyNFT.sol/ERC721ToyNFT.json");
 const { abi: abiWB } = require("../artifacts/contracts/WalkBadgeOracle.sol/WalkBadgeOracle.json");
 const { abi: abiWTE } = require("../artifacts/contracts/Exchange.sol/WalkTokenExchange.json");
 const fs = require("fs"); 
@@ -18,7 +19,7 @@ function mnemonic2() {
 
 //make sure you've switched defaultnetwork to Kovan and put a mnemonic.txt file in the test folder
 describe("Pet Project Full Test v1 Kovan", function () {
-    let walkToken, walkBadge, walkExchange, typesLibrary; //our contracts
+    let walkToken, walkBadge, walkExchange, dogToy, typesLibrary; //our contracts
     let dai, link, LP, LPAP; //already deployed contracts
     let shelter,  walker; //users
     let overrides;
@@ -65,6 +66,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         walkTokenAddress="0x649c200De35dc9990dB3ac49aC8Ed2237053aA35"
         exchangeAddress="0x90b709e2bdf140c5D4bFD7A1f046572ce9f2845f"
         walkBadgeAddress="0x1b5B99dEff7D8dc9e57D51F3fCF2CAa127B60d2D"
+        dogToyAddress=""
     });
 
     it("deploy walkToken", async () => {
@@ -81,6 +83,15 @@ describe("Pet Project Full Test v1 Kovan", function () {
         //   await startingPay.wait(1)
     });
 
+    it("deploy dogToy", async () => {
+        const DogToy = await ethers.getContractFactory(
+            "ERC721ToyNFT"
+          );
+        dogToy = await DogToy.connect(shelter).deploy();  
+        await walkToken.deployed()
+        dogToyAddress=dogToy.address
+    })
+
     it("deploy walkExchange", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
@@ -91,7 +102,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
             "WalkTokenExchange"
           );
 
-        walkExchange = await WalkExchange.connect(shelter).deploy(walkToken.address, dai.address, LP.address);
+        walkExchange = await WalkExchange.connect(shelter).deploy(walkToken.address, dai.address, LP.address, dogToyAddress);
         await walkExchange.deployed()
         console.log("Exchange Address: ", walkExchange.address)
         exchangeAddress=walkExchange.address
@@ -241,7 +252,18 @@ describe("Pet Project Full Test v1 Kovan", function () {
     })
 
     xit("test walker buying an NFT from exchange contract", async () => {
-        //still have to write this contract
+        walkExchange = new ethers.Contract(
+            exchangeAddress, 
+            abiWTE,
+            shelter)  
+        
+        //buy one toy for 1000 WT. 
+        const approve = await walkToken.connect(walker).approve(walkExchange.address,ethers.BigNumber.from((1*10**21).toLocaleString('fullwide', {useGrouping:false})),overrides);
+        await approve.wait(1)
+        
+        //buy a Toy
+        const buyToy = await walkExchange.connect(shelter).buyDogToyNFT("Brooklyn Squirrel"); 
+        await buyToy.wait(1)
     })
 
 })

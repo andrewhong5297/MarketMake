@@ -122,9 +122,9 @@ contract WalkTokenExchange is ReentrancyGuard {
         ToyNFT = ERC721ToyNFT(_ToyNFT);
     }
 
-    function buyDogToyNFT(string name) external {
+    function buyDogToyNFT(string calldata name) external {
         require(msg.value == newToyCost, "need more tokens to buy this toy");
-        string action = "Buy new doggy toy";
+        string calldata action = "Buy new doggy toy";
         bool toyBought = ToyNFT.buyToy(name);
         require(toyBought, "toy is out of stock");
         emit boughtToy(msg.sender, msg.value, action, now);
