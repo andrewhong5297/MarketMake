@@ -3,10 +3,6 @@ const { ethers } = require("hardhat");
 const { abi: abiDai } = require("../artifacts/contracts/Dai.sol/Dai.json");
 const fs = require("fs"); 
 
-function mnemonic() {
-  return fs.readFileSync("./test/mnemonic.txt").toString().trim();
-}
-
 //make sure you have defaultnetwork on localhost, a hardhat node running
 describe("Pet Project Full Test v1 Local", function () {
     let walkToken, walkBadge, walkExchange;

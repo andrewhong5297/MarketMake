@@ -10,8 +10,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./AAVE/ILendingPool.sol";
-
-// import "./DogToy.sol";
+import "./DogToy.sol";
 
 contract WalkTokenExchange is ReentrancyGuard {
     using SafeMath for uint256;
@@ -20,7 +19,7 @@ contract WalkTokenExchange is ReentrancyGuard {
     IERC20 private IERC20Dai;
     IERC20 private IERC20WT;
     ILendingPool private ILP;
-    // ERC721ToyNFT private ToyNFT;
+    DogToy private ToyNFT;
 
     uint256 newToyCost = 1000 * (10**18); // walk tokens
 
@@ -40,13 +39,14 @@ contract WalkTokenExchange is ReentrancyGuard {
     constructor(
         address _WT,
         address _Dai,
-        address _ILP // address _ToyNFT
+        address _ILP,
+        address _ToyNFT
     ) public {
         shelter = msg.sender;
         IERC20Dai = IERC20(_Dai);
         IERC20WT = IERC20(_WT);
         ILP = ILendingPool(_ILP);
-        // ToyNFT = ERC721ToyNFT(_ToyNFT);
+        ToyNFT = DogToy(_ToyNFT);
     }
 
     function recieveWT(uint256 _value) public {
@@ -66,7 +66,7 @@ contract WalkTokenExchange is ReentrancyGuard {
         IERC20Dai.approve(msg.sender, _value);
         IERC20Dai.transferFrom(address(this), msg.sender, _value);
 
-        //eventually need a function in here that calls for withdrawAAVE too
+        //eventually need a function in here that calls for withdrawAAVE too if not enough Dai
     }
 
     // Function to receive Ether. msg.data must be empty
@@ -117,22 +117,24 @@ contract WalkTokenExchange is ReentrancyGuard {
     }
 
     //for when a new batch of toys is made to mint
-    function newToy(address _ToyNFT) external {
-        require(msg.sender == shelter);
-        ToyNFT = ERC721ToyNFT(_ToyNFT);
+    function setNewToy(address _ToyNFT) external {
+        require(msg.sender == shelter, "Only shelter can declare new toys");
+        ToyNFT = DogToy(_ToyNFT);
     }
 
     function buyDogToyNFT(string calldata name) external {
-        string memory action = "Buy new doggy toy";
         // get the Walk Token balance of the sender
         uint256 balanceWT = IERC20WT.balanceOf(msg.sender);
         // require that balance to be enough to buy a toy
-        require(balanceWT >= newToyCost, "Need more walk tokens to buy this toy");
+        require(
+            balanceWT >= newToyCost,
+            "Need more walk tokens to buy this toy"
+        );
         // call buy toy for sender
         bool toyBought = ToyNFT.buyToy(msg.sender, name);
-        require(toyBought, "toy is out of stock");
+        require(toyBought, "something went wrong");
         // transfer walk tokens from walker to exchange
         IERC20WT.transferFrom(msg.sender, address(this), newToyCost);
-        emit boughtToy(msg.sender, newToyCost, action, now);
+        emit boughtToy(msg.sender, newToyCost, "Bought new doggy toy", now);
     }
 }

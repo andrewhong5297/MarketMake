@@ -118,19 +118,19 @@ function App() {
 
   //contracts
   let walkExchange = new ethers.Contract(
-    "0x536fe3510Ab895c93f02D1803a7cd0602Dcd8E43",
+    "0x256483af1cbc24E45A2E26784144Dc1C983d7fb7",
     abiWTE,
     mainnetProvider
   );
 
   let walkToken = new ethers.Contract(
-    "0x4bc20d3da2a0e56a75225FDF2878f130854D31d1",
+    "0xB18CF80d28E801DC6f3FFC770fF04Baa6E4C7494",
     abiWT,
     mainnetProvider
   );
 
   let walkBadge = new ethers.Contract(
-    "0xd3A5F01d67555921aecb9544fc963ab435859690",
+    "0x9F404fBD3cEa961FbacDffC3cE5f47AC59588e37",
     abiWB,
     mainnetProvider
   );

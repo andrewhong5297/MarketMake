@@ -16,7 +16,7 @@ import {
   Alert
 } from "react-bootstrap";
 import { ethers } from "ethers";
-const { abi: abiDT } = require("../abis/ERC721ToyNFT.json");
+const { abi: abiDT } = require("../abis/DogToy.json");
 
 export const Marketplace = (props) => {
   const [toyError, setToyError] = useState(false);
@@ -31,7 +31,7 @@ export const Marketplace = (props) => {
     const address = await owner.getAddress();
     
     const dogToy = new ethers.Contract(
-      "", 
+      "0x6d091fE6a81a3B5b65D950458Af21A73F9f6cb00", 
       abiDT,
       owner)  
       try {

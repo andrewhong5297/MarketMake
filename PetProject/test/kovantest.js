@@ -4,7 +4,7 @@ const { abi: abiDai } = require("../artifacts/contracts/Dai.sol/Dai.json");
 const { abi: abiLPAP } = require("../artifacts/contracts/AAVE/ILendingPoolAddressesProvider.sol/ILendingPoolAddressesProvider.json");
 const { abi: abiLP } = require("../artifacts/contracts/AAVE/ILendingPool.sol/ILendingPool.json");
 const { abi: abiWT } = require("../artifacts/contracts/WalkToken.sol/WalkToken.json");
-// const { abi: abiDT } = require("../artifacts/contracts/ERC721ToyNFT.sol/ERC721ToyNFT.json");
+const { abi: abiDT } = require("../artifacts/contracts/DogToy.sol/DogToy.json");
 const { abi: abiWB } = require("../artifacts/contracts/WalkBadgeOracle.sol/WalkBadgeOracle.json");
 const { abi: abiWTE } = require("../artifacts/contracts/Exchange.sol/WalkTokenExchange.json");
 const fs = require("fs"); 
@@ -14,8 +14,8 @@ function mnemonic() {
 }
 
 function mnemonic2() {
-    return fs.readFileSync("./test/mnemonic2.txt").toString().trim();
-  }
+  return fs.readFileSync("./test/mnemonic2.txt").toString().trim();
+}
 
 //make sure you've switched defaultnetwork to Kovan and put a mnemonic.txt file in the test folder
 describe("Pet Project Full Test v1 Kovan", function () {
@@ -63,13 +63,13 @@ describe("Pet Project Full Test v1 Kovan", function () {
             abiLP,
             shelter)     
         
-        walkTokenAddress="0x4bc20d3da2a0e56a75225FDF2878f130854D31d1"
-        exchangeAddress="0x536fe3510Ab895c93f02D1803a7cd0602Dcd8E43"
-        walkBadgeAddress="0xd3A5F01d67555921aecb9544fc963ab435859690"
-        dogToyAddress="0x1b5B99dEff7D8dc9e57D51F3fCF2CAa127B60d2D"
+        walkTokenAddress="0xB18CF80d28E801DC6f3FFC770fF04Baa6E4C7494"
+        exchangeAddress="0x256483af1cbc24E45A2E26784144Dc1C983d7fb7"
+        walkBadgeAddress="0x9F404fBD3cEa961FbacDffC3cE5f47AC59588e37"
+        dogToyAddress="0x6d091fE6a81a3B5b65D950458Af21A73F9f6cb00"
     });
 
-    xit("deploy walkToken", async () => {
+    it("deploy walkToken", async () => {
          const WalkToken = await ethers.getContractFactory(
             "WalkToken"
           );
@@ -78,21 +78,22 @@ describe("Pet Project Full Test v1 Kovan", function () {
           console.log("WalkToken Address: ", walkToken.address)
           walkTokenAddress=walkToken.address
         
-        //   this pay is just for having enough for exchange purposes. 
-        //   const startingPay = await walkToken.connect(shelter).transfer(ethers.BigNumber.from((10**22).toLocaleString('fullwide', {useGrouping:false})),walker.getAddress())
-        //   await startingPay.wait(1)
+          //this pay is just for having enough for exchange purposes. 
+          const startingPay = await walkToken.connect(shelter).transfer(walker.getAddress(),ethers.BigNumber.from((10**22).toLocaleString('fullwide', {useGrouping:false})))
+          await startingPay.wait(1)
     });
 
-    xit("deploy dogToy", async () => {
+    it("deploy dogToy", async () => {
         const DogToy = await ethers.getContractFactory(
-            "ERC721ToyNFT"
+            "DogToy"
           );
         dogToy = await DogToy.connect(shelter).deploy();  
-        await walkToken.deployed()
+        await dogToy.deployed()
         dogToyAddress=dogToy.address
+        console.log("Dog Toy Address: ", dogToyAddress)
     })
 
-    xit("deploy walkExchange", async () => {
+    it("deploy walkExchange", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,
@@ -102,13 +103,16 @@ describe("Pet Project Full Test v1 Kovan", function () {
             "WalkTokenExchange"
           );
 
-        walkExchange = await WalkExchange.connect(shelter).deploy(walkToken.address, dai.address, LP.address);//dogToyAddress);
+        walkExchange = await WalkExchange.connect(shelter).deploy(walkToken.address, dai.address, LP.address, dogToyAddress);
         await walkExchange.deployed()
         console.log("Exchange Address: ", walkExchange.address)
         exchangeAddress=walkExchange.address
+
+        const setEx = await dogToy.connect(shelter).setExchange(walkExchange.address)
+        await setEx.wait(1)
     })
 
-    xit("deploy walkBadge", async () => {
+    it("deploy walkBadge", async () => {
         const TypesLibrary = await ethers.getContractFactory(
             "typesLibrary"
           );
@@ -143,7 +147,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         // await oraclej.wait(1)
     })
 
-    xit("walker create badge, call oracle, and update badge. Walker should see a payment too", async () => {
+    it("walker create badge, call oracle, and update badge. Walker should see a payment too", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,
@@ -226,7 +230,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         await attemptDeposit.wait(1)
     })
 
-    xit("test walker redeem WT for Dai at 1/100 ratio, with withdrawal call from AAVE if balance not enough", async () => {
+    it("test walker redeem WT for Dai at 1/100 ratio, with withdrawal call from AAVE if balance not enough", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
             abiWT,
@@ -251,7 +255,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         console.log("Balance of Walker Dai after redeem: ", balance.toString());
     })
 
-    xit("test walker buying an NFT from exchange contract", async () => {
+    it("test walker buying an NFT from exchange contract", async () => {
         walkExchange = new ethers.Contract(
             exchangeAddress, 
             abiWTE,
@@ -262,8 +266,11 @@ describe("Pet Project Full Test v1 Kovan", function () {
         await approve.wait(1)
         
         //buy a Toy
-        const buyToy = await walkExchange.connect(shelter).buyDogToyNFT("Brooklyn Squirrel"); 
+        const buyToy = await walkExchange.connect(walker).buyDogToyNFT("Brooklyn Squirrel"); 
         await buyToy.wait(1)
+        
+        //check if owns toy
+        const balance = await dogToy.connect(walker).balanceOf(walket.getAddress())
+        console.log(balance.toString())
     })
-
 })
