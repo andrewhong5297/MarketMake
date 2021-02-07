@@ -92,7 +92,9 @@ export const WalkTokenDetails = (props) => {
     const fetchGraphData = async () => {
       setGraphLoading(true);
       try {          
-        const response = await getGraphTransfers("0xa55E01a40557fAB9d87F993d8f5344f1b2408072")
+        const owner = props.provider.getSigner();
+        const address = await owner.getAddress()
+        const response = await getGraphTransfers(address)
         console.log(response)
         setData(response);
       } catch (e) {
@@ -101,12 +103,13 @@ export const WalkTokenDetails = (props) => {
     }
 
     const checkActionType = () => {
-      if(props.provider===undefined)
+      if(props.provider===undefined || data.length == 0)
       {
         return (<div className="tokenFluctuationUp">0</div>)
       }
       else
       {
+        console.log(data)
         if(data[0]["action"]==="Walk Pay") {
         return (<div className="tokenFluctuationUp">{"+" + reduceTwoDecimalsBI(data[0].value)}</div>)
         }

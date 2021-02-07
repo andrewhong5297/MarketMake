@@ -28,16 +28,11 @@ export const Marketplace = (props) => {
       const owner = props.provider.getSigner()
       const address = await owner.getAddress()
       const badgeData = await props.walkBadge.connect(owner).getBadge(address)
-      console.log(badgeData["level"].toString)
       setBadgeLevel(badgeData["level"].toString())
     }
 
     useEffect(() => {
-    if (props.provider===undefined) {
-      console.log("undef")
-    }
-    else {
-      console.log("hello")
+    if (props.provider!=undefined) {
       badgeStuff();
     }
     },[props.provider])
