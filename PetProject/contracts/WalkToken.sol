@@ -23,10 +23,7 @@ contract WalkToken is ERC20 {
     }
 
     function payTo(uint256 _newSupply, address _payee) external {
-        // require(
-        //     msg.sender == badge || msg.sender == shelter,
-        //     "only shelter can mint, not dogs"
-        // );
+        require(msg.sender == badge, "only badge contract can make payments");
         _mint(_payee, _newSupply);
     }
 }

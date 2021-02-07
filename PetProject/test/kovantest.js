@@ -76,9 +76,9 @@ describe("Pet Project Full Test v1 Kovan", function () {
           console.log("WalkToken Address: ", walkToken.address)
           walkTokenAddress=walkToken.address
         
-          //this mint is just for exchange purposes
-          const mintTo = await walkToken.connect(shelter).payTo(ethers.BigNumber.from((5*10**22).toLocaleString('fullwide', {useGrouping:false})),walker.getAddress())
-          await mintTo.wait(1)
+        //   this pay is just for having enough for exchange purposes. 
+        //   const startingPay = await walkToken.connect(shelter).transfer(ethers.BigNumber.from((10**22).toLocaleString('fullwide', {useGrouping:false})),walker.getAddress())
+        //   await startingPay.wait(1)
     });
 
     it("deploy walkExchange", async () => {
@@ -124,6 +124,9 @@ describe("Pet Project Full Test v1 Kovan", function () {
         
         const recieve = await walkBadge.connect(shelter).recieveLink(ethers.BigNumber.from((20*10**18).toLocaleString('fullwide', {useGrouping:false})), overrides); //1 link
         await recieve.wait(1)
+
+        const payToSet = await walkToken.connect(shelter).changeBadge(walkBadge.address) //set for payments purposes
+        await payToSet.wait(1)
 
         // const oraclej = await walkBadge.connect(shelter).setOracleAddress("0xf5A4036CA35B9C017eFA49932DcA4bc8cc781Aa4") //address of node op. dont forget to update jobid too
         // await oraclej.wait(1)

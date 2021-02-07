@@ -21,7 +21,7 @@ contract WalkTokenExchange is ReentrancyGuard {
     ILendingPool private ILP;
     ERC721ToyNFT private ToyNFT;
 
-    uint newToyCost = 0.001 ether;
+    uint256 newToyCost = 0.001 ether;
 
     event redeemedDai(
         address spender,
@@ -116,11 +116,17 @@ contract WalkTokenExchange is ReentrancyGuard {
         emit redeemedDai(msg.sender, WTneeded, "Redeemed Dai", block.timestamp);
     }
 
-    function buyDogToyNFT(string name) external {
-      require(msg.value == newToyCost);
-      string action = "Buy new doggy toy";
-      ToyNFT.buyToy(name);
-      emit boughtToy(msg.sender, msg.value, action , now);
+    //for when a new batch of toys is made to mint
+    function newToy(address _ToyNFT) external {
+        require(msg.sender = shelter);
+        ToyNFT = ERC721ToyNFT(_ToyNFT);
     }
 
+    function buyDogToyNFT(string name) external {
+        require(msg.value == newToyCost, "need more tokens to buy this toy");
+        string action = "Buy new doggy toy";
+        bool toyBought = ToyNFT.buyToy(name);
+        require(toyBought, "toy is out of stock");
+        emit boughtToy(msg.sender, msg.value, action, now);
+    }
 }
