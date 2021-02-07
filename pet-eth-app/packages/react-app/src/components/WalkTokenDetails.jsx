@@ -16,6 +16,10 @@ import {
 import { RedeemModal } from "./RedeemModal";
 import { Marketplace } from "./Marketplace";
 import { ethers } from "ethers";
+import graybadge from "./graybadge.png";
+import greenbadge from "./greenbadge.png";
+import bluebadge from "./bluebadge.png";
+import purplebadge from "./purplebadge.png";
 const fetch = require("node-fetch");
 
 //https://api.thegraph.com/subgraphs/name/andrewhong5297/walktokentransfers get actions by address
@@ -46,8 +50,29 @@ async function getGraphTransfers(address) {
   return await pet_response;
 }
 
+const reduceTwoDecimalsBI = (BigIntString) => {
+  if(BigIntString.length===1)
+  {
+    return "0"
+  }
+  else
+  {
+  let returnV = BigIntString.slice(0,-16)
+  const numberLen = returnV.length
+  returnV = returnV.slice(0,numberLen-2) + "." + returnV.slice(numberLen-2,numberLen)
+  return returnV
+  }
+}
+
+const getDateFromUnix = (unix_timestamp) => {
+  const date = new Date(unix_timestamp * 1000);
+  const formattedTime = (date + " ").slice(0,-33) + " EST" 
+  return formattedTime
+}
+
 export const WalkTokenDetails = (props) => {
     const [errorBadge, setBadgeError] = useState(null);
+    const [isBadgeLoading, setBadgeLoading] = useState(false);
     const [isBalanceLoading, setBalanceLoading] = useState(true);
     const [isGraphLoading, setGraphLoading] = useState(true);
     const [isPayLoading, setPayLoading] = useState(false);
@@ -57,26 +82,6 @@ export const WalkTokenDetails = (props) => {
     const [usdAmount, setUSD] = useState("0");
     const [data, setData] = useState([]);
     const [redeemModalShow, setRedeemModalShow] = useState(false);
-
-    const reduceTwoDecimalsBI = (BigIntString) => {
-      if(BigIntString.length===1)
-      {
-        return "0"
-      }
-      else
-      {
-      let returnV = BigIntString.slice(0,-16)
-      const numberLen = returnV.length
-      returnV = returnV.slice(0,numberLen-2) + "." + returnV.slice(numberLen-2,numberLen)
-      return returnV
-      }
-    }
-    
-    const getDateFromUnix = (unix_timestamp) => {
-      const date = new Date(unix_timestamp * 1000);
-      const formattedTime = (date + " ").slice(0,-33) + " EST" 
-      return formattedTime
-    }
 
     const fetchBalance = async () => {
       setBalanceLoading(true);
@@ -119,6 +124,30 @@ export const WalkTokenDetails = (props) => {
       }
     }
 
+    const getLevelImg = () => {
+      switch(badgeLevel) {
+        case "0":
+          return (<img src={graybadge} />)
+          break;
+        case "1":
+          return (<img src={greenbadge} />)
+          break;
+        case "2":
+          return (<img src={bluebadge} />)
+          break;
+        case "3":
+          return (<img src={purplebadge} />)
+          break;        
+            }}
+    const [badgeLevel, setBadgeLevel] = useState(1);
+
+    const badgeStuff = async () => {
+      const owner = props.provider.getSigner()
+      const address = await owner.getAddress()
+      const badgeData = await props.walkBadge.connect(owner).getBadge(address)
+      setBadgeLevel(badgeData["level"].toString())
+    }
+
     //update all data and table when provider loads in
     useEffect(() => {
     fetchBalance()
@@ -127,6 +156,7 @@ export const WalkTokenDetails = (props) => {
       setMapping(null)
     }
     else{
+      badgeStuff();
       setMapping(data.map((row, index) => (
       <tr id={index}>
         <td id={index}>{getDateFromUnix(row["createdAt"])}</td>
@@ -137,7 +167,7 @@ export const WalkTokenDetails = (props) => {
       )))
     }
     }, [props.provider])
-
+    //second useeffect to empty the table
     useEffect(()=>{
       if(props.provider===undefined){
         setMapping(null)
@@ -219,6 +249,7 @@ export const WalkTokenDetails = (props) => {
                         ? <Spinner animation="border" variant="dark" />
                         : checkActionType()
                       }
+                      {getLevelImg()}
                   </Card.Text>
                   <Card.Text className="walkTokenCount">
                       {
@@ -234,6 +265,17 @@ export const WalkTokenDetails = (props) => {
                 <Row>
                   <Col>
                     <Container style={{display: "flex", justifyContent: "center", alignItems: "center" }} React Center>
+                        <Button onClick={badgeStuff} style = {{fontSize: 14}} disabled={isBadgeLoading ? true : false}>
+                          { isBadgeLoading
+                          ? <Spinner 
+                          as="span"
+                          animation="border"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true" />
+                          : null
+                          } 
+                          &nbsp;Create or Update Badge&nbsp;</Button> &nbsp;&nbsp;&nbsp;
                         <Button onClick={claimPay} style = {{fontSize: 14}} disabled={isPayLoading ? true : false}>
                             { isPayLoading
                             ? <Spinner 
