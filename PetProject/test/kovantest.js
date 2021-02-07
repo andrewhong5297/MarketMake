@@ -63,10 +63,10 @@ describe("Pet Project Full Test v1 Kovan", function () {
             abiLP,
             shelter)     
         
-        walkTokenAddress="0x6c83E8704680625b5Fb99913fDef6FD100B3C648"
-        exchangeAddress="0x833ca4df99eB899cD2D9A4C15a29797C96239311"
-        walkBadgeAddress="0xB4BB400F94db502616E83CAAfD0467eF8553Fb3D"
-        dogToyAddress="0x02D8Dd000dafFCA37D2176670d6b9E05B207ffe8"
+        walkTokenAddress="0x9611B6d05d00F11A768B2FF2b292Dbf943835076"
+        exchangeAddress="0x5Fae318182f87D7b7F78c83C93c5B5d26174fF0D"
+        walkBadgeAddress="0x040B37c073fCCAe050c995eF687A3C2900e6D8De"
+        dogToyAddress="0x3e3c4cb9B82d4bA208f27E41b51C2168e7f8CC0d"
     });
 
     it("deploy walkToken", async () => {
@@ -78,9 +78,9 @@ describe("Pet Project Full Test v1 Kovan", function () {
           console.log("WalkToken Address: ", walkToken.address)
           walkTokenAddress=walkToken.address
         
-          //this pay is just for having enough for exchange purposes. 
-          const startingPay = await walkToken.connect(shelter).transfer(walker.getAddress(),ethers.BigNumber.from((10**22).toLocaleString('fullwide', {useGrouping:false})))
-          await startingPay.wait(1)
+        //   this pay is just for having enough for exchange purposes. 
+        //   const startingPay = await walkToken.connect(shelter).transfer(walker.getAddress(),ethers.BigNumber.from((10**22).toLocaleString('fullwide', {useGrouping:false})))
+        //   await startingPay.wait(1)
     });
 
     it("deploy dogToy", async () => {
@@ -147,6 +147,38 @@ describe("Pet Project Full Test v1 Kovan", function () {
         // await oraclej.wait(1)
     })
 
+    it("shelter deposit Dai into exchange for walkers' redeemability", async () => {
+        walkExchange = new ethers.Contract(
+            exchangeAddress, 
+            abiWTE,
+            shelter)  
+        
+        //deposit Dai into contract
+        const approve = await dai.connect(shelter).approve(walkExchange.address, ethers.BigNumber.from((10**21).toLocaleString('fullwide', {useGrouping:false})), overrides); //1000 dai
+        await approve.wait(1)
+        
+        const recieve = await walkExchange.connect(shelter).recieveDai(ethers.BigNumber.from((10**21).toLocaleString('fullwide', {useGrouping:false})), overrides); //1000 dai
+        await recieve.wait(1)
+        
+        // //transfer ETH to the contract for gas fees (Implement GSN later)
+        // const tx = await shelter.sendTransaction({
+        //     to: walkExchange.address,
+        //     value: ethers.BigNumber.from((10**17).toLocaleString('fullwide', {useGrouping:false})) //0.1 ETH
+        // });
+        // console.log(tx)
+    });
+
+    it("exchange deposits Dai into AAVE", async () => {
+        walkExchange = new ethers.Contract(
+            exchangeAddress, 
+            abiWTE,
+            shelter)  
+
+        //deposit 100 dai into AAVE from exchange contract
+        const attemptDeposit = await walkExchange.connect(shelter).depositAAVE(ethers.BigNumber.from((10**21).toLocaleString('fullwide', {useGrouping:false})), overrides); //1000 dai
+        await attemptDeposit.wait(1)
+    })
+
     xit("walker create badge, call oracle, and update badge. Walker should see a payment too", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
@@ -198,38 +230,6 @@ describe("Pet Project Full Test v1 Kovan", function () {
                         Total dogs walked of ${badgeDataAfter[4]}`)
     })
 
-    it("shelter deposit Dai into exchange for walkers' redeemability", async () => {
-        walkExchange = new ethers.Contract(
-            exchangeAddress, 
-            abiWTE,
-            shelter)  
-        
-        //deposit Dai into contract
-        const approve = await dai.connect(shelter).approve(walkExchange.address, ethers.BigNumber.from((10**21).toLocaleString('fullwide', {useGrouping:false})), overrides); //1000 dai
-        await approve.wait(1)
-        
-        const recieve = await walkExchange.connect(shelter).recieveDai(ethers.BigNumber.from((10**21).toLocaleString('fullwide', {useGrouping:false})), overrides); //1000 dai
-        await recieve.wait(1)
-        
-        // //transfer ETH to the contract for gas fees (Implement GSN later)
-        // const tx = await shelter.sendTransaction({
-        //     to: walkExchange.address,
-        //     value: ethers.BigNumber.from((10**17).toLocaleString('fullwide', {useGrouping:false})) //0.1 ETH
-        // });
-        // console.log(tx)
-    });
-
-    it("exchange deposits Dai into AAVE", async () => {
-        walkExchange = new ethers.Contract(
-            exchangeAddress, 
-            abiWTE,
-            shelter)  
-
-        //deposit 100 dai into AAVE from exchange contract
-        const attemptDeposit = await walkExchange.connect(shelter).depositAAVE(ethers.BigNumber.from((10**21).toLocaleString('fullwide', {useGrouping:false})), overrides); //1000 dai
-        await attemptDeposit.wait(1)
-    })
-
     xit("test walker redeem WT for Dai at 1/100 ratio, with withdrawal call from AAVE if balance not enough", async () => {
         walkToken = new ethers.Contract(
             walkTokenAddress, 
@@ -270,7 +270,7 @@ describe("Pet Project Full Test v1 Kovan", function () {
         await buyToy.wait(1)
         
         //check if owns toy
-        const balance = await dogToy.connect(walker).balanceOf(walket.getAddress())
+        const balance = await dogToy.connect(walker).balanceOf(walker.getAddress())
         console.log(balance.toString())
     })
 })

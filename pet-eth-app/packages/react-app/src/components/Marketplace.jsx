@@ -15,25 +15,8 @@ const { abi: abiDT } = require("../abis/DogToy.json");
 
 export const Marketplace = (props) => {
   const [toyError, setToyError] = useState(false);
-  const [toysBought, setToysBought] = useState("0");
   const [isToyLoading, setToyLoading] = useState(false);
-
-  useEffect(() => {
-  if(props.provider!=undefined){
-    getToyCount()
-  }
-  }, [props.provider])
-
-  const getToyCount = async () => {
-    const owner = props.provider.getSigner();
-    
-    const dogToy = new ethers.Contract(
-      "0x02D8Dd000dafFCA37D2176670d6b9E05B207ffe8", 
-      abiDT,
-      owner)  
-    const toyBalance = await dogToy.connect(owner).getToysMinted();
-    setToysBought(toyBalance.toString());
-  }
+  
   const buyToy = async () => {
     try {
     const overrides = {
@@ -44,10 +27,11 @@ export const Marketplace = (props) => {
     const address = await owner.getAddress();
     
     const dogToy = new ethers.Contract(
-      "0x02D8Dd000dafFCA37D2176670d6b9E05B207ffe8", 
+      "0x3e3c4cb9B82d4bA208f27E41b51C2168e7f8CC0d", 
       abiDT,
       owner)  
     const toyBalance = await dogToy.connect(owner).balanceOf(address)
+
     if(toyBalance.toString()!="0")
     {
       setToyError(
@@ -57,7 +41,8 @@ export const Marketplace = (props) => {
       )  
     }
     else {
-      const buyToy = await props.walkExchange.connect(owner).buyDogToyNFT(overrides);
+      const approve = await props.walkToken.connect(owner).approve(props.walkExchange.address,ethers.BigNumber.from((1*10**21).toLocaleString('fullwide', {useGrouping:false})),overrides);
+      const buyToy = await props.walkExchange.connect(owner).buyDogToyNFT("Brooklyn Squirrel",overrides);
       setToyLoading(true)
       await buyToy.wait(2) //next project we should attach the etherscan tx too
       setToyLoading(false)
@@ -102,7 +87,7 @@ export const Marketplace = (props) => {
                   <span style={{fontSize: 14}}>1000 WT</span>
                   </div>
                   <div>
-                  <span style={{fontSize: 14, color: "red"}}>{toysBought + " Out of 20 Sold"}</span>
+                  <span style={{fontSize: 14, color: "red"}}>5 Out of 20 Sold</span>
                   </div>
                   <Button onClick={buyToy} style = {{fontSize: 13}} variant = "primary" disabled={isToyLoading ? true : false}>
                         { isToyLoading
