@@ -4,7 +4,7 @@ import "../index.css";
 import {
   Container,
   Row,
-  Col,
+  Col, 
   Button,
   Tab,
   Tabs,
@@ -245,15 +245,19 @@ export const WalkTokenDetails = (props) => {
                     <Card.Title className="customCardTitle">Total Walk Tokens (WT)</Card.Title>
                   </Col>
                 </Row>
+                
+                <div>
+                  <Container style={{textAlign: "right"}}>
+                  {getLevelImg()}
+                  </Container>
+                   </div>
+
                   <Card.Text>
                       {
                         isGraphLoading
                         ? <Spinner animation="border" variant="dark" />
                         : checkActionType()
                       }
-                      <div>
-                          {getLevelImg()}
-                      </div>
                   </Card.Text>
                   <Card.Text className="walkTokenCount">
                       {
@@ -269,7 +273,7 @@ export const WalkTokenDetails = (props) => {
                 <Row>
                   <Col>
                     <Container style={{display: "flex", justifyContent: "center", alignItems: "center" }} React Center>
-                        <Button onClick={badgeStuff} style = {{fontSize: 14}} disabled={isBadgeLoading ? true : false}>
+                        <Button onClick={badgeStuff} style = {{fontSize: 14, backgroundColor: "#188120"}} disabled={isBadgeLoading ? true : false}>
                           { isBadgeLoading
                           ? <Spinner 
                           as="span"
@@ -280,7 +284,7 @@ export const WalkTokenDetails = (props) => {
                           : null
                           } 
                           &nbsp;Create or Update Badge&nbsp;</Button> &nbsp;&nbsp;&nbsp;
-                        <Button onClick={claimPay} style = {{fontSize: 14}} disabled={isPayLoading ? true : false}>
+                        <Button onClick={claimPay} style = {{fontSize: 14}} variant="primary" disabled={isPayLoading ? true : false}>
                             { isPayLoading
                             ? <Spinner 
                             as="span"

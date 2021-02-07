@@ -7,7 +7,7 @@ import bluebadge from "../images/bluebadge.png";
 import purplebadge from "../images/purplebadge.png";
 import dogtoy from "../images/dog toy.png";
 import {
-  Row,
+  Row, 
   Col,
   Button,
   Spinner,
