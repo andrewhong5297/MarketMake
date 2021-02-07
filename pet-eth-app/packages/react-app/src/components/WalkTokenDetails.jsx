@@ -304,7 +304,7 @@ export const WalkTokenDetails = (props) => {
                       overlay={renderTooltip}
                     >
                       {getLevelImg()}
-                    </OverlayTrigger>,
+                    </OverlayTrigger>
                   </Container>
                    </div>
                   <Card.Text>
