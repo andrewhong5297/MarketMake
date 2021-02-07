@@ -71,6 +71,9 @@ export const Marketplace = (props) => {
                   <span style={{fontSize: 14}}>Durable and soft squirrel plushie crafted with natural and organic materials handpicked from nature. Claim your limited edition now!</span>
                   </div>
                   <div>
+                  <span style={{fontSize: 14}}>1000 WT</span>
+                  </div>
+                  <div>
                   <span style={{fontSize: 14, color: "red"}}>5 Out of 20 Sold</span>
                   </div>
                   <Button onClick={buyToy} style = {{fontSize: 13}} variant = "primary" disabled={isToyLoading ? true : false}>
