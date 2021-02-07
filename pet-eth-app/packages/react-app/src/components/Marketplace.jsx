@@ -12,38 +12,45 @@ import {
   Col,
   Button,
   Spinner,
-  Container
+  Container,
+  Alert
 } from "react-bootstrap";
 import { ethers } from "ethers";
 
 export const Marketplace = (props) => {
-  const overrides = {
-
-  }
-
-  const [isBadgeLoading, setBadgeLoading] = useState(false);
+  const [toyError, setToyError] = useState(false);
   const [isToyLoading, setToyLoading] = useState(false);
-  const [badgeLevel, setBadgeLevel] = useState(1);
+  
+  const buyToy = async () => {
+    const overrides = {
+      gasLimit: ethers.BigNumber.from("1000000"),
+    };
 
-  const badgeStuff = async () => {
-    const owner = props.provider.getSigner()
-    const address = await owner.getAddress()
-    const badgeData = await props.walkBadge.connect(owner).getBadge(address)
-    console.log(badgeData["level"].toString)
-    setBadgeLevel(badgeData["level"].toString())
+    const owner = props.provider.getSigner();
+    const address = await owner.getAddress();
+      try {
+        
+        const buyToy = await props.walkExchange.connect(owner).buyToy(overrides);
+        setToyLoading(true)
+        await buyToy.wait(2) //next project we should attach the etherscan tx too
+        setToyLoading(false)
+        setToyError(
+        <Alert variant="success" onClose={() => setToyError(null)} dismissible>
+            <Alert.Heading>Your badge is updated!</Alert.Heading>
+        </Alert>
+      )  
+    }
+    catch(e) {
+      console.error(e)
+      setToyLoading(false)
+      setToyError(
+        <Alert variant="danger" onClose={() => setToyError(null)} dismissible>
+            <Alert.Heading>That failed for some reason. Please try again.</Alert.Heading>
+        </Alert>
+    ) 
+    }
+    
   }
-
-  useEffect(() => {
-  if (props.provider===undefined) {
-    console.log("undef")
-  }
-  else {
-    console.log("hello")
-    badgeStuff();
-  }
-  },[props.provider])
-  //need create and upgrade badge buttons (in marketplace)
-  //need NFT buy button and toy representation.
 
   return (
           <div style={{ marginTop: `20px`}}> 
@@ -66,7 +73,7 @@ export const Marketplace = (props) => {
                   <div>
                   <span style={{fontSize: 14, color: "red"}}>5 Out of 20 Sold</span>
                   </div>
-                  <Button onClick={badgeStuff} style = {{fontSize: 13}} variant = "primary" disabled={isToyLoading ? true : false}>
+                  <Button onClick={buyToy} style = {{fontSize: 13}} variant = "primary" disabled={isToyLoading ? true : false}>
                         { isToyLoading
                         ? <Spinner 
                         as="span"
@@ -79,6 +86,7 @@ export const Marketplace = (props) => {
                         &nbsp;&nbsp;Buy Dog Toy&nbsp;&nbsp;</Button>
                   </Col>
                 </Row>
+                {toyError}
             </Container>
           </div>
   )}

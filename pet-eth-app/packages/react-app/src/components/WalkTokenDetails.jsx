@@ -72,6 +72,7 @@ const getDateFromUnix = (unix_timestamp) => {
 }
 
 export const WalkTokenDetails = (props) => {
+    const [errorPay, setPayError] = useState(null);
     const [errorBadge, setBadgeError] = useState(null);
     const [isBadgeLoading, setBadgeLoading] = useState(false);
     const [isBalanceLoading, setBalanceLoading] = useState(true);
@@ -81,6 +82,7 @@ export const WalkTokenDetails = (props) => {
     const [datamapped, setMapping] = useState(null)
     const [balance, setBalance] = useState("0");
     const [usdAmount, setUSD] = useState("0");
+    const [badgeLevel, setBadgeLevel] = useState("0");
     const [data, setData] = useState([]);
     const [redeemModalShow, setRedeemModalShow] = useState(false);
 
@@ -141,9 +143,7 @@ export const WalkTokenDetails = (props) => {
           break;        
             }}
 
-    const [badgeLevel, setBadgeLevel] = useState(1);
-
-    const badgeStuff = async () => {
+    const getBadgeLevel= async () => {
       const owner = props.provider.getSigner()
       const address = await owner.getAddress()
       const badgeData = await props.walkBadge.connect(owner).getBadge(address)
@@ -152,22 +152,22 @@ export const WalkTokenDetails = (props) => {
 
     //update all data and table when provider loads in
     useEffect(() => {
-    fetchBalance()
-    fetchGraphData()
-    if(props.provider===undefined){
-      setMapping(null)
-    }
-    else{
-      badgeStuff();
-      setMapping(data.map((row, index) => (
-      <tr id={index}>
-        <td id={index}>{getDateFromUnix(row["createdAt"])}</td>
-        <td id={index}>{row["action"]}</td>
-        <td id={index}>{reduceTwoDecimalsBI(row["value"])}</td>
-        <td id={index}><a href={"https://kovan.etherscan.io/address/"+props.walkBadge.address+"?fromaddress=" + row["from"]}>{row["id"]}</a></td>
-      </tr>
-      )))
-    }
+      fetchBalance()
+      fetchGraphData()
+      if(props.provider===undefined){
+        setMapping(null)
+      }
+      else{
+        getBadgeLevel();
+        setMapping(data.map((row, index) => (
+        <tr id={index}>
+          <td id={index}>{getDateFromUnix(row["createdAt"])}</td>
+          <td id={index}>{row["action"]}</td>
+          <td id={index}>{reduceTwoDecimalsBI(row["value"])}</td>
+          <td id={index}><a href={"https://kovan.etherscan.io/address/"+props.walkBadge.address+"?fromaddress=" + row["from"]}>{row["id"]}</a></td>
+        </tr>
+        )))
+      }
     }, [props.provider])
     //second useeffect to empty the table
     useEffect(()=>{
@@ -191,8 +191,7 @@ export const WalkTokenDetails = (props) => {
       setUSD((parseInt(balance)/100).toString())
     }, [balance])
 
-    //claim pay button
-    const claimPay = async (formData) => {
+    const claimPay = async () => {
       const overrides = {
           gasLimit: ethers.BigNumber.from("1000000"),
         };
@@ -202,8 +201,8 @@ export const WalkTokenDetails = (props) => {
           const badge = await props.walkBadge.connect(owner).getBadge(owner.getAddress())
           if (badge[1]==="0")
           {
-            setBadgeError(
-              <Alert variant="danger" onClose={() => setBadgeError(null)} dismissible>
+            setPayError(
+              <Alert variant="danger" onClose={() => setPayError(null)} dismissible>
                   <Alert.Heading>Make sure you have already created a badge in the marketplace to register your account</Alert.Heading>
               </Alert>
             )
@@ -211,12 +210,12 @@ export const WalkTokenDetails = (props) => {
 
           else 
           {
-            const updatePay = await props.walkBadge.connect(owner).createBadge(owner.getAddress(), overrides); 
+            const updatePay = await props.walkBadge.connect(owner).updateWalkerStats(owner.getAddress(), overrides); 
             setPayLoading(true)
             await updatePay.wait(5)
             setPayLoading(false)
-            setBadgeError(
-              <Alert variant="success" onClose={() => setBadgeError(null)} dismissible>
+            setPayError(
+              <Alert variant="success" onClose={() => setPayError(null)} dismissible>
                   <Alert.Heading>Oracle updated your walk stats, walk tokens have been sent!</Alert.Heading>
               </Alert>
             )  
@@ -225,13 +224,49 @@ export const WalkTokenDetails = (props) => {
        catch(e) {
           console.error(e)
           setPayLoading(false)
-          setBadgeError(
-                  <Alert variant="danger" onClose={() => setBadgeError(null)} dismissible>
+          setPayError(
+                  <Alert variant="danger" onClose={() => setPayError(null)} dismissible>
                       <Alert.Heading>That failed for some reason. Please try again.</Alert.Heading>
                   </Alert>
               ) 
           }
       }
+    
+    const createUpdateBadge = async () => {
+      const overrides = {
+        gasLimit: ethers.BigNumber.from("1000000"),
+      };
+      const owner = props.provider.getSigner();
+      const address = await owner.getAddress();
+        try {
+          if(badgeLevel=="0") {
+          const createBadge = await props.walkBadge.connect(owner).createBadge(address, overrides);
+          setBadgeLoading(true)
+          await createBadge.wait(2)
+        }
+        else{
+          const updateBadge = await props.walkBadge.connect(owner).updateBadgeLevel(address, overrides);
+          setBadgeLoading(true)
+          await updateBadge.wait(2)
+        }
+        setBadgeLoading(false)
+        setBadgeError(
+          <Alert variant="success" onClose={() => setBadgeError(null)} dismissible>
+              <Alert.Heading>Your badge is updated!</Alert.Heading>
+          </Alert>
+        )  
+      }
+      catch(e) {
+        console.error(e)
+        setBadgeLoading(false)
+        setBadgeError(
+          <Alert variant="danger" onClose={() => setBadgeError(null)} dismissible>
+              <Alert.Heading>That failed for some reason. Please try again.</Alert.Heading>
+          </Alert>
+      ) 
+      }
+      
+    }
 
   return (
     <div>
@@ -251,7 +286,6 @@ export const WalkTokenDetails = (props) => {
                   {getLevelImg()}
                   </Container>
                    </div>
-
                   <Card.Text>
                       {
                         isGraphLoading
@@ -273,7 +307,7 @@ export const WalkTokenDetails = (props) => {
                 <Row>
                   <Col>
                     <Container style={{display: "flex", justifyContent: "center", alignItems: "center" }} React Center>
-                        <Button onClick={badgeStuff} style = {{fontSize: 14, backgroundColor: "#188120"}} disabled={isBadgeLoading ? true : false}>
+                        <Button onClick={createUpdateBadge} style = {{fontSize: 14, backgroundColor: "#188120", borderColor: "#188120"}} disabled={isBadgeLoading ? true : false}>
                           { isBadgeLoading
                           ? <Spinner 
                           as="span"
@@ -311,6 +345,7 @@ export const WalkTokenDetails = (props) => {
                     </Container>
                   </Col>
                   {errorBadge}
+                  {errorPay}
                 </Row>
               </div>
 
