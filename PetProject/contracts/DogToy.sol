@@ -3,9 +3,19 @@
 pragma solidity >=0.6.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract ERC721ToyNFT is ERC721 {
   using SafeMath for uint256;
+  using Counters for Counters.Counter;
+
+  address exchange;
+  uint toyBatchSize = 20;
+  Counters.Counter private _tokenIds;
+
+  constructor() public ERC721("DogToyTokenBatch", "DTT") {
+    exchange = msg.sender;
+  }
 
   event NewToy(uint toyId, string name);
 
@@ -15,26 +25,17 @@ contract ERC721ToyNFT is ERC721 {
 
   Toy[] public toys;
 
-  function buyToy(string _name) public returns (bool) {
-    /*
-    This function creates a new toy object, associates it with an ID
-    mints it as a token, and emits a NewToy event
-    */
-   if toys.length <= 20 {
-     uint toyId = toys.push(Toy(_name)) - 1;
-     _safeMint(msg.sender, toyId);
-     emit NewToy(toyId, _name, msg.value);
-     return true;
-   } else {
-     return false;
-  }
-
-  modifier isOwnerOf(uint _toyId) {
-    require(msg.sender == ownerOf(_toyId));
-    _;
-  }
-
-  function changeName(uint _toyId, string calldata _newName) external isOwnerOf(_toyId) {
-    toys[_toyId].name = _newName;
+  function buyToy(address walker, string calldata _name) public returns (bool) {
+    require(msg.sender==exchange, "Only the exchange can mint new Dog Toys");
+    if (toys.length <= toyBatchSize) {
+      toys.push(Toy(_name));
+      _tokenIds.increment();
+      uint toyId = _tokenIds.current();
+      _safeMint(walker, toyId);
+      emit NewToy(toyId, _name);
+      return true;
+    } else {
+      return false;
+    }
   }
 }
