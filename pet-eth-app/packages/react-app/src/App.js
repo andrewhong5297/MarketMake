@@ -118,19 +118,19 @@ function App() {
 
   //contracts
   let walkExchange = new ethers.Contract(
-    "0x5Fae318182f87D7b7F78c83C93c5B5d26174fF0D",
+    "0x6079045839Be2BF73B4E0a3fA1Aa5f39Be9aB4F8",
     abiWTE,
     mainnetProvider
   );
 
   let walkToken = new ethers.Contract(
-    "0x9611B6d05d00F11A768B2FF2b292Dbf943835076",
+    "0xEd51Df280eF334668A6d8b479298bE426F72778c",
     abiWT,
     mainnetProvider
   );
 
   let walkBadge = new ethers.Contract(
-    "0x040B37c073fCCAe050c995eF687A3C2900e6D8De",
+    "0x1e913c6d22344e7BE1e13fbBfe11E3dbE6628dd1",
     abiWB,
     mainnetProvider
   );
@@ -151,7 +151,7 @@ function App() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
-            <Nav.Link href="https://youtube.com">Pitch Video</Nav.Link>
+            <Nav.Link href="https://youtu.be/_4RbHpNJAA8">Pitch Video</Nav.Link>
             <Nav.Link href="https://hack.ethglobal.co/marketmake/teams/rechblh1Znn8U0uzU/recpnc2Ir529X7aJI">
               MarketMake Profile Link
             </Nav.Link>

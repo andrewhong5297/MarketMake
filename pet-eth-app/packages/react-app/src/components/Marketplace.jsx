@@ -27,7 +27,7 @@ export const Marketplace = (props) => {
     const address = await owner.getAddress();
     
     const dogToy = new ethers.Contract(
-      "0x3e3c4cb9B82d4bA208f27E41b51C2168e7f8CC0d", 
+      "0xf3856df27854D01904D99b86FB93Ca274CF617Bf", 
       abiDT,
       owner)  
     const toyBalance = await dogToy.connect(owner).balanceOf(address)
