@@ -71,6 +71,9 @@ module.exports = {
         version:"0.7.0"
       },
       {
+        version:"0.8.3"
+      },
+      {
         version:"0.8.4"
       }],
     optimizer: {
@@ -80,9 +83,12 @@ module.exports = {
   },
   etherscan: {
     apiKey: "FQKZCMUAQUA688R7FVDIH9BGD6698JIFPZ"
-    //npx hardhat verify --network mainnet 0x45Bd6a721582bc7C61562A6Cd4590c391899a759 "0xc3a9b2be34d7605eef2ec39c7f5b00e71552d319"
-    //npx hardhat verify --network mainnet 0xc3a9b2be34d7605eef2ec39c7f5b00e71552d319 "0xc3a9b2be34d7605eef2ec39c7f5b00e71552d319"
+    //idk npx hardhat verify --network mainnet 0x45Bd6a721582bc7C61562A6Cd4590c391899a759 "0xc3a9b2be34d7605eef2ec39c7f5b00e71552d319"
+    //Crowdfund? npx hardhat verify --network mainnet 0xc3a9b2be34d7605eef2ec39c7f5b00e71552d319 "0xc3a9b2be34d7605eef2ec39c7f5b00e71552d319"
+    //SplitFactory npx hardhat verify --network mainnet 0xb61feD6D59F9bAB219f2B9Ccab6c8e7016255e44 "0x2f81E57ff4f4d83B40a9f719fD892D8E806e0761" "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+    //Splitter npx hardhat verify --network mainnet 0x2f81E57ff4f4d83B40a9f719fD892D8E806e0761
   },
+
   paths: {
     sources: "./contracts",
     tests: "./test",
