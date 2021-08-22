@@ -65,7 +65,7 @@ module.exports = {
         version:"0.5.8"
       },
       {
-        version:"0.6.12"
+        version:"0.8.0"
       },
       {
         version:"0.7.0"
