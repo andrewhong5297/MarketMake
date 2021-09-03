@@ -1,8 +1,10 @@
 require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-etherscan");
+require('hardhat-contract-sizer');
+
 const fs = require("fs");
 
-const defaultNetwork = "kovan"; 
+const defaultNetwork = "rinkeby";
 
 function mnemonic() {
   try {
@@ -22,25 +24,25 @@ module.exports = {
       url: "http://localhost:8545",
     },
     rinkeby: {
-      url: "https://rinkeby.infura.io/v3/faefe1dcd6094fb388019173d2328d8f",
+      url: "https://rinkeby.infura.io/v3/9e181ea092734f8c885be4fd21bf3bc5",
       accounts: {
         mnemonic: mnemonic(),
       },
     },
     mainnet: {
-      url: "https://mainnet.infura.io/v3/cc9ead11daad4fcf819ce82b503f1651", //new
+      url: "https://mainnet.infura.io/v3/9e181ea092734f8c885be4fd21bf3bc5", //new
       accounts: {
         mnemonic: mnemonic(),
       },
     },
     ropsten: {
-      url: "https://ropsten.infura.io/v3/faefe1dcd6094fb388019173d2328d8f",
+      url: "https://ropsten.infura.io/v3/9e181ea092734f8c885be4fd21bf3bc5",
       accounts: {
         mnemonic: mnemonic(),
       },
     },
     kovan: {
-      url: "https://kovan.infura.io/v3/faefe1dcd6094fb388019173d2328d8f",
+      url: "https://kovan.infura.io/v3/9e181ea092734f8c885be4fd21bf3bc5",
       accounts: {
         mnemonic: mnemonic(),
       },
@@ -59,22 +61,28 @@ module.exports = {
         version: "0.5.11"
       },
       {
+        version: "0.4.16"
+      },
+      {
         version: "0.6.0"
       },
       {
-        version:"0.5.8"
+        version: "0.6.12"
       },
       {
-        version:"0.8.0"
+        version: "0.6.8"
       },
       {
-        version:"0.7.0"
+        version: "0.8.0"
       },
       {
-        version:"0.8.3"
+        version: "0.7.0"
       },
       {
-        version:"0.8.4"
+        version: "0.8.3"
+      },
+      {
+        version: "0.8.4"
       }],
     optimizer: {
       enabled: true,
@@ -87,8 +95,13 @@ module.exports = {
     //Crowdfund? npx hardhat verify --network mainnet 0xc3a9b2be34d7605eef2ec39c7f5b00e71552d319 "0xc3a9b2be34d7605eef2ec39c7f5b00e71552d319"
     //SplitFactory npx hardhat verify --network mainnet 0xb61feD6D59F9bAB219f2B9Ccab6c8e7016255e44 "0x2f81E57ff4f4d83B40a9f719fD892D8E806e0761" "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
     //Splitter npx hardhat verify --network mainnet 0x2f81E57ff4f4d83B40a9f719fD892D8E806e0761
+    //mirrorwritetoken npx hardhat verify --network rinkeby 0x6e3fCbb6f5c0D206B061A04f92827C780EEc58b5
   },
-
+  contractSizer: {
+    alphaSort: true,
+    runOnCompile: true,
+    disambiguatePaths: false,
+  },
   paths: {
     sources: "./contracts",
     tests: "./test",
